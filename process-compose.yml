@@ -1,0 +1,15 @@
+processes:
+  docker:
+    command: docker compose up
+
+  frontend:
+    cwd: frontend
+    command: sh -c "cd frontend && npm install && npm start"
+    dependencies:
+      - docker
+
+  backend:
+    cwd: backend
+    command: sh -c "cd backend && dotnet watch"
+    dependencies:
+      - docker
