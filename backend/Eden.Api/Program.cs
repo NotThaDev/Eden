@@ -11,9 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure CORS with a named policy
-const string AllowOriginsPolicy = "_allowOriginsPolicy";
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -30,18 +27,7 @@ var app = builder.Build();
 
 EdenAppContext.Initialize(app);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eden API V1");
-        c.RoutePrefix = string.Empty; // Serve at root if desired
-    });
-}
-
 app.UseHttpsRedirection();
-app.UseCors(AllowOriginsPolicy);
 app.UseAuthorization();
 app.MapControllers();
 

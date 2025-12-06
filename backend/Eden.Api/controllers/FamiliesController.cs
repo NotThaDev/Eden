@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Eden.Api.DTOs;
 using Eden.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +46,7 @@ namespace Eden.Api.Controllers
                 return BadRequest("Number of children cannot exceed number of members.");
             }
 
-           await existingFamily.UpdateFamilyAsync();
+            await existingFamily.UpdateFamilyAsync();
 
             return Ok(existingFamily);
         }
@@ -67,7 +68,8 @@ namespace Eden.Api.Controllers
             {
                 return BadRequest("Isee must be a non-negative value.");
             }
-            if(family.Members == 0)
+
+            if (family.Members == 0)
             {
                 return BadRequest("Family must have at least one member.");
             }
@@ -95,8 +97,12 @@ namespace Eden.Api.Controllers
                 return NotFound();
             }
 
-            await Family.DeleteFamilyAsync(id);
-            return NoContent();
+            var deleted = await Family.DeleteFamilyAsync(id);
+            if (deleted)
+            {
+                return NoContent();
+            }
+            return StatusCode(500, "Failed to delete family.");
         }
     }
 }

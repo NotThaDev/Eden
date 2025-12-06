@@ -76,7 +76,7 @@ namespace Eden.Api.Helpers
                 App.UseSwagger();
                 App.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyBackend API V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eden API V1");
                     c.RoutePrefix = string.Empty; // Serve at root if desired
                 });
             }
