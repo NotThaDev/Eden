@@ -53,6 +53,20 @@ namespace Eden.Api.Controllers
         [HttpPost()]
         public async Task<IActionResult> Create([FromBody] Family family)
         {
+            if (family == null)
+            {
+                return BadRequest("Family data is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(family.Name))
+            {
+                return BadRequest("Family name is required.");
+            }
+
+            if (family.Isee < 0)
+            {
+                return BadRequest("Isee must be a non-negative value.");
+            }
             if(family.Members == 0)
             {
                 return BadRequest("Family must have at least one member.");
