@@ -6,14 +6,35 @@ namespace Eden.Api.Helpers
     public class EdenAppContext
     {
         private static EdenAppContext _context;
+        private static readonly object _lock = new object();
         private IServiceProvider _serviceProvider;
 
-        public static EdenAppContext Context { get { return _context; } }
+        public static EdenAppContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    throw new InvalidOperationException("EdenAppContext has not been initialized. Call Initialize() first.");
+                }
+                return _context;
+            }
+        }
+
         public static void Initialize(WebApplication App)
         {
-            _context ??= new EdenAppContext();
-            _context._serviceProvider = App.Services;
-            _context.ConfigureCors(App);
+            if (_context == null)
+            {
+                lock (_lock)
+                {
+                    if (_context == null)
+                    {
+                        _context = new EdenAppContext();
+                        _context._serviceProvider = App.Services;
+                        _context.ConfigureCors(App);
+                    }
+                }
+            }
         }
 
         public async Task<T> WithDbContext<T>(Func<AppDbContext, Task<T>> action)
