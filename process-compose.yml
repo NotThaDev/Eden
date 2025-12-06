@@ -1,0 +1,24 @@
+processes:
+  containers:
+    command: | 
+      docker compose up -d \
+        && echo "##DOCKER STARTED SUCCESSFULLY##"
+    ready_log_line: "##DOCKER STARTED SUCCESSFULLY##"
+    shutdown:
+      signal: 9
+      command: docker compose stop
+
+  frontend:
+    working_dir: frontend
+    command: npm install && npm start
+    shutdown:
+      signal: 9
+
+  api_service:
+    working_dir: backend/Eden.Api
+    command: dotnet watch
+    shutdown:
+      signal: 9
+    depends_on:
+      containers:
+        condition: process_log_ready
