@@ -1,26 +1,36 @@
-using backend.Data;
+using Eden.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Helpers
+namespace Eden.Api.Helpers
 {
     public class EdenAppContext
     {
         private static EdenAppContext _context;
+        private IServiceProvider _serviceProvider;
 
-        public AppDbContext DbContext { get; private set; }
-        public static EdenAppContext Context { get; }
+        public static EdenAppContext Context { get { return _context; } }
         public static void Initialize(WebApplication App)
         {
             _context ??= new EdenAppContext();
+            _context._serviceProvider = App.Services;
             _context.ConfigureCors(App);
-            _context.ConfigureDb(App);
         }
 
-        private void ConfigureDb(WebApplication App)
+        public async Task<T> WithDbContext<T>(Func<AppDbContext, Task<T>> action)
         {
-            using var scope = App.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            DbContext = db;
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var queryResult = await action(dbContext);
+            return queryResult;
+        }
+
+
+        public T WithDbContext<T>(Func<AppDbContext, T> action)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var queryResult = action(dbContext);
+            return queryResult;
         }
 
         private void ConfigureCors(WebApplication App)
@@ -49,8 +59,6 @@ namespace backend.Helpers
                     c.RoutePrefix = string.Empty; // Serve at root if desired
                 });
             }
-
-
         }
     }
 }

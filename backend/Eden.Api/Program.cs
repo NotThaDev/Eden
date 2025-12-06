@@ -1,5 +1,5 @@
-using backend.Data;
-using backend.Helpers;
+using Eden.Api.Data;
+using Eden.Api.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 });
 
 var app = builder.Build();
+
 EdenAppContext.Initialize(app);
 
 if (app.Environment.IsDevelopment())
@@ -34,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyBackend API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Eden API V1");
         c.RoutePrefix = string.Empty; // Serve at root if desired
     });
 }
@@ -44,4 +45,12 @@ app.UseCors(AllowOriginsPolicy);
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Unhandled exception: {ex.Message}");
+    throw;
+}
