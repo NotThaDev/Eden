@@ -1,0 +1,64 @@
+<div class="navigation-container">
+  @if(isMobile()) {
+  <mat-toolbar>
+    <button matIconButton (click)="toggleMobileNavbar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </mat-toolbar>
+  }
+
+  <mat-sidenav-container autosize>
+    <mat-sidenav
+      class="navigation-sidenav"
+      [mode]="isMobile() ? 'over' : 'side'"
+      [fixedInViewport]="isMobile()"
+      [opened]="isMobileNavOpen() || !isMobile()"
+      [ngClass]="isNavbarCollapsed() && !isMobile() ? 'collapsed' : ''"
+    >
+      @if(!isMobile()) {
+      <div class="logo-container" (click)="toggleNavbarCollapse()">
+        <span class="logo-text">{{ isNavbarCollapsed() ? 'E' : 'Eden' }}</span>
+      </div>
+      }
+      <mat-nav-list>
+        @for (route of validRoutes; track route.path) {
+        <a
+          mat-list-item
+          class="nav-entry"
+          [routerLink]="route.children.length > 0 ? null : route.path"
+          [activated]="isRouteActive(route.path)"
+          (click)="onNavEntryClick(route)"
+        >
+          <mat-icon matListItemIcon>{{ route.icon }}</mat-icon>
+          <span
+            matListItemTitle
+            [style]="{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }"
+          >
+            @if (!isNavbarCollapsed() || isMobileNavOpen()) {
+            {{ route.title }}
+
+            @if (route.children.length > 0) {
+            <mat-icon style="font-size: 20px; vertical-align: middle">
+              {{ openedSubmenu === route.path ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+            } }
+          </span>
+        </a>
+
+        <!-- #TODO On collaps show icon + tooltip with the same menu down here -->
+        @if(route.children.length > 0 && openedSubmenu === route.path && !isNavbarCollapsed() ||
+        isMobileNavOpen()) {
+        <app-sub-menu [navEntry]="route" />
+        } }
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="layout-content">
+      <ng-content></ng-content>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

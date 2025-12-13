@@ -1,0 +1,59 @@
+$submenu-line-color: rgba(0, 0, 0, 0.06);
+$submenu-active-bg: rgba(0, 0, 0, 0.04);
+$submenu-indent: 48px; // distance from left edge to submenu title
+$submenu-line-indent: $submenu-indent - 24px;
+$submenu-line-size: 2px;
+
+.submenu-list {
+  gap: 0;
+  padding: 0;
+
+  & .submenu-entry-line {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding-left: $submenu-indent;
+
+    // vertical connector line that runs through submenu group - full height
+    &::before {
+      content: '';
+      position: absolute;
+      left: ($submenu-line-indent);
+      top: 0;
+      bottom: 0;
+      width: ($submenu-line-size);
+      background: $submenu-line-color;
+    }
+
+    // short horizontal tick connecting the item text to the vertical line
+    &::after {
+      content: '';
+      position: absolute;
+      left: ($submenu-line-indent + $submenu-line-size);
+      top: calc(50% - 1px);
+      transform: translateY(-50%);
+      width: 12px;
+      height: ($submenu-line-size);
+      background: $submenu-line-color;
+    }
+
+    &:last-child::before {
+      bottom: 50%;
+    }
+
+    .nav-entry.submenu-entry {
+      border-radius: 6px;
+      padding: 0 8px;
+      height: 38px;
+      position: relative;
+    }
+  }
+}
+
+.mat-mdc-nav-list .mat-mdc-list-item.mdc-list-item--activated {
+  background: none;
+  mat-icon,
+  span {
+    color: var(--mat-sys-primary);
+  }
+}
