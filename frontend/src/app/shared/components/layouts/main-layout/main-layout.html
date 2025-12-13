@@ -49,7 +49,7 @@
           </span>
         </a>
 
-        <!-- #TODO On collaps show icon + tooltip with the same menu down here -->
+        <!-- #TODO On collapse show icon + tooltip with the same menu down here -->
         @if(route.children.length > 0 && openedSubmenu === route.path && !isNavbarCollapsed() ||
         isMobileNavOpen()) {
         <app-sub-menu [navEntry]="route" />
