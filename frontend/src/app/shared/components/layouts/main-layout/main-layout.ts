@@ -37,7 +37,7 @@ export class MainLayout implements OnDestroy {
 
   protected validRoutes: NavEntry[] = routes
     .filter((route) => !route.hide)
-    ?.map((route) => {
+    .map((route) => {
       return {
         path: route.path,
         icon: route.icon,
