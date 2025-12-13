@@ -78,8 +78,8 @@ export class MainLayout implements OnDestroy {
   }
 
   onNavEntryClick(route: NavEntry): void {
-    const hasChilren = route.children && route.children.length > 0;
-    if (hasChilren) {
+    const hasChildren = route.children && route.children.length > 0;
+    if (hasChildren) {
       this.toggleSubmenu(route.path);
       // Make sure to open the navbar when collapsed, if clicking a parent nav entry
       if (this.isNavbarCollapsed()) {
