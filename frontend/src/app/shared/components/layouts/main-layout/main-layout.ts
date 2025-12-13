@@ -70,6 +70,7 @@ export class MainLayout implements OnDestroy {
 
   protected toggleMobileNavbar(): void {
     if (!this.isMobile()) return;
+    this.isMobileNavOpen.set(!this.isMobileNavOpen());
     this.sidenav.toggle();
   }
 
@@ -106,9 +107,6 @@ export class MainLayout implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    const platformId = inject(PLATFORM_ID);
-    if (isPlatformBrowser(platformId)) {
-      this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
-    }
+    this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
 }
