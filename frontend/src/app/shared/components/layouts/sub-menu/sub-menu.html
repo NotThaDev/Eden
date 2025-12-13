@@ -1,0 +1,17 @@
+<mat-nav-list class="submenu-list">
+  @for(child of navEntry().children; track child.path) {
+  <div class="submenu-entry-line">
+    <a
+      mat-list-item
+      class="nav-entry submenu-entry"
+      [routerLink]="`${navEntry().path}/${child.path}`"
+      [activated]="isRouteActive(`${navEntry().path}/${child.path}`)"
+      routerLinkActive="active-link"
+    >
+      <span matListItemTitle>
+        {{ child.title }}
+      </span>
+    </a>
+  </div>
+  }
+</mat-nav-list>
