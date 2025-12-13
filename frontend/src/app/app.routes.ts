@@ -1,4 +1,4 @@
-import { Route, Routes } from '@angular/router';
+import { Route } from '@angular/router';
 import { BocFamily } from './features/boc/pages/boc-family/boc-family';
 
 interface EdenAppRoute extends Route {
