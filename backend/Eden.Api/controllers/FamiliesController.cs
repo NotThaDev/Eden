@@ -102,6 +102,7 @@ namespace Eden.Api.Controllers
             {
                 return NoContent();
             }
+
             return StatusCode(500, "Failed to delete family.");
         }
     }
