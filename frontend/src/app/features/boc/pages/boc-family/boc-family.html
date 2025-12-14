@@ -1,5 +1,12 @@
 <app-page-header [title]="'Families'">
   <div class="content-container">
+    <div class="toolbar">
+      <button matFab extended (click)="onAddFamily()">
+        <mat-icon>add</mat-icon>
+        Add Family
+      </button>
+    </div>
+
     <!-- #TODO Add action column and resize the columns -->
     <table mat-table [dataSource]="dataSource" matSort class="custom-table">
       <!-- Name Column -->

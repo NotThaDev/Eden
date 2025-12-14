@@ -7,50 +7,70 @@
 
 // Custom white theme palette with blue accent
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$blue-palette,
-      tertiary: mat.$orange-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$blue-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 
   // Primary color (Blue)
   --mat-sys-primary: #0062a8;
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: #d1e4ff;
   --mat-sys-on-primary-container: #001d35;
-  
+
   // Surface colors (Clean white palette)
-  --mat-sys-surface: #fafbfc;          // Main background - very light blue-gray
-  --mat-sys-surface-dim: #f5f6f7;      // Slightly darker surface
-  --mat-sys-surface-bright: #ffffff;    // Bright white for cards/elevated content
+  --mat-sys-surface: #fafbfc; // Main background - very light blue-gray
+  --mat-sys-surface-dim: #f5f6f7; // Slightly darker surface
+  --mat-sys-surface-bright: #ffffff; // Bright white for cards/elevated content
   --mat-sys-surface-container: #ffffff; // Container background (white)
   --mat-sys-surface-container-low: #f9fafb;
   --mat-sys-surface-container-lowest: #ffffff;
   --mat-sys-surface-container-high: #f3f4f6;
   --mat-sys-surface-container-highest: #ebedef;
-  
+
   // Text colors
-  --mat-sys-on-surface: #1a1d21;        // Primary text - dark gray
+  --mat-sys-on-surface: #1a1d21; // Primary text - dark gray
   --mat-sys-on-surface-variant: #5f6368; // Secondary text - medium gray
-  
+
   // Border and divider colors
-  --mat-sys-outline: #dadce0;           // Subtle borders
-  --mat-sys-outline-variant: #e8eaed;   // Very subtle borders
-  
+  --mat-sys-outline: #dadce0; // Subtle borders
+  --mat-sys-outline-variant: #e8eaed; // Very subtle borders
+
   // Background colors for different states
   --mat-sys-background: #fafbfc;
   --mat-sys-on-background: #1a1d21;
 }
 
 body {
+  @include mat.fab-overrides(
+    (
+      container-shape: 8px,
+      extended-container-shape: 8px,
+      small-container-shape: 8px,
+
+      container-elevation-shadow: none,
+      extended-container-elevation-shadow: none,
+      small-container-elevation-shadow: none,
+      extended-focus-container-elevation-shadow: none,
+
+      hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
+      extended-hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
+      small-hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
+      extended-container-height: 42px,
+    )
+  );
+
   color-scheme: light;
-  
+
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-  
+
   margin: 0;
 }

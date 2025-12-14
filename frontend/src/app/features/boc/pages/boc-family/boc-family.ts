@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, signal, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -6,10 +6,19 @@ import { Subscription } from 'rxjs';
 import { PageHeader } from '../../../../shared/components/layouts/page-header/page-header';
 import { Family } from './../../../../core/models/family';
 import { FamilyService } from './../../services/family.service';
+import { MatIcon } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-boc-family',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, PageHeader],
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    PageHeader,
+    MatIcon,
+    MatButtonModule,
+  ],
   templateUrl: './boc-family.html',
   styleUrl: './boc-family.scss',
 })
@@ -20,6 +29,7 @@ export class BocFamily implements AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['name', 'members', 'children', 'isee'];
   dataSource = new MatTableDataSource<Family>([]);
   loading = true;
+  displayNewFamilyModal = signal(false);
 
   private subscription = new Subscription();
 
@@ -44,5 +54,9 @@ export class BocFamily implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  onAddFamily() {
+    this.displayNewFamilyModal.set(true);
   }
 }
