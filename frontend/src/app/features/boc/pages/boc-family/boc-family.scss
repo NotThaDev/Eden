@@ -1,9 +1,24 @@
-.table-stripped {
-  .mat-mdc-row:nth-child(odd) {
-    background-color: #f9f9f9;
-  }
-  
+.custom-table {
+  border-radius: 8px;
+  overflow: hidden;
+
   .mat-mdc-header-row {
-    background-color: transparent;
+    background-color: var(--mat-sys-surface-container-high); // Light gray background
+    height: 32px;
+    font-weight: 400;
+
+    .mat-mdc-header-cell {
+      border-bottom: none;
+      color: var(--mat-sys-on-surface); // Dark text
+    }
+  }
+
+  tr {
+    height: 48px;
+
+    .mat-mdc-cell {
+      border-bottom: 1px solid var(--mat-sys-outline-variant); // Subtle border
+      color: var(--mat-sys-on-surface-variant); // Medium gray text
+    }
   }
 }
