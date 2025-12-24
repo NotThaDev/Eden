@@ -1,9 +1,9 @@
 <app-page-header [title]="'Families'">
   <div class="content-container">
     <div class="toolbar">
-      <button matFab extended (click)="openDialog()">
+      <button matButton="filled" extended (click)="openDialog()">
         <mat-icon>add</mat-icon>
-        Add Family
+        New Family
       </button>
     </div>
 
@@ -36,11 +36,5 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-    <mat-paginator
-      [style.marginTop.px]="16"
-      [pageSizeOptions]="[5, 10, 20]"
-      aria-label="Select page of periodic elements"
-    >
-    </mat-paginator>
   </div>
 </app-page-header>

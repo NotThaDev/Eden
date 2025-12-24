@@ -48,21 +48,13 @@ html {
 }
 
 body {
-  @include mat.fab-overrides(
+  @include mat.button-overrides(
     (
-      container-shape: 8px,
-      extended-container-shape: 8px,
-      small-container-shape: 8px,
-
-      container-elevation-shadow: none,
-      extended-container-elevation-shadow: none,
-      small-container-elevation-shadow: none,
-      extended-focus-container-elevation-shadow: none,
-
-      hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
-      extended-hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
-      small-hover-container-elevation-shadow: 0 1px 4px rgba(0, 0, 0, 0.08),
-      extended-container-height: 42px,
+      filled-container-shape: 12px,
+      outlined-container-shape: 12px,
+      protected-container-shape: 12px,
+      text-container-shape: 12px,
+      tonal-container-shape: 12px,
     )
   );
 

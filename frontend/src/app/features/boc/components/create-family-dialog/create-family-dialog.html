@@ -20,6 +20,6 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button matButton (click)="dialogRef.close()">No Thanks</button>
-  <button matButton (click)="onClose()">Ok</button>
+  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Cancel</button>
+  <button matButton="filled" (click)="onClose()" class="dialog-button">Save</button>
 </mat-dialog-actions>
