@@ -1,90 +1,72 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpHandler } from '../../../core/http/httpHandler';
 import { Family } from '../../../core/models/family';
-import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { finalize, tap } from 'rxjs';
+import { error } from 'console';
 
 @Injectable({ providedIn: 'root' })
 export class FamilyService {
-  private familiesSubject = new BehaviorSubject<Family[]>([]);
-  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private httpHandler = inject(HttpHandler);
 
-  // Expose as observables
-  public families$ = this.familiesSubject.asObservable();
-  public loading$ = this.loadingSubject.asObservable();
+  // Signals for state management
+  private familiesSignal = signal<Family[]>([]);
+  private loadingSignal = signal<boolean>(false);
 
-  // Expose current value for sync access
-  get families(): Family[] {
-    return this.familiesSubject.value;
+  // Expose as readonly signals
+  public families = this.familiesSignal.asReadonly();
+  public loading = this.loadingSignal.asReadonly();
+
+  // Computed signal for total count (example of computed usage)
+  public familiesCount = computed(() => this.familiesSignal().length);
+
+  fetchFamilies() {
+    this.loadingSignal.set(true);
+    this.httpHandler
+      .get<Family[]>('api/family')
+      .pipe(finalize(() => this.loadingSignal.set(false)))
+      .subscribe((families) => this.familiesSignal.set(families));
   }
 
-  constructor(private httpHandler: HttpHandler) {
-    this.loadFamilies();
+  createFamily(family: Family) {
+    this.loadingSignal.set(true);
+
+    return this.httpHandler.post<Family>('api/family', family).pipe(
+      tap((newFamily) => {
+        this.familiesSignal.update((families) => [...families, newFamily]);
+      }),
+      finalize(() => this.loadingSignal.set(false))
+    );
   }
 
-  private loadFamilies() {
-    this.loadingSubject.next(true);
-    this.httpHandler.get<Family[]>('api/family')
-      .pipe(
-        finalize(() => this.loadingSubject.next(false))
-      )
-      .subscribe({
-        next: (families) => this.familiesSubject.next(families),
-        error: (error) => console.error('Error loading families:', error)
-      });
-  }
+  deleteFamily(familyId: number) {
+    this.loadingSignal.set(true);
 
-  createFamily(family: Family): Observable<Family> {
-    this.loadingSubject.next(true);
-    const observable = this.httpHandler.post<Family>('api/family', family);
-    
-    observable.pipe(
-      finalize(() => this.loadingSubject.next(false))
-    ).subscribe({
-      next: (newFamily) => {
-        this.familiesSubject.next([...this.families, newFamily]);
-      },
-      error: (error) => console.error('Error creating family:', error)
-    });
-    
-    return observable;
-  }
-
-  deleteFamily(familyId: number): Observable<void> {
-    this.loadingSubject.next(true);
-    const observable = this.httpHandler.delete<void>(`api/family/${familyId}`);
-    
-    observable.pipe(
-      finalize(() => this.loadingSubject.next(false))
-    ).subscribe({
-      next: () => {
-        this.familiesSubject.next(
-          this.families.filter((family) => family.id !== familyId)
+    return this.httpHandler.delete<void>(`api/family/${familyId}`).pipe(
+      tap(() => {
+        this.familiesSignal.update((families) =>
+          families.filter((family) => family.id !== familyId)
         );
-      },
-      error: (error) => console.error('Error deleting family:', error)
-    });
-    
-    return observable;
+      }),
+      finalize(() => this.loadingSignal.set(false))
+    );
   }
 
-  updateFamily(family: Family): Observable<Family> {
+  updateFamily(family: Family) {
     if (!family.id) {
       throw new Error('Family ID is required for update.');
     }
-    this.loadingSubject.next(true);
-    const observable = this.httpHandler.patch<Family>(`api/family/${family.id}`, family);
-    
-    observable.pipe(
-      finalize(() => this.loadingSubject.next(false))
-    ).subscribe({
-      next: (updatedFamily) => {
-        this.familiesSubject.next(
-          this.families.map((f) => (f.id === updatedFamily.id ? updatedFamily : f))
-        );
-      },
-      error: (error) => console.error('Error updating family:', error)
-    });
-    
-    return observable;
+    this.loadingSignal.set(true);
+
+    return this.httpHandler
+      .patch<Family>(`api/family/${family.id}`, family)
+      .pipe(finalize(() => this.loadingSignal.set(false)))
+      .subscribe({
+        next: (updatedFamily) => {
+          this.familiesSignal.update((families) =>
+            families.map((f) => (f.id === updatedFamily.id ? updatedFamily : f))
+          );
+        },
+        error: (error) => console.error('Error updating family:', error),
+      });
   }
 }

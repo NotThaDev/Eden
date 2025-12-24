@@ -1,6 +1,6 @@
 import { MatMenuModule } from '@angular/material/menu';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { Component, OnDestroy, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, NgClass } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
@@ -31,7 +31,7 @@ import { SubMenu } from '../sub-menu/sub-menu';
     SubMenu,
   ],
 })
-export class MainLayout implements OnDestroy {
+export class MainLayout implements OnDestroy, OnInit {
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
 
@@ -108,5 +108,14 @@ export class MainLayout implements OnDestroy {
 
   ngOnDestroy(): void {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
+  }
+
+  ngOnInit(): void {
+    const currentPath = window.location.pathname;
+    const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
+
+    if (matchingRoute && matchingRoute.children.length > 0) {
+      this.openedSubmenu = matchingRoute.path;
+    }
   }
 }

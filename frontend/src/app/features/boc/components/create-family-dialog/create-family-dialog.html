@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Add a New Family</h2>
+<mat-dialog-content [formGroup]="familyFormControl">
+  <div class="family-form-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput placeholder="Doe's Family" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Members</mat-label>
+      <input matInput type="number" placeholder="4" formControlName="members" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Childrens</mat-label>
+      <input matInput type="number" placeholder="2" formControlName="children" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>ISEE</mat-label>
+      <input matInput type="number" placeholder="5000" formControlName="isee" />
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton (click)="dialogRef.close()">No Thanks</button>
+  <button matButton (click)="onClose()">Ok</button>
+</mat-dialog-actions>

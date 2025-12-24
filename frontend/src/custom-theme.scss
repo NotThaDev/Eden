@@ -66,6 +66,19 @@ body {
     )
   );
 
+  @include mat.form-field-overrides(
+    (
+      container-height: 42px,
+      container-vertical-padding: 12px,
+    )
+  );
+
+  @include mat.dialog-overrides(
+    (
+      container-shape: 12px,
+    )
+  );
+
   color-scheme: light;
 
   background-color: var(--mat-sys-surface);
