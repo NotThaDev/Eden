@@ -71,6 +71,18 @@ body {
     )
   );
 
+  @include mat.snack-bar-overrides(
+    (
+      container-color: transparent,
+      supporting-text-color: var(--mat-sys-on-surface),
+    )
+  );
+
+  // overriding the snackbar box shadow
+  .mdc-snackbar__surface {
+    box-shadow: none !important;
+  }
+
   color-scheme: light;
 
   background-color: var(--mat-sys-surface);

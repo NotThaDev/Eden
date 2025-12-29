@@ -1,0 +1,8 @@
+<div class="snackbar-content-container" [style.border-color]="getBorderColor()">
+  <span matSnackBarLabel> {{ data.title }}</span>
+  <mat-icon [style]="{ color: getIconColor(), 'font-size': '22px' }"> {{ getIcon() }} </mat-icon>
+
+  <button class="close-btn" mat-icon-button matSnackBarDismiss (click)="snackBarRef.dismissWithAction()">
+    <mat-icon> close </mat-icon>
+  </button>
+</div>
