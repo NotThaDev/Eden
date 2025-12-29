@@ -69,6 +69,11 @@ namespace Eden.Api.Controllers
                 return BadRequest("Isee must be a non-negative value.");
             }
 
+            if( family.Isee > 10040)
+            {
+                return BadRequest("Isee must be less than or equal to 10040.");
+            }
+
             if (family.Members == 0)
             {
                 return BadRequest("Family must have at least one member.");

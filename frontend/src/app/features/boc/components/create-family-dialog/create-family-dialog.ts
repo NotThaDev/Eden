@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import {
@@ -10,7 +10,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Family } from '../../../../core/models/family';
-import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create-family-dialog',
@@ -28,18 +28,57 @@ import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
   ],
 })
 export class CreateFamilyDialog {
+  membersValidationError = signal<string>('');
+
   readonly formBuilder = inject(FormBuilder);
   readonly familyFormControl = this.formBuilder.group({
-    name: [''],
-    members: [],
-    children: [],
-    isee: [],
+    name: [null, [Validators.required, Validators.minLength(1)]],
+    members: [null, [Validators.required, Validators.min(1), this.membersValidator.bind(this)]],
+    children: [0, [Validators.required, this.childrenValidator.bind(this)]],
+    isee: [null, [Validators.required, Validators.min(0), Validators.max(10040)]],
   });
 
   readonly dialogRef = inject(MatDialogRef<CreateFamilyDialog>);
 
+  private membersValidator(control: FormControl) {
+    this.membersValidationError.set('');
+    const childrenValue = this.familyFormControl?.get('children')?.value;
+    const membersValue = control.value;
+
+    const isMemberDefined = membersValue !== null && membersValue !== undefined;
+    const isChildrenDefined = childrenValue !== null && childrenValue !== undefined;
+    if (!isMemberDefined || !isChildrenDefined) {
+      return null;
+    }
+
+    if (membersValue <= childrenValue) {
+      this.membersValidationError.set('Total members must be greater than the number of children.');
+      return { invalidMembersCount: true };
+    }
+
+    return null;
+  }
+
+  private childrenValidator(control: FormControl) {
+    this.membersValidationError.set('');
+    const membersValue = this.familyFormControl?.get('members')?.value;
+    const childrenValue = control.value;
+
+    const isMemberDefined = membersValue !== null && membersValue !== undefined;
+    const isChildrenDefined = childrenValue !== null && childrenValue !== undefined;
+    if (!isMemberDefined || !isChildrenDefined) {
+      return null;
+    }
+
+    if (childrenValue >= membersValue) {
+      this.membersValidationError.set('Number of children must be less than the total members.');
+      return { invalidChildrenCount: true };
+    }
+
+    return null;
+  }
+
   onClose(): void {
-    // #TODO add a proper validation mechanism
     if (this.familyFormControl.invalid) {
       return;
     }
