@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { BocFamily } from './features/boc/pages/boc-family/boc-family';
+import { BocFamily } from './features/boc/boc-family/boc-family';
 
 interface EdenAppRoute extends Route {
   icon?: string;

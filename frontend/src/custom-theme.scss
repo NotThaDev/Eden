@@ -5,38 +5,89 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-// Use a simpler approach - just override the primary color
-// This preserves all the default Material 3 state layer behavior
+// Custom white theme palette with blue accent
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$blue-palette,
-      tertiary: mat.$orange-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$blue-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 
-  // Override specific primary color tones to match your blue
+  // Primary color (Blue)
   --mat-sys-primary: #0062a8;
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: #d1e4ff;
   --mat-sys-on-primary-container: #001d35;
+
+  // Surface colors (Clean white palette)
+  --mat-sys-surface: #fafbfc; // Main background - very light blue-gray
+  --mat-sys-surface-dim: #f5f6f7; // Slightly darker surface
+  --mat-sys-surface-bright: #ffffff; // Bright white for cards/elevated content
+  --mat-sys-surface-container: #ffffff; // Container background (white)
+  --mat-sys-surface-container-low: #f9fafb;
+  --mat-sys-surface-container-lowest: #ffffff;
+  --mat-sys-surface-container-high: #f3f4f6;
+  --mat-sys-surface-container-highest: #ebedef;
+
+  // Text colors
+  --mat-sys-on-surface: #1a1d21; // Primary text - dark gray
+  --mat-sys-on-surface-variant: #5f6368; // Secondary text - medium gray
+
+  // Border and divider colors
+  --mat-sys-outline: #dadce0; // Subtle borders
+  --mat-sys-outline-variant: #e8eaed; // Very subtle borders
+
+  // Background colors for different states
+  --mat-sys-background: #fafbfc;
+  --mat-sys-on-background: #1a1d21;
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 12px,
+      outlined-container-shape: 12px,
+      protected-container-shape: 12px,
+      text-container-shape: 12px,
+      tonal-container-shape: 12px,
+    )
+  );
+
+  @include mat.form-field-overrides(
+    (
+      container-height: 42px,
+      container-vertical-padding: 12px,
+    )
+  );
+
+  @include mat.dialog-overrides(
+    (
+      container-shape: 12px,
+    )
+  );
+
+  @include mat.snack-bar-overrides(
+    (
+      container-color: transparent,
+      supporting-text-color: var(--mat-sys-on-surface),
+    )
+  );
+
+  // overriding the snackbar box shadow
+  .mdc-snackbar__surface {
+    box-shadow: none !important;
+  }
+
   color-scheme: light;
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
 
-  // Reset the user agent margin.
   margin: 0;
 }

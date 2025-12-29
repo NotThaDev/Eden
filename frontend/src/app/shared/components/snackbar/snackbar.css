@@ -1,0 +1,17 @@
+.snackbar-content-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  background: var(--mat-sys-surface);
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.close-btn {
+  margin-left: auto;
+  height: 24px;
+  cursor: pointer;
+}

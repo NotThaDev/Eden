@@ -1,0 +1,12 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0 0 32px 0;
+  letter-spacing: -0.02em;
+}

@@ -1,0 +1,42 @@
+<app-page-header [title]="'Families'">
+  <div class="content-container">
+    <div class="toolbar">
+      <button matButton="filled" extended (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+        New Family
+      </button>
+    </div>
+
+    <!-- #TODO Move the table to a general (shared) component -->
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="custom-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let family">{{ family.name }}</td>
+        </ng-container>
+
+        <!-- Members Column -->
+        <ng-container matColumnDef="members">
+          <th mat-header-cell *matHeaderCellDef>Members</th>
+          <td mat-cell *matCellDef="let family">{{ family.members }}</td>
+        </ng-container>
+
+        <!-- Children Column -->
+        <ng-container matColumnDef="children">
+          <th mat-header-cell *matHeaderCellDef>Children</th>
+          <td mat-cell *matCellDef="let family">{{ family.children }}</td>
+        </ng-container>
+
+        <!-- ISEE Column -->
+        <ng-container matColumnDef="isee">
+          <th mat-header-cell *matHeaderCellDef>ISEE</th>
+          <td mat-cell *matCellDef="let family">{{ family.isee }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
+</app-page-header>
