@@ -1,6 +1,12 @@
-import { Component, inject, signal, AfterViewInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatGridListModule } from '@angular/material/grid-list';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -9,14 +15,8 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
 import { Family } from '../../../../core/models/family';
 
 @Component({
@@ -35,7 +35,7 @@ import { Family } from '../../../../core/models/family';
   ],
 })
 // #TODO use a more generic name like (e.g., FamilyDialog) since it is also used for editing
-export class CreateFamilyDialog implements AfterViewInit {
+export class CreateFamilyDialog implements OnInit {
   membersValidationError = signal<string>('');
 
   readonly data = inject<{ family?: Family }>(MAT_DIALOG_DATA, { optional: true });
@@ -102,7 +102,7 @@ export class CreateFamilyDialog implements AfterViewInit {
     this.dialogRef.close(this.familyFormControl.value);
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     if (this.data?.family) {
       const family = this.data.family;
       this.familyFormControl.get('name')?.setValue(family.name);
