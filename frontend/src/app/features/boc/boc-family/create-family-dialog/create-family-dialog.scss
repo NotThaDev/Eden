@@ -24,6 +24,14 @@ $members-container-gap: 16px;
       top: calc(50% + $members-container-gap);
     }
   }
+
+  @media (max-width: 600px) {
+    flex-wrap: nowrap;
+
+    .error-field {
+      font-size: 12px;
+    }
+  }
 }
 
 .dialog-button {
