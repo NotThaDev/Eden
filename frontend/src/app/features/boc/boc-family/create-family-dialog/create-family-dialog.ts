@@ -34,10 +34,12 @@ import { Family } from '../../../../core/models/family';
     MatGridListModule,
   ],
 })
+// #TODO use a more generic name like (e.g., FamilyDialog) since it is also used for editing
 export class CreateFamilyDialog implements AfterViewInit {
   membersValidationError = signal<string>('');
 
   readonly data = inject<{ family?: Family }>(MAT_DIALOG_DATA, { optional: true });
+  readonly title = this.data?.family ? `Edit ${this.data.family.name}` : 'Add a New Family';
   readonly formBuilder = inject(FormBuilder);
   readonly familyFormControl: FormGroup = this.formBuilder.group({
     name: [null, [Validators.required, Validators.minLength(1)]],

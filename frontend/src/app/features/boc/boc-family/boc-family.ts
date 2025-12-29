@@ -50,8 +50,7 @@ export class BocFamily implements OnInit {
   private _snackBar = inject(MatSnackBar);
 
   private familyService = inject(FamilyService);
-  readonly familyDialog = inject(MatDialog);
-  readonly confirmationDialog = inject(MatDialog);
+  readonly dialogRef = inject(MatDialog);
 
   displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'actions'];
 
@@ -70,7 +69,7 @@ export class BocFamily implements OnInit {
   }
 
   deleteFamily(family: Family) {
-    const dialogRef = this.confirmationDialog.open(ConfirmationDialog, {
+    const dialogRef = this.dialogRef.open(ConfirmationDialog, {
       data: {
         title: `Delete "${family.name}" Family?`,
         message: `Are you sure you want to delete this family? This action cannot be undone.`,
@@ -102,7 +101,7 @@ export class BocFamily implements OnInit {
   }
 
   editFamily(family: Family) {
-    const dialogRef = this.familyDialog.open(CreateFamilyDialog, {
+    const dialogRef = this.dialogRef.open(CreateFamilyDialog, {
       data: {
         family: family,
       },
@@ -133,7 +132,7 @@ export class BocFamily implements OnInit {
   }
 
   openDialog(): void {
-    const dialogRef = this.familyDialog.open(CreateFamilyDialog);
+    const dialogRef = this.dialogRef.open(CreateFamilyDialog);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {

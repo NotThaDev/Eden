@@ -25,6 +25,12 @@ html {
   --mat-sys-primary-container: #d1e4ff;
   --mat-sys-on-primary-container: #001d35;
 
+  // Error/Warn color (Red)
+  --mat-sys-error: #ba1a1a;
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-error-container: #ffdad6;
+  --mat-sys-on-error-container: #410002;
+
   // Surface colors (Clean white palette)
   --mat-sys-surface: #fafbfc; // Main background - very light blue-gray
   --mat-sys-surface-dim: #f5f6f7; // Slightly darker surface
