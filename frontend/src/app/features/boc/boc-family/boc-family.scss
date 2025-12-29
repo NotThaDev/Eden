@@ -5,6 +5,7 @@
   margin-bottom: 16px;
 }
 
+// Table style (#TODO Move this on the seperate component)
 .table-container {
   overflow-x: auto;
   overflow-y: visible;
@@ -59,5 +60,20 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+}
+
+// Action buttons styling
+.action-button {
+  color: var(--mat-sys-on-surface-variant);
+  height: fit-content;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+  }
+
+  .delete-icon {
+    color: var(--mat-sys-error);
   }
 }

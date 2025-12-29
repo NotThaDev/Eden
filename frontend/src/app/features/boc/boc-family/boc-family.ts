@@ -22,6 +22,7 @@ import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../../shared/components/snackbar/type';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-boc-family',
@@ -49,9 +50,10 @@ export class BocFamily implements OnInit {
   private _snackBar = inject(MatSnackBar);
 
   private familyService = inject(FamilyService);
-  readonly dialog = inject(MatDialog);
+  readonly familyDialog = inject(MatDialog);
+  readonly confirmationDialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'members', 'children', 'isee'];
+  displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'actions'];
 
   dataSource = new MatTableDataSource<Family>([]);
   loading = computed(() => this.familyService.loading());
@@ -67,8 +69,71 @@ export class BocFamily implements OnInit {
     this.familyService.fetchFamilies();
   }
 
+  deleteFamily(family: Family) {
+    const dialogRef = this.confirmationDialog.open(ConfirmationDialog, {
+      data: {
+        title: `Delete "${family.name}" Family?`,
+        message: `Are you sure you want to delete this family? This action cannot be undone.`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.familyService.deleteFamily(family.id).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to delete family.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Family successfully deleted!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
+  }
+
+  editFamily(family: Family) {
+    const dialogRef = this.familyDialog.open(CreateFamilyDialog, {
+      data: {
+        family: family,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.familyService.updateFamily(result, family.id).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to update family.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Family successfully updated!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
+  }
+
   openDialog(): void {
-    const dialogRef = this.dialog.open(CreateFamilyDialog);
+    const dialogRef = this.familyDialog.open(CreateFamilyDialog);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
