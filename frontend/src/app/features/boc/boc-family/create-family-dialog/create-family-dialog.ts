@@ -1,15 +1,23 @@
-import { Component, inject, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatGridListModule } from '@angular/material/grid-list';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogContent,
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Family } from '../../../../core/models/family';
 
 @Component({
   selector: 'app-create-family-dialog',
@@ -26,14 +34,17 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
     MatGridListModule,
   ],
 })
-export class CreateFamilyDialog {
+// #TODO use a more generic name like (e.g., FamilyDialog) since it is also used for editing
+export class CreateFamilyDialog implements OnInit {
   membersValidationError = signal<string>('');
 
+  readonly data = inject<{ family?: Family }>(MAT_DIALOG_DATA, { optional: true });
+  readonly title = this.data?.family ? `Edit ${this.data.family.name}` : 'Add a New Family';
   readonly formBuilder = inject(FormBuilder);
-  readonly familyFormControl = this.formBuilder.group({
+  readonly familyFormControl: FormGroup = this.formBuilder.group({
     name: [null, [Validators.required, Validators.minLength(1)]],
     members: [null, [Validators.required, Validators.min(1), this.membersValidator.bind(this)]],
-    children: [0, [Validators.required, this.childrenValidator.bind(this)]],
+    children: [null, [Validators.required, this.childrenValidator.bind(this)]],
     isee: [null, [Validators.required, Validators.min(0), Validators.max(10040)]],
   });
 
@@ -55,7 +66,9 @@ export class CreateFamilyDialog {
       return { invalidMembersCount: true };
     }
 
-    this.familyFormControl?.get('children')?.updateValueAndValidity({ emitEvent: true });
+    if (this.familyFormControl.get('children')?.invalid) {
+      this.familyFormControl?.get('children')?.updateValueAndValidity({ emitEvent: true });
+    }
     return null;
   }
 
@@ -75,7 +88,9 @@ export class CreateFamilyDialog {
       return { invalidChildrenCount: true };
     }
 
-    this.familyFormControl?.get('members')?.updateValueAndValidity({ emitEvent: true });
+    if (this.familyFormControl.get('members')?.invalid) {
+      this.familyFormControl?.get('members')?.updateValueAndValidity({ emitEvent: true });
+    }
     return null;
   }
 
@@ -85,5 +100,15 @@ export class CreateFamilyDialog {
     }
 
     this.dialogRef.close(this.familyFormControl.value);
+  }
+
+  ngOnInit(): void {
+    if (this.data?.family) {
+      const family = this.data.family;
+      this.familyFormControl.get('name')?.setValue(family.name);
+      this.familyFormControl.get('members')?.setValue(family.members);
+      this.familyFormControl.get('children')?.setValue(family.children);
+      this.familyFormControl.get('isee')?.setValue(family.isee);
+    }
   }
 }

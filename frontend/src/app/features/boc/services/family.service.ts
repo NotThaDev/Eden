@@ -37,7 +37,11 @@ export class FamilyService {
     );
   }
 
-  deleteFamily(familyId: number) {
+  deleteFamily(familyId?: number) {
+    if (!familyId) {
+      throw new Error('Family ID is required for deletion.');
+    }
+
     this.loadingSignal.set(true);
 
     return this.httpHandler.delete<void>(`api/family/${familyId}`).pipe(
@@ -50,22 +54,20 @@ export class FamilyService {
     );
   }
 
-  updateFamily(family: Family) {
-    if (!family.id) {
+  updateFamily(family: Family, id?: number) {
+    if (!id) {
       throw new Error('Family ID is required for update.');
     }
+
     this.loadingSignal.set(true);
 
-    return this.httpHandler
-      .patch<Family>(`api/family/${family.id}`, family)
-      .pipe(finalize(() => this.loadingSignal.set(false)))
-      .subscribe({
-        next: (updatedFamily) => {
-          this.familiesSignal.update((families) =>
-            families.map((f) => (f.id === updatedFamily.id ? updatedFamily : f))
-          );
-        },
-        error: (error) => console.error('Error updating family:', error),
-      });
+    return this.httpHandler.put<Family>(`api/family/${id}`, family).pipe(
+      tap((updatedFamily) => {
+        this.familiesSignal.update((families) =>
+          families.map((f) => (f.id === updatedFamily.id ? updatedFamily : f))
+        );
+      }),
+      finalize(() => this.loadingSignal.set(false))
+    );
   }
 }

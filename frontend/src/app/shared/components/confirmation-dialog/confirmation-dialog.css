@@ -1,0 +1,17 @@
+.confirmation-message span {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.confirmation-message {
+  margin-bottom: 20px;
+}
+
+.confirm-button {
+  background-color: var(--mat-sys-error);
+}
+
+.action-button {
+  height: 36px;
+  padding: 0 12px;
+}

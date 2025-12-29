@@ -12,6 +12,7 @@ html {
       color: (
         primary: mat.$blue-palette,
         tertiary: mat.$orange-palette,
+        error: mat.$red-palette,
       ),
       typography: Roboto,
       density: 0,
@@ -23,6 +24,12 @@ html {
   --mat-sys-on-primary: #ffffff;
   --mat-sys-primary-container: #d1e4ff;
   --mat-sys-on-primary-container: #001d35;
+
+  // Error/Warn color (Red)
+  --mat-sys-error: #ba1a1a;
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-error-container: #ffdad6;
+  --mat-sys-on-error-container: #410002;
 
   // Surface colors (Clean white palette)
   --mat-sys-surface: #fafbfc; // Main background - very light blue-gray
