@@ -17,7 +17,7 @@ namespace Eden.Api.Models
 
         public static Task<List<Family>> GetFamiliesAsync()
         {
-            return EdenAppContext.Context.WithDbContext(db => db.Families.ToListAsync());
+            return EdenAppContext.Context.WithDbContext(db => db.Families.OrderBy(f => f.CreatedAt).ToListAsync());
         }
 
         public static Task<Family?> GetFamilyByIdAsync(int id)
