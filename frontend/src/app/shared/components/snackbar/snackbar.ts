@@ -32,7 +32,6 @@ export class Snackbar {
   }
 
   getIconColor(): string {
-    console.log(this.data.status);
     switch (this.data.status) {
       case SnackbarStatus.SUCCESS:
         return '#4CAF50'; // Green
