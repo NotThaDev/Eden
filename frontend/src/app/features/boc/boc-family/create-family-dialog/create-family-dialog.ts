@@ -55,6 +55,7 @@ export class CreateFamilyDialog {
       return { invalidMembersCount: true };
     }
 
+    this.familyFormControl?.get('children')?.updateValueAndValidity({ emitEvent: true });
     return null;
   }
 
@@ -74,6 +75,7 @@ export class CreateFamilyDialog {
       return { invalidChildrenCount: true };
     }
 
+    this.familyFormControl?.get('members')?.updateValueAndValidity({ emitEvent: true });
     return null;
   }
 
