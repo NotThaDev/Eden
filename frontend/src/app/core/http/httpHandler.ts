@@ -85,7 +85,7 @@ export class HttpHandler {
   ) {
     method = method.toUpperCase();
 
-    if (method == 'DELETE' || method == 'GET') {
+    if (method === 'DELETE' || method === 'GET') {
       if (body) {
         throw new Error('Delete And Get do not Require A body');
       }
