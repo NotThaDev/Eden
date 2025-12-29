@@ -2,7 +2,6 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpHandler } from '../../../core/http/httpHandler';
 import { Family } from '../../../core/models/family';
 import { finalize, tap } from 'rxjs';
-import { error } from 'console';
 
 @Injectable({ providedIn: 'root' })
 export class FamilyService {
