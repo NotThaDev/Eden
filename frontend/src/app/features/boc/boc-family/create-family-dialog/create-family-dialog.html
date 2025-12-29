@@ -24,7 +24,7 @@
     <mat-form-field appearance="outline">
       <mat-label>ISEE</mat-label>
       <input matInput type="number" placeholder="5000" formControlName="isee" />
-      @if(familyFormControl.get('isee')?.getError('max'))
+      @if (familyFormControl.get('isee')?.getError('max'))
       {
       <mat-error>
         ISEE must be less than or equal to 10040.
