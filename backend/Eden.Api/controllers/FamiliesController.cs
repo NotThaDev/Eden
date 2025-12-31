@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Eden.Api.DTOs;
 using Eden.Api.Models;
 using Microsoft.AspNetCore.Mvc;
