@@ -58,6 +58,8 @@ namespace Eden.Api.Models
         public async Task<Load> UpdateLoadAsync()
         {
             List<LoadItem> updatedItems = [];
+            List<LoadItem> removedItems = [];
+
             if (!Id.HasValue)
             {
                 throw new InvalidOperationException("Load must have an Id to be updated.");
@@ -68,14 +70,26 @@ namespace Eden.Api.Models
             {
                 existingLoad.LoadDate = LoadDate;
 
-                // Handle Items changes
-                // Remove items that are no longer in the list
                 var itemsToRemove = existingLoad.Items
                     .Where(existingItem => !Items.Any(newItem => newItem.FoodId == existingItem.FoodId))
                     .ToList();
 
                 foreach (var item in itemsToRemove)
                 {
+                    // Use the already tracked Food from the navigation property
+                    var food = item.Food ?? throw new InvalidOperationException($"Food with Id {item.FoodId} does not exist.");
+                    if (food.Quantity < item.Quantity)
+                    {
+                        throw new InvalidOperationException($"Cannot remove {item.Quantity} of '{food.Name}' as it would result in negative stock.");
+                    }
+
+                    existingLoad.Items.Remove(item);
+                    // Track removed items to subtract their quantities
+                    removedItems.Add(new LoadItem
+                    {
+                        FoodId = item.FoodId,
+                        Quantity = -item.Quantity // Negative to subtract from food quantity
+                    });
                     db.LoadItems.Remove(item);
                 }
 
@@ -88,7 +102,7 @@ namespace Eden.Api.Models
                     if (existingItem != null)
                     {
                         if (existingItem.Quantity != newItem.Quantity)
-                        {                 
+                        {
                             // Update existing item
                             updatedItems.Add(new LoadItem
                             {
@@ -118,6 +132,11 @@ namespace Eden.Api.Models
             if (updatedItems.Count > 0)
             {
                 await UpdateFoodQuantities(updatedItems);
+            }
+
+            if (removedItems.Count > 0)
+            {
+                await UpdateFoodQuantities(removedItems);
             }
 
             return await GetLoadByIdAsync(Id.Value) ?? throw new InvalidOperationException($"Load with Id {Id.Value} does not exist anymore after update.");

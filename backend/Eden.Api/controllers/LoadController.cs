@@ -64,15 +64,19 @@ namespace Eden.Api.Controllers
                 existingLoad.LoadDate = load.LoadDate.Value;
             }
 
-            var validationResult = await _validateLoadItems(existingLoad.Items);
-
-            if (validationResult is not null)
-            {
-                return validationResult;
-            }
-
             if (load.Items != null)
             {
+                var validationResult = await _validateLoadItems([.. load.Items.Select(li => new LoadItem
+                {
+                    FoodId = li.FoodId,
+                    Quantity = li.Quantity
+                })]);
+
+                if (validationResult is not null)
+                {
+                    return validationResult;
+                }
+
                 // Clear existing items and add new ones
                 existingLoad.Items.Clear();
                 foreach (var item in load.Items)
