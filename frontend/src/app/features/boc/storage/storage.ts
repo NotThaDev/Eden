@@ -108,8 +108,8 @@ export class Storage implements OnInit {
 
     const dialogRef = this.dialogRef.open(ConfirmationDialog, {
       data: {
-        title: `Delete "${food.name}" Family?`,
-        message: `Are you sure you want to delete this family? This action cannot be undone.`,
+        title: `Delete "${food.name}"?`,
+        message: `Are you sure you want to delete this food? This action cannot be undone.`,
       },
     });
 
