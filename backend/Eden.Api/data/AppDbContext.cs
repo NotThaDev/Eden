@@ -6,6 +6,7 @@ namespace Eden.Api.Data
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Family> Families => Set<Family>();
+        public DbSet<Food> Foods => Set<Food>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
