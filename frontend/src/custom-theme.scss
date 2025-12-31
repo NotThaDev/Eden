@@ -97,4 +97,92 @@ body {
   font: var(--mat-sys-body-medium);
 
   margin: 0;
+
+  // Custom styling
+
+  .eden-table-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    border-radius: 8px;
+
+    // Custom scrollbar styling
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--mat-sys-surface-container-low);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--mat-sys-outline);
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--mat-sys-on-surface-variant);
+      }
+    }
+
+    .eden-table {
+      border-radius: 8px;
+      min-width: 450px;
+      width: 100%;
+
+      .mat-mdc-header-row {
+        background-color: var(--mat-sys-surface-container-high); // Light gray background
+        height: 32px;
+        font-weight: 400;
+
+        .mat-mdc-header-cell {
+          border-bottom: none;
+          color: var(--mat-sys-on-surface); // Dark text
+        }
+      }
+
+      tr {
+        height: 48px;
+
+        .mat-mdc-cell {
+          border-bottom: 1px solid var(--mat-sys-outline-variant); // Subtle border
+          color: var(--mat-sys-on-surface-variant); // Medium gray text
+
+          // Text overflow ellipsis
+          max-width: 200px; // Adjust based on your needs
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    // Action buttons styling
+    .action-button {
+      color: var(--mat-sys-on-surface-variant);
+      height: fit-content;
+
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+      }
+
+      .delete-icon {
+        color: var(--mat-sys-error);
+      }
+    }
+  }
+
+  .eden-form-field-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+
+    span {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--mat-sys-on-primary-container);
+    }
+  }
 }

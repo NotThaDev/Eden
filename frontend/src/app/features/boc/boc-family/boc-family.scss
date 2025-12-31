@@ -5,75 +5,15 @@
   margin-bottom: 16px;
 }
 
-// Table style (#TODO Move this on the seperate component)
-.table-container {
-  overflow-x: auto;
-  overflow-y: visible;
-  border-radius: 8px;
-
-  // Custom scrollbar styling
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--mat-sys-surface-container-low);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--mat-sys-outline);
-    border-radius: 4px;
-
-    &:hover {
-      background: var(--mat-sys-on-surface-variant);
-    }
-  }
-}
-
-.custom-table {
-  border-radius: 8px;
-  min-width: 450px;
-  width: 100%;
-
-  .mat-mdc-header-row {
-    background-color: var(--mat-sys-surface-container-high); // Light gray background
-    height: 32px;
-    font-weight: 400;
-
-    .mat-mdc-header-cell {
-      border-bottom: none;
-      color: var(--mat-sys-on-surface); // Dark text
-    }
-  }
-
-  tr {
-    height: 48px;
-
-    .mat-mdc-cell {
-      border-bottom: 1px solid var(--mat-sys-outline-variant); // Subtle border
-      color: var(--mat-sys-on-surface-variant); // Medium gray text
-
-      // Text overflow ellipsis
-      max-width: 200px; // Adjust based on your needs
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-}
-
-// Action buttons styling
-.action-button {
-  color: var(--mat-sys-on-surface-variant);
+.load-details {
+  // #TODO we can remove the hover effect
+  width: 18px;
   height: fit-content;
+
+  padding: 0;
 
   mat-icon {
     font-size: 18px;
     height: 18px;
-  }
-
-  .delete-icon {
-    color: var(--mat-sys-error);
   }
 }
