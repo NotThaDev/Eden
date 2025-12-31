@@ -48,7 +48,7 @@ namespace Eden.Api.Models
 
             if (newLoad != null)
             {
-                await UpdateFoodQuantities(newLoad.Items);
+                await UpdateFoodQuantities(newLoad.Items, newLoad.Id ?? 0);
             }
 
 
@@ -131,12 +131,12 @@ namespace Eden.Api.Models
 
             if (updatedItems.Count > 0)
             {
-                await UpdateFoodQuantities(updatedItems);
+                await UpdateFoodQuantities(updatedItems, Id.Value);
             }
 
             if (removedItems.Count > 0)
             {
-                await UpdateFoodQuantities(removedItems);
+                await UpdateFoodQuantities(removedItems, Id.Value);
             }
 
             return await GetLoadByIdAsync(Id.Value) ?? throw new InvalidOperationException($"Load with Id {Id.Value} does not exist anymore after update.");
@@ -161,18 +161,26 @@ namespace Eden.Api.Models
                 FoodId = li.FoodId,
                 Quantity = -li.Quantity // Subtract the quantities added by this load
             }).ToList();
-            await UpdateFoodQuantities(loadItems);
+            await UpdateFoodQuantities(loadItems, id);
 
             return true;
         }
 
-        private static async Task UpdateFoodQuantities(List<LoadItem> loadItems)
+        private static async Task UpdateFoodQuantities(List<LoadItem> loadItems, int loadId)
         {
             foreach (var item in loadItems)
             {
                 var food = await Food.GetFoodByIdAsync(item.FoodId);
                 if (food is null) continue;
+                
                 food.Quantity += item.Quantity;
+                
+                // Only update LatestLoadId if we're adding items (positive quantity)
+                if (item.Quantity > 0)
+                {
+                    food.LatestLoadId = loadId;
+                }
+                
                 await food.UpdateFoodAsync();
             }
         }
