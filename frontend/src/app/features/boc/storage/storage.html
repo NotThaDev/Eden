@@ -1,0 +1,62 @@
+<app-page-header [title]="'Storage'">
+  <div class="toolbar">
+    <button matButton="filled" (click)="onAddFood()" extended>
+      <mat-icon>add</mat-icon>
+      Add Food
+    </button>
+    <button matButton="filled" extended disabled="true">
+      <mat-icon>local_shipping</mat-icon>
+      New Load
+    </button>
+  </div>
+  <div class="eden-table-container storage-table">
+    <table mat-table [dataSource]="dataSource" class="eden-table">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let food">{{ food.name }}</td>
+      </ng-container>
+
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let food">{{ food.quantity }}</td>
+      </ng-container>
+
+      <!-- Unit / Unit Size Column -->
+      <ng-container matColumnDef="unit">
+        <th mat-header-cell *matHeaderCellDef>Unit</th>
+        <td mat-cell *matCellDef="let food">{{ `${food.unitSize} ${food.unit}` }}</td>
+      </ng-container>
+
+      <!-- Last load -->
+      <ng-container matColumnDef="lastLoadId">
+        <th mat-header-cell *matHeaderCellDef>Last Load</th>
+        <!-- // #TODO This will become a link to show the full load -->
+        <td mat-cell *matCellDef="let food">
+          @if(food.lastLoadId) {
+            <button matButton class="load-details" >
+              View Load
+              <mat-icon>local_shipping</mat-icon>
+            </button>
+          } @else { N/A }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef [style]="{ width: '120px' }"></th>
+        <td mat-cell *matCellDef="let food">
+          <button matIconButton class="action-button" (click)="onEditFood(food)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton class="action-button" (click)="onDeleteFood(food)">
+            <mat-icon class="delete-icon">delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </div>
+</app-page-header>

@@ -4,25 +4,24 @@ import {
   computed,
   effect,
   inject,
-  OnInit,
-  ViewChild,
+  OnInit
 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Family } from '../../../core/models/family';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
-import { FamilyService } from '../services/family.service';
-import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../../shared/components/snackbar/type';
-import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { FamilyService } from '../services/family.service';
+import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 
 @Component({
   selector: 'app-boc-family',
@@ -44,9 +43,6 @@ import { ConfirmationDialog } from '../../../shared/components/confirmation-dial
   styleUrl: './boc-family.scss',
 })
 export class BocFamily implements OnInit {
-  @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
   private _snackBar = inject(MatSnackBar);
 
   private familyService = inject(FamilyService);

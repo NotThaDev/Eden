@@ -1,0 +1,139 @@
+import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Food } from '../../../core/models/food';
+import { FoodService } from '../services/food.service';
+import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
+import { MatIcon } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { UpdateFoodDialog } from './update-food-dialog/update-food-dialog';
+import { SnackbarStatus } from '../../../shared/components/snackbar/type';
+import { Snackbar } from '../../../shared/components/snackbar/snackbar';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
+
+@Component({
+  selector: 'app-storage',
+  imports: [MatTableModule, PageHeader, MatButtonModule, MatIcon],
+  templateUrl: './storage.html',
+  styleUrl: './storage.scss',
+})
+export class Storage implements OnInit {
+  private foodService = inject(FoodService);
+  private _snackBar = inject(MatSnackBar);
+  readonly dialogRef = inject(MatDialog);
+
+  columns = ['name', 'quantity', 'unit', 'lastLoadId', 'actions'];
+  dataSource = new MatTableDataSource<Food>([]);
+  loading = computed(() => this.foodService.loading());
+
+  constructor() {
+    effect(() => {
+      const data = this.foodService.foods();
+      this.dataSource.data = data;
+    });
+  }
+
+  ngOnInit(): void {
+    this.foodService.fetchFoods();
+  }
+
+  onAddFood(): void {
+    const dialogRef = this.dialogRef.open(UpdateFoodDialog, {
+      data: {
+        title: `Add New Food`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.foodService.createFood(result).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to create food.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Family successfully created!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
+  }
+
+  onEditFood(food: Food): void {
+    const dialogRef = this.dialogRef.open(UpdateFoodDialog, {
+      data: {
+        food,
+        title: `Edit ${food.name}`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.foodService.updateFood(result, food.id).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to update food.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Food successfully updated!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
+  }
+
+  onDeleteFood(food: Food): void {
+    if (!food.id) {
+      return;
+    }
+
+    const dialogRef = this.dialogRef.open(ConfirmationDialog, {
+      data: {
+        title: `Delete "${food.name}" Family?`,
+        message: `Are you sure you want to delete this family? This action cannot be undone.`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.foodService.deleteFood(food.id).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to delete food.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Food successfully deleted!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
+  }
+}
