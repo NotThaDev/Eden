@@ -7,6 +7,8 @@ namespace Eden.Api.Data
     {
         public DbSet<Family> Families => Set<Family>();
         public DbSet<Food> Foods => Set<Food>();
+        public DbSet<Load> Loads => Set<Load>();
+        public DbSet<LoadItem> LoadItems => Set<LoadItem>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
