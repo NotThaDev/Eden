@@ -2,21 +2,21 @@
 <mat-dialog-content [formGroup]="foodFormControl">
   <div class="food-form-container">
     <div class="eden-form-field-container">
-      <span [style]="{ color: getLabelColor('name') }">Food Name</span>
-      <mat-form-field appearance="outline" [style]="{ width: '100%' }">
+      <span [style.color]="getLabelColor('name')">Food Name</span>
+      <mat-form-field appearance="outline" [style.width.%]="100">
         <input matInput placeholder="Spaghetti" formControlName="name" />
       </mat-form-field>
     </div>
 
     <div class="eden-form-field-container">
-      <span [style]="{ color: getLabelColor('quantity') }">Quantity Details</span>
-      <mat-form-field appearance="outline" [style]="{ width: '100%' }">
+      <span [style.color]="getLabelColor('quantity')">Quantity Details</span>
+      <mat-form-field appearance="outline" [style.width.%]="100">
         <input matInput type="number" placeholder="4" formControlName="quantity" />
       </mat-form-field>
     </div>
 
     <div class="eden-form-field-container">
-      <span [style]="{ color: getUnitLabelColor() }">Unit Details</span>
+      <span [style.color]="getUnitLabelColor()">Unit Details</span>
       <div class="unit-form-container">
         <mat-form-field appearance="outline">
           <input matInput type="number" placeholder="1.5" formControlName="unitSize" />
