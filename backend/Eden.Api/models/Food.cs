@@ -16,18 +16,18 @@ namespace Eden.Api.Models
         // eg. "kg", "liters", "pieces", "grams"
         public string Unit { get; set; } = string.Empty;
 
+        public int? LatestLoadId { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; }
 
         public static Task<List<Food>> GetFoodsAsync()
         {
-            // #TODO Once we also have the load we need to join it to find the latest Load where this food was added
             return EdenAppContext.Context.WithDbContext(db => db.Foods.OrderBy(f => f.CreatedAt).ToListAsync());
         }
 
         public static Task<Food?> GetFoodByIdAsync(int id)
         {
-            // #TODO Once we also have the load we need to join it to find the latest Load where this food was added
             return EdenAppContext.Context.WithDbContext(db => db.Foods.Where(f => f.Id == id).FirstOrDefaultAsync());
         }
 
@@ -46,6 +46,7 @@ namespace Eden.Api.Models
 
                 return newFood;
             }
+
             // Handle unique constraint violation (duplicate food name)
             catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
             {
@@ -63,6 +64,7 @@ namespace Eden.Api.Models
                     return db.SaveChangesAsync();
                 });
             }
+
             // Handle unique constraint violation (duplicate food name) on update
             catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
             {
