@@ -35,10 +35,10 @@
         <!-- // #TODO This will become a link to show the full load -->
         <td mat-cell *matCellDef="let food">
           @if(food.lastLoadId) {
-            <button matButton class="load-details" >
-              View Load
-              <mat-icon>local_shipping</mat-icon>
-            </button>
+          <button matButton class="load-details">
+            View Load
+            <mat-icon>local_shipping</mat-icon>
+          </button>
           } @else { N/A }
         </td>
       </ng-container>

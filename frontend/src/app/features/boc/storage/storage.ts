@@ -39,11 +39,7 @@ export class Storage implements OnInit {
   }
 
   onAddFood(): void {
-    const dialogRef = this.dialogRef.open(UpdateFoodDialog, {
-      data: {
-        title: `Add New Food`,
-      },
-    });
+    const dialogRef = this.dialogRef.open(UpdateFoodDialog);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
@@ -59,7 +55,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Family successfully created!',
+                title: 'Food successfully created!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
