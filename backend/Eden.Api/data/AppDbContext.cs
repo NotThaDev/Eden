@@ -12,6 +12,13 @@ namespace Eden.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configure the foreign key constraint for LatestLoadId
+            modelBuilder.Entity<Food>()
+                .HasOne<Load>()
+                .WithMany()
+                .HasForeignKey(f => f.LatestLoadId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 var createdAtProperty = entityType.ClrType.GetProperty("CreatedAt");

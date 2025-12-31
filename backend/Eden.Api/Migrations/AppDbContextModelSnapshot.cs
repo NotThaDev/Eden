@@ -66,6 +66,9 @@ namespace Eden.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<int?>("LatestLoadId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -81,6 +84,8 @@ namespace Eden.Api.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LatestLoadId");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -135,6 +140,14 @@ namespace Eden.Api.Migrations
                     b.ToTable("LoadItems");
                 });
 
+            modelBuilder.Entity("Eden.Api.Models.Food", b =>
+                {
+                    b.HasOne("Eden.Api.Models.Load", null)
+                        .WithMany()
+                        .HasForeignKey("LatestLoadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
             modelBuilder.Entity("Eden.Api.Models.LoadItem", b =>
                 {
                     b.HasOne("Eden.Api.Models.Food", "Food")
@@ -143,15 +156,13 @@ namespace Eden.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eden.Api.Models.Load", "Load")
+                    b.HasOne("Eden.Api.Models.Load", null)
                         .WithMany("Items")
                         .HasForeignKey("LoadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Food");
-
-                    b.Navigation("Load");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.Load", b =>
