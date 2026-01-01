@@ -11,6 +11,7 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
 
 @Component({
   selector: 'app-storage',
@@ -129,6 +130,16 @@ export class Storage implements OnInit {
             });
           },
         });
+      }
+    });
+  }
+
+  onAddLoad(): void {
+    const dialogRef = this.dialogRef.open(NewLoadDialog);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        console.log(result);
       }
     });
   }
