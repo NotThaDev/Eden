@@ -42,10 +42,37 @@ $submenu-line-size: 2px;
     }
 
     .nav-entry.submenu-entry {
+      margin-bottom: 4px;
       border-radius: 6px;
       padding: 0 8px;
       height: 38px;
       position: relative;
+
+      &:hover {
+        background-color: transparent !important;
+        background: transparent !important;
+      }
+
+      // Disable click/active effect
+      &:active,
+      &:focus {
+        background-color: transparent !important;
+        background: transparent !important;
+      }
+
+      // Disable Material ripple hover and click effects
+      &::before,
+      &::after {
+        display: none !important;
+      }
+
+      // Override Material ripple effects
+      .mdc-list-item__ripple,
+      .mat-mdc-list-item-ripple,
+      .mat-mdc-focus-indicator {
+        display: none !important;
+        opacity: 0 !important;
+      }
     }
   }
 }
