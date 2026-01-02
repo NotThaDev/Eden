@@ -12,7 +12,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FoodService } from '../../services/food.service';
-import { MatSelect, MatOption } from "@angular/material/select";
+import { MatSelect, MatOption } from '@angular/material/select';
 
 @Component({
   selector: 'app-new-load-dialog',
@@ -27,8 +27,8 @@ import { MatSelect, MatOption } from "@angular/material/select";
     MatGridListModule,
     MatIconModule,
     MatSelect,
-    MatOption
-],
+    MatOption,
+  ],
   templateUrl: './new-load-dialog.html',
   styleUrl: './new-load-dialog.scss',
 })
@@ -42,7 +42,12 @@ export class NewLoadDialog implements OnInit {
 
   readonly loadFormControl: FormGroup = this.formBuilder.group({
     loadDate: [null, [Validators.required]],
-    items: this.formBuilder.array([]),
+    items: this.formBuilder.array([
+      {
+        foodId: ['', [Validators.required]],
+        quantity: [1, [Validators.required, Validators.min(1)]],
+      },
+    ]),
   });
 
   get items(): FormArray {
@@ -53,7 +58,7 @@ export class NewLoadDialog implements OnInit {
   createLoadItem(): FormGroup {
     return this.formBuilder.group({
       foodId: ['', [Validators.required]],
-      quantity: [0, [Validators.required, Validators.min(1)]],
+      quantity: [1, [Validators.required, Validators.min(1)]],
     });
   }
 
