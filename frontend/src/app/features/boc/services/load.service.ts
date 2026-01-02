@@ -1,7 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, tap } from 'rxjs';
 import { HttpHandler } from '../../../core/http/httpHandler';
-import { Food } from '../../../core/models/food';
 import { Load } from '../../../core/models/load';
 
 @Injectable({ providedIn: 'root' })

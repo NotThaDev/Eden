@@ -1,5 +1,5 @@
 /**
- * !! THIS WILL BE THE DEFAULT DATE FORMAT (Month GG YYYY)
+ * !! THIS WILL BE THE DEFAULT DATE FORMAT (Month DD YYYY)
  *
  * To change the date format on the single component level, provide the
  * `provideLuxonDateAdapter` function with the desired date format.
