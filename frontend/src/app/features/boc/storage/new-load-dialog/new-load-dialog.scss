@@ -1,0 +1,82 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 550px;
+  height: 420px;
+  padding: 1.5rem;
+}
+
+.form-container {
+  padding: 16px 0;
+  min-width: 550px;
+  min-height: 400px;
+}
+
+.items-section {
+  margin-top: 8px;
+
+  .add-row-button {
+    width: 32px;
+    height: 32px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .items-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+  }
+
+  .item-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    mat-form-field {
+      flex: 1;
+
+      &:first-of-type {
+        flex: 2; // Food ID field wider
+      }
+    }
+
+    .delete-row-button {
+      color: var(--mat-sys-on-surface-variant);
+      height: fit-content;
+
+      .delete-icon {
+        color: var(--mat-sys-error);
+      }
+    }
+
+    .mat-mdc-button-disabled .delete-icon {
+      opacity: 0.5;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+}

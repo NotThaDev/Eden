@@ -4,7 +4,7 @@
       <mat-icon>add</mat-icon>
       Add Food
     </button>
-    <button matButton="filled" extended disabled="true">
+    <button matButton="filled" extended (click)="onAddLoad()">
       <mat-icon>local_shipping</mat-icon>
       New Load
     </button>
@@ -29,17 +29,16 @@
         <td mat-cell *matCellDef="let food">{{ `${food.unitSize} ${food.unit}` }}</td>
       </ng-container>
 
-      <!-- Last load -->
-      <ng-container matColumnDef="lastLoadId">
-        <th mat-header-cell *matHeaderCellDef>Last Load</th>
+      <!-- Latest load -->
+      <ng-container matColumnDef="latestLoadId">
+        <th mat-header-cell *matHeaderCellDef>Latest Load</th>
         <!-- // #TODO This will become a link to show the full load -->
         <td mat-cell *matCellDef="let food">
-          @if(food.lastLoadId) {
-          <button matButton class="load-details">
-            View Load
+          @if(food.latestLoadId) {
+          <button matIconButton class="view-load-button" disabled="true">
             <mat-icon>local_shipping</mat-icon>
           </button>
-          } @else { N/A }
+          } @else { <span class="na-label">N/A</span> }
         </td>
       </ng-container>
 

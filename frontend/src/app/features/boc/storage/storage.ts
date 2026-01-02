@@ -11,6 +11,8 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
+import { LoadService } from '../services/load.service';
 
 @Component({
   selector: 'app-storage',
@@ -20,10 +22,11 @@ import { ConfirmationDialog } from '../../../shared/components/confirmation-dial
 })
 export class Storage implements OnInit {
   private foodService = inject(FoodService);
+  private loadService = inject(LoadService);
   private _snackBar = inject(MatSnackBar);
   readonly dialogRef = inject(MatDialog);
 
-  columns = ['name', 'quantity', 'unit', 'lastLoadId', 'actions'];
+  columns = ['name', 'quantity', 'unit', 'latestLoadId', 'actions'];
   dataSource = new MatTableDataSource<Food>([]);
   loading = computed(() => this.foodService.loading());
 
@@ -127,6 +130,35 @@ export class Storage implements OnInit {
                 status: SnackbarStatus.SUCCESS,
               },
             });
+          },
+        });
+      }
+    });
+  }
+
+  onAddLoad(): void {
+    const dialogRef = this.dialogRef.open(NewLoadDialog);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.loadService.createLoad(result).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to create load.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Load successfully created!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+
+            this.foodService.fetchFoods();
           },
         });
       }
