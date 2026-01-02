@@ -153,7 +153,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Food successfully created!',
+                title: 'Load successfully created!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
