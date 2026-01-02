@@ -26,7 +26,7 @@ export class Storage implements OnInit {
   private _snackBar = inject(MatSnackBar);
   readonly dialogRef = inject(MatDialog);
 
-  columns = ['name', 'quantity', 'unit', 'lastLoadId', 'actions'];
+  columns = ['name', 'quantity', 'unit', 'latestLoadId', 'actions'];
   dataSource = new MatTableDataSource<Food>([]);
   loading = computed(() => this.foodService.loading());
 

@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 .storage-table {
   margin-top: 24px;
 }
@@ -9,4 +11,36 @@
   justify-content: flex-end;
   align-items: center;
   gap: 16px;
+}
+
+.view-load-button {
+  @include mat.icon-button-overrides(
+    (
+      focus-state-layer-opacity: 0,
+      hover-state-layer-opacity: 0,
+      pressed-state-layer-opacity: 0,
+    )
+  );
+
+  color: var(--mat-sys-primary);
+  height: fit-content;
+
+  mat-icon:hover {
+    opacity: 0.7;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+  }
+}
+
+.mat-mdc-button-disabled.view-load-button {
+  color: var(--mat-sys-primary);
+  opacity: 0.3;
+}
+
+.na-label {
+  display: block;
+  padding-left: 8px;
 }

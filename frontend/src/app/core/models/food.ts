@@ -4,5 +4,5 @@ export interface Food {
   quantity: number;
   unitSize: number;
   unit: string;
-  lastLoadId?: number;
+  latestLoadId?: number;
 }
