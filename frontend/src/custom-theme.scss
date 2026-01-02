@@ -63,21 +63,18 @@ body {
       text-container-shape: 12px,
       tonal-container-shape: 12px,
 
-      filled-state-layer-color: var(--mat-sys-on-primary, 0.12),
+      filled-state-layer-color: var(--mat-sys-on-primary),
       filled-hover-state-layer-opacity: 0.2,
-      )
+    )
   );
 
   @include mat.fab-overrides(
     (
       container-color: var(--mat-sys-primary),
       small-container-color: var(--mat-sys-primary),
-
       foreground-color: var(--mat-sys-on-primary),
       small-foreground-color: var(--mat-sys-on-primary),
-
-      small-state-layer-color: var(--mat-sys-on-primary, 0.12),
-
+      small-state-layer-color: var(--mat-sys-on-primary),
       container-elevation-shadow: none,
       small-container-elevation-shadow: none,
       small-focus-container-elevation-shadow: none,
