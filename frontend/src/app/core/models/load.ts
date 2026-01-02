@@ -1,15 +1,15 @@
 import { Food } from './food';
 
 export interface Load {
-  id?: string;
+  id?: number;
   loadDate: Date;
   items: LoadItem[];
 }
 
 export interface LoadItem {
-  id?: string;
-  foodId: string;
-  loadId?: string;
+  id?: number;
+  foodId: number;
+  loadId?: number;
   quantity: number;
   food?: Food;
 }

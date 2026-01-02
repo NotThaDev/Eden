@@ -8,7 +8,7 @@ namespace Eden.Api.Models
     {
         public int? Id { get; set; }
 
-        public DateTime LoadDate { get; set; }
+        public DateTime LoadDate { get; set => field.ToUniversalTime(); }
 
         // Navigation
         public List<LoadItem> Items { get; set; } = new List<LoadItem>();
@@ -172,15 +172,15 @@ namespace Eden.Api.Models
             {
                 var food = await Food.GetFoodByIdAsync(item.FoodId);
                 if (food is null) continue;
-                
+
                 food.Quantity += item.Quantity;
-                
+
                 // Only update LatestLoadId if we're adding items (positive quantity)
                 if (item.Quantity > 0)
                 {
                     food.LatestLoadId = loadId;
                 }
-                
+
                 await food.UpdateFoodAsync();
             }
         }

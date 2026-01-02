@@ -12,6 +12,7 @@ import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
+import { LoadService } from '../services/load.service';
 
 @Component({
   selector: 'app-storage',
@@ -21,6 +22,7 @@ import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
 })
 export class Storage implements OnInit {
   private foodService = inject(FoodService);
+  private loadService = inject(LoadService);
   private _snackBar = inject(MatSnackBar);
   readonly dialogRef = inject(MatDialog);
 
@@ -139,7 +141,26 @@ export class Storage implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
-        console.log(result);
+        this.loadService.createLoad(result).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Failed to create load.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Food successfully created!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+
+            this.foodService.fetchFoods();
+          },
+        });
       }
     });
   }
