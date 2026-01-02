@@ -1,10 +1,12 @@
 <h2 mat-dialog-title>Create a New Load</h2>
 <div class="form-container">
   <mat-dialog-content [formGroup]="loadFormControl">
+    <!-- #TODO Functionality to add future loads? And actually apply them when the time arrives? -->
     <mat-form-field appearance="outline">
       <mat-label>Load Date</mat-label>
-      <input matInput type="date" formControlName="loadDate" />
-      <!-- #TODO Functionality to add future loads? And actually apply them when the time arrives? -->
+      <input matInput [matDatepickerFilter]="futureDateFilter" [matDatepicker]="picker" formControlName="loadDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
     <div class="items-section">
@@ -35,7 +37,12 @@
             }
           </mat-form-field>
 
-          <button matIconButton class="delete-row-button" (click)="removeItem($index)" [disabled]="items.length === 1">
+          <button
+            matIconButton
+            class="delete-row-button"
+            (click)="removeItem($index)"
+            [disabled]="items.length === 1"
+          >
             <mat-icon class="delete-icon">delete_outline</mat-icon>
           </button>
         </div>
