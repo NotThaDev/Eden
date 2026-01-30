@@ -81,7 +81,7 @@ await EdenAppContext.Context.WithDbContext(db =>
 public FoodController(AppDbContext context) { } // Don't do this
 ```
 
-**Why**: `EdenAppContext` provides centralized scope management and CORS configuration. It's initialized once in [Program.cs](backend/Eden.Api/Program.cs#L27) and accessed via static singleton.
+**Why**: `EdenAppContext` provides centralized scope management and CORS configuration. It's initialized once in [Program.cs](backend/Eden.Api/Program.cs#L28) and accessed via static singleton.
 
 ### Backend: Model-Centric Logic
 
