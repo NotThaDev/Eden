@@ -10,7 +10,7 @@ processes:
 
   frontend:
     working_dir: frontend
-    command: npm install && npm start
+    command: bun ci && bun start
     shutdown:
       signal: 9
 
