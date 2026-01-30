@@ -14,6 +14,18 @@ processes:
     shutdown:
       signal: 9
 
+  migrations:
+    working_dir: backend/Eden.Api
+    command: |
+      dotnet ef database update --connection "Host=localhost;Port=5432;Database=eden;Username=user;Password=password" \
+        && echo "##MIGRATIONS RUN SUCCESSFULLY##"
+    ready_log_line: "##MIGRATIONS RUN SUCCESSFULLY##"
+    shutdown:
+      signal: 9
+    depends_on:
+      containers:
+        condition: process_log_ready
+
   api_service:
     working_dir: backend/Eden.Api
     command: dotnet watch
@@ -22,3 +34,5 @@ processes:
     depends_on:
       containers:
         condition: process_log_ready
+      migrations:
+        condition: process_completed_successfully
