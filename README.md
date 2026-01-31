@@ -7,13 +7,14 @@ A full-stack management web application built with .NET 10 and Angular 21.
 - **Backend**: ASP.NET Core 10 Web API + Entity Framework Core
 - **Frontend**: Angular 21 with Angular Material and TailwindCSS
 - **Database**: PostgreSQL 16 (containerized)
-- **Package Manager**: npm for frontend, dotnet CLI for backend
+- **Package Manager**: bun for frontend, dotnet CLI for backend
 
 ## Prerequisites
 
 Before running the project, ensure you have the following installed:
 
-- **Node.js** 25.5+
+- **Node.js** 20+ (for Angular CLI and tooling)
+- **Bun** 1.1+ (used by the process-compose workflow)
 - **.NET SDK** 10.0
 - **Docker** & Docker Compose
 - **process-compose** ([installation guide](https://github.com/F1bonacc1/process-compose))
@@ -33,6 +34,7 @@ process-compose up
 ```
 
 This will:
+
 1. Start Docker containers (PostgreSQL + pgAdmin)
 2. Run database migrations
 3. Start the backend API (http://localhost:5190)
@@ -41,19 +43,22 @@ This will:
 ### Individual Services
 
 **Backend only:**
+
 ```bash
 cd backend/Eden.Api
 dotnet watch
 ```
 
 **Frontend only:**
+
 ```bash
 cd frontend
-npm install
-npm start
+bun install
+bun start
 ```
 
 **Database only:**
+
 ```bash
 docker compose up -d
 ```
@@ -61,12 +66,15 @@ docker compose up -d
 ### Database Management
 
 **Access pgAdmin:**
+
 - URL: http://localhost:5050
 - Email: `admin@example.com`
 - Password: `password`
 
 ## API Documentation
+
 When running in development mode, Swagger UI is available at:
+
 - http://localhost:5190
 
 ## Project Structure
