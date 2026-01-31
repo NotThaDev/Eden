@@ -62,8 +62,15 @@ dotnet ef migrations add <migration_name>
 Migrations run automatically on startup via EF Core.
 
 **Database Access:**
-- **Connection String**: `Host=db;Port=5432;Database=eden;Username=user;Password=password`
-- **pgAdmin**: http://localhost:5050 (admin@example.com / password)
+- **From inside the Docker network (containers, e.g. backend API)**  
+  Use the service name `db` as host:  
+  `Host=db;Port=5432;Database=eden;Username=user;Password=password`
+- **From the host machine (local tools, e.g. dotnet ef, psql, IDEs)**  
+  Use `localhost` as host:  
+  `Host=localhost;Port=5432;Database=eden;Username=user;Password=password`
+- **pgAdmin (runs in a container, accessed via browser)**  
+  - URL: http://localhost:5050 (admin@example.com / password)  
+  - When adding a server in pgAdmin, set **Host name/address** to `db`
 
 ## Critical Patterns & Conventions
 
