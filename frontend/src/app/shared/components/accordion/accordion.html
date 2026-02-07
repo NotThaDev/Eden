@@ -21,7 +21,7 @@
         expand_more
       </mat-icon>
     </button>
-    @if (accordionItem.expanded) {
+    <div class="accordion-item-body-wrapper" [class.expanded]="accordionItem.expanded">
       <div
         class="accordion-item-body"
         role="region"
@@ -30,6 +30,6 @@
       >
         <ng-content></ng-content>
       </div>
-    }
+    </div>
   </cdk-accordion-item>
 </cdk-accordion>
