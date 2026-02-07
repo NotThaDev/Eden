@@ -1,16 +1,6 @@
-import { CdkAccordionItem, CdkAccordionModule } from '@angular/cdk/accordion';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { NgTemplateOutlet } from '@angular/common';
-import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  input,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-  viewChild,
-} from '@angular/core';
+import { Component, input, TemplateRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({

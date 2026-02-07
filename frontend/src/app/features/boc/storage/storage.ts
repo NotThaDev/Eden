@@ -12,9 +12,9 @@ import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { FoodService } from '../services/food.service';
 import { LoadService } from '../services/load.service';
+import { LoadDrawerContent } from './load-drawer-content/load-drawer-content';
 import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
 import { UpdateFoodDialog } from './update-food-dialog/update-food-dialog';
-import { LoadDrawerContent } from './load-drawer-content/load-drawer-content';
 
 @Component({
   selector: 'app-storage',
