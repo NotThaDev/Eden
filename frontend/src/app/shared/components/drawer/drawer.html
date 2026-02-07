@@ -3,7 +3,12 @@
     <div class="drawer-backdrop" (click)="onClose.emit()"></div>
   }
 
-  <div class="drawer" [class.open]="isOpen()" [style.width]="normalizedWidth">
+  <div
+    class="drawer"
+    [class.open]="isOpen()"
+    [style.width]="normalizedWidth()"
+    [style.right]="drawerPosition()"
+  >
     <div class="drawer-header">
       <h2 class="drawer-title">{{ title() }}</h2>
       <button matIconButton class="close-button" (click)="onClose.emit()">
