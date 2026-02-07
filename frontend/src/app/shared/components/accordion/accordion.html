@@ -1,0 +1,35 @@
+<cdk-accordion class="accordion" [style]="style()">
+  <cdk-accordion-item
+    #accordionItem="cdkAccordionItem"
+    class="accordion-item"
+    [expanded]="defaultExpanded()"
+  >
+    <button
+      [classList]="['accordion-item-header', accordionItem.expanded ? 'expanded' : ''].join(' ')"
+      (click)="accordionItem.toggle()"
+      tabindex="0"
+      [attr.id]="'accordion-header-' + key"
+      [attr.aria-expanded]="accordionItem.expanded"
+      [attr.aria-controls]="'accordion-body-' + key"
+    >
+      @if (isTemplateRef(title())) {
+        <ng-container *ngTemplateOutlet="getTitleAsTemplateRef()"></ng-container>
+      } @else {
+        {{ title() }}
+      }
+      <mat-icon [class]="accordionItem.expanded ? 'arrow-icon expanded' : 'arrow-icon'">
+        expand_more
+      </mat-icon>
+    </button>
+    @if (accordionItem.expanded) {
+      <div
+        class="accordion-item-body"
+        role="region"
+        [attr.id]="'accordion-body-' + key"
+        [attr.aria-labelledby]="'accordion-header-' + key"
+      >
+        <ng-content></ng-content>
+      </div>
+    }
+  </cdk-accordion-item>
+</cdk-accordion>

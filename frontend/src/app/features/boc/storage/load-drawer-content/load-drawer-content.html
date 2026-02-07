@@ -1,0 +1,26 @@
+<div class="loads-container">
+  @for (load of loads(); track load.id; let i = $index) {
+    <accordion
+      [title]="titleTemplate"
+      [key]="`${foodId}-load-${i}`"
+      [style]="getAccordionStyle(i)"
+      [defaultExpanded]="i === 0"
+    >
+      <div class="load-content">
+        @for (item of load.items; track item.id) {
+          <div class="load-item-row">
+            <span class="load-item-quantity">{{ item.quantity }}x {{ item.food?.name }}</span>
+            <span class="load-item-unity">({{ item.food?.unitSize }} {{ item.food?.unit }})</span>
+          </div>
+        }
+      </div>
+    </accordion>
+
+    <ng-template #titleTemplate>
+      <app-label-chip
+        class="load-date"
+        [label]="(load.loadDate | date: 'dd/MM/yyyy') ?? ''"
+      ></app-label-chip>
+    </ng-template>
+  }
+</div>

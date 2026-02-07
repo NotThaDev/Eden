@@ -49,6 +49,24 @@ namespace Eden.Api.Controllers
             return Ok(load);
         }
 
+        [HttpGet("food/{foodId}")]
+        public async Task<IActionResult> GetByFoodId(int foodId)
+        {
+            if (await Food.GetFoodByIdAsync(foodId) is null)
+            {
+                return NotFound();
+            }
+
+            var loads = await Load.GetLoadByFoodIdAsync(foodId);
+            
+            if (loads == null)
+            {
+                return Ok(new List<Load>());
+            }
+            
+            return Ok(loads);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateLoadRequest load)
         {

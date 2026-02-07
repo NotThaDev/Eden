@@ -1,0 +1,22 @@
+<div class="drawer-container">
+  @if (isOpen()) {
+    <div class="drawer-backdrop" (click)="onClose.emit()"></div>
+  }
+
+  <div
+    class="drawer"
+    [class.open]="isOpen()"
+    [style.width]="normalizedWidth()"
+    [style.right]="drawerPosition()"
+  >
+    <div class="drawer-header">
+      <h2 class="drawer-title">{{ title() }}</h2>
+      <button matIconButton class="close-button" (click)="onClose.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="drawer-content">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

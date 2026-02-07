@@ -8,7 +8,12 @@ namespace Eden.Api.Models
     {
         public int? Id { get; set; }
 
-        public DateTime LoadDate { get; set => field.ToUniversalTime(); }
+        private DateTime _loadDate;
+        public DateTime LoadDate
+        {
+            get => _loadDate;
+            set => _loadDate = value.Kind == DateTimeKind.Utc ? value : value.ToUniversalTime();
+        }
 
         // Navigation
         public List<LoadItem> Items { get; set; } = new List<LoadItem>();
@@ -34,6 +39,17 @@ namespace Eden.Api.Models
                     .ThenInclude(i => i.Food)
                     .Where(l => l.Id == id)
                     .FirstOrDefaultAsync());
+        }
+
+        public static Task<List<Load>> GetLoadByFoodIdAsync(int foodId)
+        {
+            return EdenAppContext.Context.WithDbContext(db =>
+                db.Loads
+                    .Include(l => l.Items)
+                    .ThenInclude(i => i.Food)
+                    .Where(l => l.Items.Any(item => item.FoodId == foodId))
+                    .OrderByDescending(l => l.LoadDate)
+                    .ToListAsync());
         }
 
         public static async Task<Load?> AddLoad(Load load)

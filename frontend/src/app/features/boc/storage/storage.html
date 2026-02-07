@@ -1,3 +1,13 @@
+<app-drawer
+  [isOpen]="selectedFoodId !== null"
+  (onClose)="onCloseFoodDetails()"
+  [title]="'Loads History'"
+>
+  @if (selectedFoodId !== null) {
+    <app-load-drawer-content [foodId]="selectedFoodId"></app-load-drawer-content>
+  }
+</app-drawer>
+
 <app-page-header [title]="'Storage'">
   <div class="toolbar">
     <button matButton="filled" (click)="onAddFood()" extended>
@@ -31,14 +41,15 @@
 
       <!-- Latest load -->
       <ng-container matColumnDef="latestLoadId">
-        <th mat-header-cell *matHeaderCellDef>Latest Load</th>
-        <!-- // #TODO This will become a link to show the full load -->
+        <th mat-header-cell *matHeaderCellDef>Loads</th>
         <td mat-cell *matCellDef="let food">
-          @if(food.latestLoadId) {
-          <button matIconButton class="view-load-button" disabled="true">
-            <mat-icon>local_shipping</mat-icon>
-          </button>
-          } @else { <span class="na-label">N/A</span> }
+          @if (food.latestLoadId) {
+            <button matIconButton class="view-load-button" (click)="onViewLoad(food.id)">
+              <mat-icon>local_shipping</mat-icon>
+            </button>
+          } @else {
+            <span class="na-label">N/A</span>
+          }
         </td>
       </ng-container>
 
