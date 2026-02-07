@@ -1,22 +1,24 @@
 import { Component, computed, effect, inject, OnInit } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Food } from '../../../core/models/food';
-import { FoodService } from '../services/food.service';
-import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
-import { MatIcon } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { UpdateFoodDialog } from './update-food-dialog/update-food-dialog';
-import { SnackbarStatus } from '../../../shared/components/snackbar/type';
-import { Snackbar } from '../../../shared/components/snackbar/snackbar';
+import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Food } from '../../../core/models/food';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
-import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
+import { Drawer } from '../../../shared/components/drawer/drawer';
+import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
+import { Snackbar } from '../../../shared/components/snackbar/snackbar';
+import { SnackbarStatus } from '../../../shared/components/snackbar/type';
+import { FoodService } from '../services/food.service';
 import { LoadService } from '../services/load.service';
+import { NewLoadDialog } from './new-load-dialog/new-load-dialog';
+import { UpdateFoodDialog } from './update-food-dialog/update-food-dialog';
+import { LoadDrawerContent } from './load-drawer-content/load-drawer-content';
 
 @Component({
   selector: 'app-storage',
-  imports: [MatTableModule, PageHeader, MatButtonModule, MatIcon],
+  imports: [MatTableModule, PageHeader, MatButtonModule, MatIcon, Drawer, LoadDrawerContent],
   templateUrl: './storage.html',
   styleUrl: './storage.scss',
 })
@@ -29,6 +31,7 @@ export class Storage implements OnInit {
   columns = ['name', 'quantity', 'unit', 'latestLoadId', 'actions'];
   dataSource = new MatTableDataSource<Food>([]);
   loading = computed(() => this.foodService.loading());
+  selectedFoodId: number | null = null;
 
   constructor() {
     effect(() => {
@@ -163,5 +166,13 @@ export class Storage implements OnInit {
         });
       }
     });
+  }
+
+  onCloseFoodDetails(): void {
+    this.selectedFoodId = null;
+  }
+
+  onViewLoad(foodId: number): void {
+    this.selectedFoodId = foodId;
   }
 }

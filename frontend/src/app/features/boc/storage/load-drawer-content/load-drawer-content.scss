@@ -1,0 +1,28 @@
+.load-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .load-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+
+    .load-item-quantity {
+      color: var(--mat-sys-on-surface);
+    }
+
+    .load-item-unity {
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}
+
+.loads-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}

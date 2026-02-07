@@ -75,7 +75,7 @@ export class MainLayout implements OnDestroy, OnInit {
   }
 
   isRouteActive(path: string): boolean {
-    return window.location.pathname.includes(path);
+    return globalThis.location.pathname.includes(path);
   }
 
   onNavEntryClick(route: NavEntry): void {
@@ -111,7 +111,7 @@ export class MainLayout implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    const currentPath = window.location.pathname;
+    const currentPath = globalThis.location.pathname;
     const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
 
     if (matchingRoute && matchingRoute.children.length > 0) {

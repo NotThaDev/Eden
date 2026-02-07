@@ -26,6 +26,14 @@ export class LoadService {
       .subscribe((loads) => this.loadsSignal.set(loads));
   }
 
+  fetchLoadsByFoodId(foodId: number) {
+    this.loadingSignal.set(true);
+    this.httpHandler
+      .get<Load[]>(`api/load/food/${foodId}`)
+      .pipe(finalize(() => this.loadingSignal.set(false)))
+      .subscribe((loads) => this.loadsSignal.set(loads));
+  }
+
   createLoad(load: Load) {
     this.loadingSignal.set(true);
 
