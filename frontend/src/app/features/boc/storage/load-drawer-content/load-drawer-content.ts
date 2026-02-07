@@ -1,13 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Accardion } from '../../../../shared/components/accardion/accardion';
+import { Accordion } from '../../../../shared/components/accordion/accordion';
 import { LabelChip } from '../../../../shared/components/label-chip/label-chip';
 import { LoadService } from '../../services/load.service';
 
 @Component({
   selector: 'app-load-drawer-content',
-  imports: [MatExpansionModule, DatePipe, LabelChip, Accardion],
+  imports: [MatExpansionModule, DatePipe, LabelChip, Accordion],
   templateUrl: './load-drawer-content.html',
   styleUrl: './load-drawer-content.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

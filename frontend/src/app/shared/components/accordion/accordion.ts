@@ -4,12 +4,12 @@ import { Component, input, TemplateRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'accardion',
+  selector: 'accordion',
   imports: [CdkAccordionModule, NgTemplateOutlet, MatIconModule],
-  templateUrl: './accardion.html',
-  styleUrl: './accardion.scss',
+  templateUrl: './accordion.html',
+  styleUrl: './accordion.scss',
 })
-export class Accardion {
+export class Accordion {
   title = input.required<string | TemplateRef<any>>();
   key = input.required<string>();
   defaultExpanded = input<boolean>(false);

@@ -1,6 +1,6 @@
 <div class="loads-container">
   @for (load of loads(); track load.id; let i = $index) {
-    <accardion
+    <accordion
       [title]="titleTemplate"
       [key]="`${foodId}-load-${i}`"
       [style]="getAccordionStyle(i)"
@@ -14,7 +14,7 @@
           </div>
         }
       </div>
-    </accardion>
+    </accordion>
 
     <ng-template #titleTemplate>
       <app-label-chip
