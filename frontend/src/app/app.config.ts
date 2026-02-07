@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { routes } from './app.routes';
 import { MONTH_DAY_YEAR_FORMAT } from './shared/DateFormat';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 const snackbarDefaultConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -15,10 +16,11 @@ const snackbarDefaultConfig: MatSnackBarConfig = {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(withFetch()),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideLuxonDateAdapter(MONTH_DAY_YEAR_FORMAT),
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: snackbarDefaultConfig }
-  ]
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: snackbarDefaultConfig },
+  ],
 };

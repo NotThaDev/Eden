@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { routes } from '../../../../app.routes';
 import { NavEntry } from '../types';
 import { SubMenu } from '../sub-menu/sub-menu';
@@ -35,6 +35,8 @@ export class MainLayout implements OnDestroy, OnInit {
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
 
+  platformId = inject(PLATFORM_ID);
+
   protected validRoutes: NavEntry[] = routes
     .filter((route) => !route.hide)
     .map((route) => {
@@ -59,6 +61,7 @@ export class MainLayout implements OnDestroy, OnInit {
 
   private readonly _mobileQuery: MediaQueryList;
   private readonly _mobileQueryListener: () => void;
+  private readonly _router = inject(Router);
 
   protected toggleNavbarCollapse(): void {
     if (!this.isNavbarCollapsed()) {
@@ -75,7 +78,7 @@ export class MainLayout implements OnDestroy, OnInit {
   }
 
   isRouteActive(path: string): boolean {
-    return globalThis.location.pathname.includes(path);
+    return this._router.url.includes(path);
   }
 
   onNavEntryClick(route: NavEntry): void {
@@ -95,23 +98,24 @@ export class MainLayout implements OnDestroy, OnInit {
 
   constructor() {
     const media = inject(MediaMatcher);
-    const platformId = inject(PLATFORM_ID);
 
     this._mobileQuery = media.matchMedia('(max-width: 600px)');
     this.isMobile.set(this._mobileQuery.matches);
     this._mobileQueryListener = () => this.isMobile.set(this._mobileQuery.matches);
 
-    if (isPlatformBrowser(platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       this._mobileQuery.addEventListener('change', this._mobileQueryListener);
     }
   }
 
   ngOnDestroy(): void {
-    this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
+    if (isPlatformBrowser(this.platformId)) {
+      this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
+    }
   }
 
   ngOnInit(): void {
-    const currentPath = globalThis.location.pathname;
+    const currentPath = this._router.url;
     const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
 
     if (matchingRoute && matchingRoute.children.length > 0) {
