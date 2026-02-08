@@ -9,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 })
 export class LabelChip {
   label = input.required<string>();
-  backGroundColor = input<string>('#F5F5F5');
+  backgroundColor = input<string>('#F5F5F5');
   textColor = input<string>('var(--mat-sys-on-surface)');
   borderColor = input<string>('#E0E0E0');
 

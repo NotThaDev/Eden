@@ -37,13 +37,15 @@
         <ng-container matColumnDef="necessityLevel">
           <th mat-header-cell *matHeaderCellDef>Necessity Grade</th>
           <td mat-cell *matCellDef="let family">
-            <app-label-chip
-              [label]="getNecessityGradeLabelProp(family.necessityLevel).label"
-              [borderColor]="getNecessityGradeLabelProp(family.necessityLevel).borderColor"
-              [backGroundColor]="getNecessityGradeLabelProp(family.necessityLevel).backgroundColor"
-              [textColor]="getNecessityGradeLabelProp(family.necessityLevel).textColor"
-            >
-            </app-label-chip>
+            @if (getNecessityGradeLabelProp(family.necessityLevel); as props) {
+              <app-label-chip
+                [label]="props.label"
+                [borderColor]="props.borderColor"
+                [backgroundColor]="props.backgroundColor"
+                [textColor]="props.textColor"
+              >
+              </app-label-chip>
+            }
           </td>
         </ng-container>
 

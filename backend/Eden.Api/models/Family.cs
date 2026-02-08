@@ -45,8 +45,8 @@ namespace Eden.Api.Models
 
         public Task UpdateFamilyAsync()
         {
-            var newBucket = CalculateNeedLevel(Isee, Children, Members);
-            NecessityLevel = newBucket;
+            var newLevel = CalculateNeedLevel(Isee, Children, Members);
+            NecessityLevel = newLevel;
             return EdenAppContext.Context.WithDbContext(db =>
             {
                 db.Update(this);
