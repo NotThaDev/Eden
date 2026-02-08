@@ -9,10 +9,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { routes } from '../../../../app.routes';
 import { NavEntry } from '../types';
 import { SubMenu } from '../sub-menu/sub-menu';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-main-layout',
@@ -115,11 +116,26 @@ export class MainLayout implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    const currentPath = this._router.url;
-    const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
+    // Listen to navigation events to get the correct URL (works with SSR)
+    this._router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const currentPath = event.urlAfterRedirects;
+        const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
 
-    if (matchingRoute && matchingRoute.children.length > 0) {
-      this.openedSubmenu = matchingRoute.path;
+        if (matchingRoute && matchingRoute.children.length > 0) {
+          this.openedSubmenu = matchingRoute.path;
+        }
+      });
+
+    // Also check initial URL only in browser context
+    if (isPlatformBrowser(this.platformId)) {
+      const currentPath = this._router.url;
+      const matchingRoute = this.validRoutes.find((route) => currentPath.includes(route.path));
+
+      if (matchingRoute && matchingRoute.children.length > 0) {
+        this.openedSubmenu = matchingRoute.path;
+      }
     }
   }
 }
