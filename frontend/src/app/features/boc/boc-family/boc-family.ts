@@ -23,6 +23,7 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
+import { NecessityLevelChipProps } from './utils';
 
 @Component({
   selector: 'app-boc-family',
@@ -65,12 +66,7 @@ export class BocFamily implements OnInit {
     this.familyService.fetchFamilies();
   }
 
-  getNecessityGradeLabelProp(level: AssistanceLevel): {
-    label: string;
-    textColor: string;
-    backgroundColor: string;
-    borderColor: string;
-  } {
+  getNecessityGradeLabelProp(level: AssistanceLevel): NecessityLevelChipProps {
     switch (level) {
       case AssistanceLevel.VeryLow:
         return {
@@ -108,7 +104,12 @@ export class BocFamily implements OnInit {
           borderColor: '#D32F2F',
         };
       default:
-        return level;
+        return {
+          label: 'Unknown',
+          textColor: '#000000',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#000000',
+        };
     }
   }
 
