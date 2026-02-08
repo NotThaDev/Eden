@@ -4,7 +4,7 @@ import {
   computed,
   effect,
   inject,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -15,13 +15,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Family } from '../../../core/models/family';
+import { AssistanceLevel, Family } from '../../../core/models/family';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
+import { LabelChip } from '../../../shared/components/label-chip/label-chip';
+import { NecessityLevelChipProps } from './utils';
 
 @Component({
   selector: 'app-boc-family',
@@ -33,10 +35,10 @@ import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog'
     MatIcon,
     MatButtonModule,
     MatDialogModule,
-
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    LabelChip,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './boc-family.html',
@@ -48,7 +50,7 @@ export class BocFamily implements OnInit {
   private familyService = inject(FamilyService);
   readonly dialogRef = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'actions'];
+  displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'necessityLevel', 'actions'];
 
   dataSource = new MatTableDataSource<Family>([]);
   loading = computed(() => this.familyService.loading());
@@ -62,6 +64,53 @@ export class BocFamily implements OnInit {
 
   ngOnInit() {
     this.familyService.fetchFamilies();
+  }
+
+  getNecessityGradeLabelProp(level: AssistanceLevel): NecessityLevelChipProps {
+    switch (level) {
+      case AssistanceLevel.VeryLow:
+        return {
+          label: 'Very Low',
+          textColor: '#1B5E20',
+          backgroundColor: '#E8F5E9',
+          borderColor: '#4CAF50',
+        };
+      case AssistanceLevel.Low:
+        return {
+          label: 'Low',
+          textColor: '#F57F17',
+          backgroundColor: '#FFF3E0',
+          borderColor: '#FFA726',
+        };
+      case AssistanceLevel.Medium:
+        return {
+          label: 'Medium',
+          textColor: '#E65100',
+          backgroundColor: '#FFE0B2',
+          borderColor: '#FF9800',
+        };
+      case AssistanceLevel.High:
+        return {
+          label: 'High',
+          textColor: '#C62828',
+          backgroundColor: '#FFEBEE',
+          borderColor: '#E53935',
+        };
+      case AssistanceLevel.VeryHigh:
+        return {
+          label: 'Very High',
+          textColor: '#B71C1C',
+          backgroundColor: '#FFCDD2',
+          borderColor: '#D32F2F',
+        };
+      default:
+        return {
+          label: 'Unknown',
+          textColor: '#000000',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#000000',
+        };
+    }
   }
 
   deleteFamily(family: Family) {

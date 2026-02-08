@@ -33,8 +33,24 @@
           <td mat-cell *matCellDef="let family">{{ family.isee }}</td>
         </ng-container>
 
+        <!-- Necessity Level Column -->
+        <ng-container matColumnDef="necessityLevel">
+          <th mat-header-cell *matHeaderCellDef>Necessity Grade</th>
+          <td mat-cell *matCellDef="let family">
+            @if (getNecessityGradeLabelProp(family.necessityLevel); as props) {
+              <app-label-chip
+                [label]="props.label"
+                [borderColor]="props.borderColor"
+                [backgroundColor]="props.backgroundColor"
+                [textColor]="props.textColor"
+              >
+              </app-label-chip>
+            }
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef [style]="{width: '120px'}"></th>
+          <th mat-header-cell *matHeaderCellDef [style]="{ width: '120px' }"></th>
           <td mat-cell *matCellDef="let family">
             <button matIconButton class="action-button" (click)="editFamily(family)">
               <mat-icon>edit</mat-icon>

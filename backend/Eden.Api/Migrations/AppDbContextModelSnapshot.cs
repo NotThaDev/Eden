@@ -48,6 +48,9 @@ namespace Eden.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("NecessityLevel")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Families");

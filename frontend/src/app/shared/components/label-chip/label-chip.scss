@@ -1,10 +1,19 @@
+@use '@angular/material' as mat;
+
 .label-chip {
   font-size: 12px;
   height: 24px;
   line-height: 24px;
-}
 
-.label-chip:hover {
-  cursor: default;
-  background-color: inherit;
+  @include mat.chips-overrides(
+    (
+      hover-state-layer-opacity: 0,
+      hover-state-layer-color: inherit,
+      outline-width: 0,
+    )
+  );
+
+  > * {
+    border: none;
+  }
 }
