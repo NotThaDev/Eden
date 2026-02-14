@@ -31,6 +31,11 @@ namespace Eden.Api.Models
             return EdenAppContext.Context.WithDbContext(db => db.Foods.Where(f => f.Id == id).FirstOrDefaultAsync());
         }
 
+        public static Task<List<Food>> GetFoodsByIdsAsync(List<int> ids)
+        {
+            return EdenAppContext.Context.WithDbContext(db => db.Foods.Where(f => ids.Contains(f.Id!.Value)).ToListAsync());
+        }
+
         public static async Task<Food?> AddFood(Food food)
         {
             Food? newFood = null;
@@ -51,6 +56,24 @@ namespace Eden.Api.Models
             catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
             {
                 throw new InvalidOperationException($"A food with the name '{food.Name}' already exists.", ex);
+            }
+        }
+
+        public static async Task UpdateFoodsAsync(List<Food> foods)
+        {
+            try
+            {
+                await EdenAppContext.Context.WithDbContext(db =>
+                {
+                    db.UpdateRange(foods);
+                    return db.SaveChangesAsync();
+                });
+            }
+
+            // Handle unique constraint violation (duplicate food name) on update
+            catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
+            {
+                throw new InvalidOperationException($"A food with the name '{string.Join(", ", foods.Select(f => f.Name))}' already exists.", ex);
             }
         }
 

@@ -46,6 +46,21 @@ namespace Eden.Api.Controllers
             return null;
         }
 
+        private Distribution _mapToDistribution(DistributionDto distributionDto)
+        {
+            return new Distribution
+            {
+                Id = distributionDto.Id,
+                DistributionDate = distributionDto.DistributionDate,
+                Items = [.. distributionDto.GroupedItems.SelectMany(groupedItem => groupedItem.Items.Select(item => new DistributionItem
+                {
+                    FamilyId = groupedItem.FamilyId,
+                    FoodId = item.FoodId,
+                    Quantity = item.Quantity
+                }))]
+            };
+        }
+
         private DistributionDto _mapToDistributionDto(Distribution distribution)
         {
             var items = distribution.Items
@@ -93,13 +108,27 @@ namespace Eden.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] DistributionDto distribution)
         {
-            // #TODO Implement the update by ID
             if (await _validateDistributionRequest(distribution) is IActionResult errorResult)
             {
                 return errorResult;
             }
 
-            return Ok();
+            var existingDistribution = await Distribution.GetDistributionByIdAsync(id);
+            if (existingDistribution == null)
+            {
+                return NotFound();
+            }
+
+            var updatedDistribution = _mapToDistribution(distribution);
+            updatedDistribution.Id = id;
+
+            var result = await Distribution.UpdateDistributionAsync(updatedDistribution);
+            if (result == null)
+            {
+                return BadRequest("Failed to update distribution.");
+            }
+
+            return Ok(_mapToDistributionDto(result));
         }
 
         [HttpPost()]
@@ -111,17 +140,7 @@ namespace Eden.Api.Controllers
             }
 
             // Build the proper Distribution request from the DTO
-            var newDistribution = new Distribution
-            {
-                DistributionDate = distribution.DistributionDate,
-                Items = [.. distribution.GroupedItems.SelectMany(groupedItem => groupedItem.Items.Select(item => new DistributionItem
-                {
-                    FamilyId = groupedItem.FamilyId,
-                    FoodId = item.FoodId,
-                    Quantity = item.Quantity
-                }))]
-            };
-
+            var newDistribution = _mapToDistribution(distribution);
             var createdDistribution = await Distribution.AddDistribution(newDistribution);
             if (createdDistribution == null)
             {
@@ -143,6 +162,31 @@ namespace Eden.Api.Controllers
             await Distribution.DeleteDistributionAsync(id);
 
             return NoContent();
+        }
+
+        [HttpPost("preview")]
+        public async Task<IActionResult> GetDistributionPreview([FromBody] DistributionPreviewDto previewRequest)
+        {
+            var families = previewRequest.FamilyIds.Count > 0 ? await Family.GetFamilyByIdsAsync(previewRequest.FamilyIds) : await Family.GetFamiliesAsync();
+            var foods = previewRequest.FoodIds.Count > 0 ? await Food.GetFoodsByIdsAsync(previewRequest.FoodIds) : await Food.GetFoodsAsync();
+
+            if (families == null || families.Count == 0)
+            {
+                return BadRequest("No families found to build distribution preview.");
+            }
+
+            if (foods == null || foods.Count == 0)
+            {
+                return BadRequest("No foods found to build distribution preview.");
+            }
+
+            var distributionPreview = await Distribution.BuildDistributionFromFamilies(families, foods);
+            if (distributionPreview == null)
+            {
+                return BadRequest("Failed to build distribution preview.");
+            }
+
+            return Ok(_mapToDistributionDto(distributionPreview));
         }
     }
 }
