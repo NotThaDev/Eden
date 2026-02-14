@@ -23,4 +23,10 @@ namespace Eden.Api.DTOs
         public int Quantity { get; set; }
         public Food? Food { get; set; }
     }
+
+    public record DistributionPreviewDto
+    {
+        public List<int> FamilyIds { get; set; } = [];
+        public List<int> FoodIds { get; set; } = [];
+    }
 }
