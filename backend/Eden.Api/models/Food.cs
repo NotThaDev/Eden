@@ -59,6 +59,17 @@ namespace Eden.Api.Models
             }
         }
 
+        /// <summary>
+        /// General-purpose bulk update method for Food entities.
+        /// Updates all properties of the provided Food entities in a single database operation.
+        /// </summary>
+        /// <param name="foods">List of Food entities to update. Each entity must have a valid Id.</param>
+        /// <exception cref="InvalidOperationException">Thrown when a unique constraint violation occurs (duplicate food name).</exception>
+        /// <remarks>
+        /// This method uses EF Core's UpdateRange for efficient bulk updates of all entity properties.
+        /// While currently used primarily for quantity updates, it is designed as a general-purpose
+        /// utility and will update all modified properties on the provided entities.
+        /// </remarks>
         public static async Task UpdateFoodsAsync(List<Food> foods)
         {
             try
