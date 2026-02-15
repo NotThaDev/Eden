@@ -68,7 +68,7 @@ namespace Eden.Api.Models
         /// <remarks>
         /// This method uses EF Core's UpdateRange for efficient bulk updates of all entity properties.
         /// While currently used primarily for quantity updates, it is designed as a general-purpose
-        /// utility and will update all modified properties on the provided entities.
+        /// utility and will update all properties of the provided entities (UpdateRange marks all properties for update).
         /// </remarks>
         public static async Task UpdateFoodsAsync(List<Food> foods)
         {
