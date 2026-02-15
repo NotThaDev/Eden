@@ -50,15 +50,20 @@ namespace Eden.Api.Models
                 newDistribution = db.Distributions.Add(distribution).Entity;
                 
                 // Update food quantities in the same transaction
-                var foodIds = distribution.Items.Select(i => i.FoodId ?? 0).ToList();
-                var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
-                
-                foreach (var item in distribution.Items)
+                // Filter out items with null FoodId to avoid errors
+                var itemsWithFood = distribution.Items.Where(i => i.FoodId.HasValue).ToList();
+                if (itemsWithFood.Count > 0)
                 {
-                    var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
-                    if (food != null)
+                    var foodIds = itemsWithFood.Select(i => i.FoodId!.Value).ToList();
+                    var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
+                    
+                    foreach (var item in itemsWithFood)
                     {
-                        food.Quantity -= item.Quantity;
+                        var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
+                        if (food != null)
+                        {
+                            food.Quantity -= item.Quantity;
+                        }
                     }
                 }
                 
@@ -87,15 +92,20 @@ namespace Eden.Api.Models
                 db.Distributions.Remove(distribution);
                 
                 // Restore food quantities in the same transaction
-                var foodIds = distribution.Items.Select(i => i.FoodId ?? 0).ToList();
-                var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
-                
-                foreach (var item in distribution.Items)
+                // Filter out items with null FoodId to avoid errors
+                var itemsWithFood = distribution.Items.Where(i => i.FoodId.HasValue).ToList();
+                if (itemsWithFood.Count > 0)
                 {
-                    var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
-                    if (food != null)
+                    var foodIds = itemsWithFood.Select(i => i.FoodId!.Value).ToList();
+                    var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
+                    
+                    foreach (var item in itemsWithFood)
                     {
-                        food.Quantity += item.Quantity;
+                        var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
+                        if (food != null)
+                        {
+                            food.Quantity += item.Quantity;
+                        }
                     }
                 }
                 
