@@ -45,23 +45,30 @@ namespace Eden.Api.Models
         {
             Distribution? newDistribution = null;
 
-            await EdenAppContext.Context.WithDbContext(db =>
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
                 newDistribution = db.Distributions.Add(distribution).Entity;
-                return db.SaveChangesAsync();
+                
+                // Update food quantities in the same transaction
+                var foodIds = distribution.Items.Select(i => i.FoodId ?? 0).ToList();
+                var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
+                
+                foreach (var item in distribution.Items)
+                {
+                    var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
+                    if (food != null)
+                    {
+                        food.Quantity -= item.Quantity;
+                    }
+                }
+                
+                await db.SaveChangesAsync();
             });
 
             if (newDistribution?.Id == null)
             {
                 return null;
             }
-
-
-            await UpdateFoodQuantities([.. distribution.Items.Select(i => new LoadItem
-                {
-                    FoodId = i.FoodId ?? 0,
-                    Quantity = -i.Quantity
-                })]);
 
             return await GetDistributionByIdAsync(newDistribution.Id!.Value);
         }
@@ -74,17 +81,26 @@ namespace Eden.Api.Models
                 return false;
             }
 
-            await EdenAppContext.Context.WithDbContext(db =>
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
+                // Remove the distribution
                 db.Distributions.Remove(distribution);
-                return db.SaveChangesAsync();
+                
+                // Restore food quantities in the same transaction
+                var foodIds = distribution.Items.Select(i => i.FoodId ?? 0).ToList();
+                var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
+                
+                foreach (var item in distribution.Items)
+                {
+                    var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
+                    if (food != null)
+                    {
+                        food.Quantity += item.Quantity;
+                    }
+                }
+                
+                await db.SaveChangesAsync();
             });
-
-            await UpdateFoodQuantities([.. distribution.Items.Select(i => new LoadItem
-            {
-                FoodId = i.FoodId ?? 0,
-                Quantity = i.Quantity
-            })]);
 
             return true;
         }
@@ -114,16 +130,28 @@ namespace Eden.Api.Models
                 }
             });
 
-            await EdenAppContext.Context.WithDbContext(db =>
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
                 db.Distributions.Update(existingDistribution);
-                return db.SaveChangesAsync();
-            });
+                
+                // Update food quantities in the same transaction if there are changes
+                if (changedItems.Count > 0)
+                {
+                    var foodIds = changedItems.Select(li => li.FoodId).ToList();
+                    var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
 
-            if (changedItems.Count > 0)
-            {
-                await UpdateFoodQuantities(changedItems);
-            }
+                    foreach (var item in changedItems)
+                    {
+                        var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
+                        if (food != null)
+                        {
+                            food.Quantity += item.Quantity;
+                        }
+                    }
+                }
+                
+                await db.SaveChangesAsync();
+            });
 
             return await GetDistributionByIdAsync(existingDistribution.Id ?? 0);
         }
@@ -201,20 +229,6 @@ namespace Eden.Api.Models
                 Items = distributableItems,
                 DistributionDate = DateTime.UtcNow
             };
-        }
-
-        private static async Task UpdateFoodQuantities(List<LoadItem> loadItems)
-        {
-            var foodIds = loadItems.Select(li => li.FoodId).ToList();
-            var foods = await Food.GetFoodsByIdsAsync(foodIds);
-
-            foreach (var item in loadItems)
-            {
-                var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
-                food?.Quantity += item.Quantity;
-            }
-
-            await Food.UpdateFoodsAsync(foods);
         }
     }
 
