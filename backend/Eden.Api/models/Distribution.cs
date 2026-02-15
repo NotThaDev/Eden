@@ -190,7 +190,10 @@ namespace Eden.Api.Models
                                     Quantity = quantity
                                 });
                             }
-                            remainder--;
+                            if (remainder > 0)
+                            {
+                                remainder--;
+                            }
                         }
                     }
                 }
