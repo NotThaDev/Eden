@@ -39,7 +39,7 @@ export class CreateFamilyDialog implements OnInit {
   membersValidationError = signal<string>('');
 
   readonly data = inject<{ family?: Family }>(MAT_DIALOG_DATA, { optional: true });
-  readonly title = this.data?.family ? `Edit ${this.data.family.name}` : 'Add a New Family';
+  readonly title = this.data?.family ? `Modifica ${this.data.family.name}` : 'Aggiungi una Nuova Famiglia';
   readonly formBuilder = inject(FormBuilder);
   readonly familyFormControl: FormGroup = this.formBuilder.group({
     name: [null, [Validators.required, Validators.minLength(1)]],
@@ -62,7 +62,7 @@ export class CreateFamilyDialog implements OnInit {
     }
 
     if (membersValue <= childrenValue) {
-      this.membersValidationError.set('Total members must be greater than the number of children.');
+      this.membersValidationError.set('Il numero totale di membri deve essere maggiore del numero di bambini.');
       return { invalidMembersCount: true };
     }
 
@@ -84,7 +84,7 @@ export class CreateFamilyDialog implements OnInit {
     }
 
     if (childrenValue >= membersValue) {
-      this.membersValidationError.set('Number of children must be less than the total members.');
+      this.membersValidationError.set('Il numero di bambini deve essere inferiore al numero totale di membri.');
       return { invalidChildrenCount: true };
     }
 

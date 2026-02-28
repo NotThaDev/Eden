@@ -24,12 +24,12 @@ export const routes: EdenAppRoutes = [
       { path: '', redirectTo: 'family', pathMatch: 'full', hide: true },
       {
         path: 'family',
-        title: 'Families',
+        title: 'Famiglie',
         component: BocFamily,
       },
       {
         path: 'storage',
-        title: 'Storage',
+        title: 'Magazzino',
         component: Storage,
       },
     ],

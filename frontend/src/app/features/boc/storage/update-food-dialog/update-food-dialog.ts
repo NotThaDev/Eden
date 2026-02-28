@@ -30,7 +30,7 @@ import { Food } from '../../../../core/models/food';
 })
 export class UpdateFoodDialog implements OnInit {
   readonly data = inject<{ food?: Food }>(MAT_DIALOG_DATA, { optional: true });
-  readonly title = this.data?.food ? `Edit ${this.data.food.name}` : 'Add a New Food ';
+  readonly title = this.data?.food ? `Modifica ${this.data.food.name}` : 'Aggiungi un Nuovo Alimento';
   readonly formBuilder = inject(FormBuilder);
   readonly foodFormControl: FormGroup = this.formBuilder.group({
     name: [null, [Validators.required, Validators.minLength(1)]],
