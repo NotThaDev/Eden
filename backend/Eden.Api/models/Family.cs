@@ -28,7 +28,7 @@ namespace Eden.Api.Models
             return EdenAppContext.Context.WithDbContext(db => db.Families.Where(f => f.Id == id).FirstOrDefaultAsync());
         }
 
-        public static Task<List<Family>> GetFamilyByIdsAsync(List<int> ids)
+        public static Task<List<Family>> GetFamiliesByIdsAsync(List<int> ids)
         {
             return EdenAppContext.Context.WithDbContext(db => db.Families.Where(f => ids.Contains(f.Id!.Value)).ToListAsync());
         }

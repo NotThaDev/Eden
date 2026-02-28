@@ -189,7 +189,7 @@ namespace Eden.Api.Controllers
         [HttpPost("preview")]
         public async Task<IActionResult> GetDistributionPreview([FromBody] DistributionPreviewDto previewRequest)
         {
-            var families = previewRequest.FamilyIds.Count > 0 ? await Family.GetFamilyByIdsAsync(previewRequest.FamilyIds) : await Family.GetFamiliesAsync();
+            var families = previewRequest.FamilyIds.Count > 0 ? await Family.GetFamiliesByIdsAsync(previewRequest.FamilyIds) : await Family.GetFamiliesAsync();
             var foods = previewRequest.FoodIds.Count > 0 ? await Food.GetFoodsByIdsAsync(previewRequest.FoodIds) : await Food.GetFoodsAsync();
 
             if (families == null || families.Count == 0)
