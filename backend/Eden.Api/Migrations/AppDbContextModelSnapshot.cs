@@ -22,6 +22,53 @@ namespace Eden.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Eden.Api.Models.Distribution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DistributionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Distributions");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DistributionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("FamilyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("FoodId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistributionId");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("FoodId");
+
+                    b.ToTable("DistributionItems");
+                });
+
             modelBuilder.Entity("Eden.Api.Models.Family", b =>
                 {
                     b.Property<int>("Id")
@@ -143,6 +190,29 @@ namespace Eden.Api.Migrations
                     b.ToTable("LoadItems");
                 });
 
+            modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>
+                {
+                    b.HasOne("Eden.Api.Models.Distribution", null)
+                        .WithMany("Items")
+                        .HasForeignKey("DistributionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eden.Api.Models.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Eden.Api.Models.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Family");
+
+                    b.Navigation("Food");
+                });
+
             modelBuilder.Entity("Eden.Api.Models.Food", b =>
                 {
                     b.HasOne("Eden.Api.Models.Load", null)
@@ -166,6 +236,11 @@ namespace Eden.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Food");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.Distribution", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.Load", b =>
