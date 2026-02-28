@@ -73,7 +73,7 @@ namespace Eden.Api.Models
             // Handle unique constraint violation (duplicate food name) on update
             catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException pgEx && pgEx.SqlState == "23505")
             {
-                throw new InvalidOperationException($"A food with the name '{string.Join(", ", foods.Select(f => f.Name))}' already exists.", ex);
+                throw new InvalidOperationException("One or more foods have a name that already exists. Please ensure all food names are unique before updating.", ex);
             }
         }
 
