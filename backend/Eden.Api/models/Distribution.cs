@@ -157,7 +157,7 @@ namespace Eden.Api.Models
             List<DistributionItem> distributableItems = [];
 
             // For each food, distribute based on assistance level percentages
-            foreach (var food in foods)
+            foreach (var food in foods.Where(f => f.Quantity > 0))
             {
                 foreach (var assistanceLevel in familiesAssistanceLevelPercentages)
                 {
