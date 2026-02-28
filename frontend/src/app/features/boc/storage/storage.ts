@@ -53,7 +53,7 @@ export class Storage implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to create food.',
+                title: 'Impossibile creare l\'alimento.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -61,7 +61,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Food successfully created!',
+                title: 'Alimento creato con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
@@ -75,7 +75,7 @@ export class Storage implements OnInit {
     const dialogRef = this.dialogRef.open(UpdateFoodDialog, {
       data: {
         food,
-        title: `Edit ${food.name}`,
+        title: `Modifica ${food.name}`,
       },
     });
 
@@ -85,7 +85,7 @@ export class Storage implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to update food.',
+                title: 'Impossibile aggiornare l\'alimento.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -93,7 +93,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Food successfully updated!',
+                title: 'Alimento aggiornato con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
@@ -110,8 +110,8 @@ export class Storage implements OnInit {
 
     const dialogRef = this.dialogRef.open(ConfirmationDialog, {
       data: {
-        title: `Delete "${food.name}"?`,
-        message: `Are you sure you want to delete this food? This action cannot be undone.`,
+        title: `Eliminare "${food.name}"?`,
+        message: `Sei sicuro di voler eliminare questo alimento? Questa azione non può essere annullata.`,
       },
     });
 
@@ -121,7 +121,7 @@ export class Storage implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to delete food.',
+                title: 'Impossibile eliminare l\'alimento.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -129,7 +129,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Food successfully deleted!',
+                title: 'Alimento eliminato con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
@@ -148,7 +148,7 @@ export class Storage implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to create load.',
+                title: 'Impossibile creare il carico.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -156,7 +156,7 @@ export class Storage implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Load successfully created!',
+                title: 'Carico creato con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });

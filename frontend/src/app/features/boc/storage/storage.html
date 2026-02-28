@@ -1,47 +1,47 @@
 <app-drawer
   [isOpen]="selectedFoodId !== null"
   (onClose)="onCloseFoodDetails()"
-  [title]="'Loads History'"
+  [title]="'Storico Carichi'"
 >
   @if (selectedFoodId !== null) {
     <app-load-drawer-content [foodId]="selectedFoodId"></app-load-drawer-content>
   }
 </app-drawer>
 
-<app-page-header [title]="'Storage'">
+<app-page-header [title]="'Magazzino'">
   <div class="toolbar">
     <button matButton="filled" (click)="onAddFood()" extended>
       <mat-icon>add</mat-icon>
-      Add Food
+      Aggiungi Alimento
     </button>
     <button matButton="filled" extended (click)="onAddLoad()">
       <mat-icon>local_shipping</mat-icon>
-      New Load
+      Nuovo Carico
     </button>
   </div>
   <div class="eden-table-container storage-table">
     <table mat-table [dataSource]="dataSource" class="eden-table">
       <!-- Name Column -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
         <td mat-cell *matCellDef="let food">{{ food.name }}</td>
       </ng-container>
 
       <!-- Quantity Column -->
       <ng-container matColumnDef="quantity">
-        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <th mat-header-cell *matHeaderCellDef>Quantità</th>
         <td mat-cell *matCellDef="let food">{{ food.quantity }}</td>
       </ng-container>
 
       <!-- Unit / Unit Size Column -->
       <ng-container matColumnDef="unit">
-        <th mat-header-cell *matHeaderCellDef>Unit</th>
+        <th mat-header-cell *matHeaderCellDef>Unità</th>
         <td mat-cell *matCellDef="let food">{{ `${food.unitSize} ${food.unit}` }}</td>
       </ng-container>
 
       <!-- Latest load -->
       <ng-container matColumnDef="latestLoadId">
-        <th mat-header-cell *matHeaderCellDef>Loads</th>
+        <th mat-header-cell *matHeaderCellDef>Carichi</th>
         <td mat-cell *matCellDef="let food">
           @if (food.latestLoadId) {
             <button matIconButton class="view-load-button" (click)="onViewLoad(food.id)">

@@ -70,42 +70,42 @@ export class BocFamily implements OnInit {
     switch (level) {
       case AssistanceLevel.VeryLow:
         return {
-          label: 'Very Low',
+          label: 'Molto Basso',
           textColor: '#1B5E20',
           backgroundColor: '#E8F5E9',
           borderColor: '#4CAF50',
         };
       case AssistanceLevel.Low:
         return {
-          label: 'Low',
+          label: 'Basso',
           textColor: '#F57F17',
           backgroundColor: '#FFF3E0',
           borderColor: '#FFA726',
         };
       case AssistanceLevel.Medium:
         return {
-          label: 'Medium',
+          label: 'Medio',
           textColor: '#E65100',
           backgroundColor: '#FFE0B2',
           borderColor: '#FF9800',
         };
       case AssistanceLevel.High:
         return {
-          label: 'High',
+          label: 'Alto',
           textColor: '#C62828',
           backgroundColor: '#FFEBEE',
           borderColor: '#E53935',
         };
       case AssistanceLevel.VeryHigh:
         return {
-          label: 'Very High',
+          label: 'Molto Alto',
           textColor: '#B71C1C',
           backgroundColor: '#FFCDD2',
           borderColor: '#D32F2F',
         };
       default:
         return {
-          label: 'Unknown',
+          label: 'Sconosciuto',
           textColor: '#000000',
           backgroundColor: '#FFFFFF',
           borderColor: '#000000',
@@ -116,8 +116,8 @@ export class BocFamily implements OnInit {
   deleteFamily(family: Family) {
     const dialogRef = this.dialogRef.open(ConfirmationDialog, {
       data: {
-        title: `Delete "${family.name}" Family?`,
-        message: `Are you sure you want to delete this family? This action cannot be undone.`,
+        title: `Eliminare la famiglia "${family.name}"?`,
+        message: `Sei sicuro di voler eliminare questa famiglia? Questa azione non può essere annullata.`,
       },
     });
 
@@ -127,7 +127,7 @@ export class BocFamily implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to delete family.',
+                title: 'Impossibile eliminare la famiglia.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -135,7 +135,7 @@ export class BocFamily implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Family successfully deleted!',
+                title: 'Famiglia eliminata con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
@@ -158,7 +158,7 @@ export class BocFamily implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to update family.',
+                title: 'Impossibile aggiornare la famiglia.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -166,7 +166,7 @@ export class BocFamily implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Family successfully updated!',
+                title: 'Famiglia aggiornata con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });
@@ -185,7 +185,7 @@ export class BocFamily implements OnInit {
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Failed to create family.',
+                title: 'Impossibile creare la famiglia.',
                 status: SnackbarStatus.ERROR,
               },
             });
@@ -193,7 +193,7 @@ export class BocFamily implements OnInit {
           complete: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
-                title: 'Family successfully created!',
+                title: 'Famiglia creata con successo!',
                 status: SnackbarStatus.SUCCESS,
               },
             });

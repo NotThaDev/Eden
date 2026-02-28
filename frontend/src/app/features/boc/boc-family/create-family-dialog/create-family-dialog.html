@@ -2,41 +2,41 @@
 <mat-dialog-content [formGroup]="familyFormControl">
   <div class="family-form-container">
     <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
-      <input matInput placeholder="Doe's Family" formControlName="name" />
+      <mat-label>Nome</mat-label>
+      <input matInput placeholder="Famiglia Rossi" formControlName="name" />
     </mat-form-field>
     <div class="members-children-container">
       <mat-form-field appearance="outline">
-        <mat-label>Members</mat-label>
+        <mat-label>Membri</mat-label>
         <input matInput type="number" placeholder="4" formControlName="members" />
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Children</mat-label>
+        <mat-label>Minori</mat-label>
         <input matInput type="number" placeholder="2" formControlName="children" />
       </mat-form-field>
       @if (membersValidationError() !== '') {
-      <div class="error-field">
-        <mat-error> {{ membersValidationError() }} </mat-error>
-      </div>
+        <div class="error-field">
+          <mat-error> {{ membersValidationError() }} </mat-error>
+        </div>
       }
     </div>
     <mat-form-field appearance="outline">
       <mat-label>ISEE</mat-label>
       <input matInput type="number" placeholder="5000" formControlName="isee" />
       @if (familyFormControl.get('isee')?.getError('max')) {
-      <mat-error> ISEE must be less than or equal to 10040. </mat-error>
+        <mat-error> L'ISEE deve essere inferiore o uguale a 10040. </mat-error>
       }
     </mat-form-field>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Cancel</button>
+  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Annulla</button>
   <button
     matButton="filled"
     (click)="onClose()"
     class="dialog-button"
     [disabled]="familyFormControl.invalid"
   >
-    Save
+    Salva
   </button>
 </mat-dialog-actions>

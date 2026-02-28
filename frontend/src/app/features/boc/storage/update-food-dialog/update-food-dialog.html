@@ -2,21 +2,21 @@
 <mat-dialog-content [formGroup]="foodFormControl">
   <div class="food-form-container">
     <div class="eden-form-field-container">
-      <span [style.color]="getLabelColor('name')">Food Name</span>
+      <span [style.color]="getLabelColor('name')">Nome Alimento</span>
       <mat-form-field appearance="outline" [style.width.%]="100">
         <input matInput placeholder="Spaghetti" formControlName="name" />
       </mat-form-field>
     </div>
 
     <div class="eden-form-field-container">
-      <span [style.color]="getLabelColor('quantity')">Quantity Details</span>
+      <span [style.color]="getLabelColor('quantity')">Dettagli Quantità</span>
       <mat-form-field appearance="outline" [style.width.%]="100">
         <input matInput type="number" placeholder="4" formControlName="quantity" />
       </mat-form-field>
     </div>
 
     <div class="eden-form-field-container">
-      <span [style.color]="getUnitLabelColor()">Unit Details</span>
+      <span [style.color]="getUnitLabelColor()">Dettagli Unità</span>
       <div class="unit-form-container">
         <mat-form-field appearance="outline">
           <input matInput type="number" placeholder="1.5" formControlName="unitSize" />
@@ -29,13 +29,13 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Cancel</button>
+  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Annulla</button>
   <button
     matButton="filled"
     (click)="onClose()"
     class="dialog-button"
     [disabled]="foodFormControl.invalid"
   >
-    Save
+    Salva
   </button>
 </mat-dialog-actions>

@@ -1,9 +1,9 @@
-<h2 mat-dialog-title>Create a New Load</h2>
+<h2 mat-dialog-title>Crea un Nuovo Carico</h2>
 <div class="form-container">
   <mat-dialog-content [formGroup]="loadFormControl">
     <!-- #TODO Functionality to add future loads? And actually apply them when the time arrives? -->
     <mat-form-field appearance="outline">
-      <mat-label>Load Date</mat-label>
+      <mat-label>Data Carico</mat-label>
       <input matInput [matDatepickerFilter]="futureDateFilter" [matDatepicker]="picker" formControlName="loadDate" />
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
@@ -11,7 +11,7 @@
 
     <div class="items-section">
       <div class="items-header">
-        <h3>Foods</h3>
+        <h3>Alimenti</h3>
         <button matMiniFab (click)="addItem()" class="add-row-button">
           <mat-icon>add</mat-icon>
         </button>
@@ -21,7 +21,7 @@
         @for (item of items.controls; track $index) {
         <div [formGroupName]="$index" class="item-row">
           <mat-form-field appearance="outline">
-            <mat-label>Food</mat-label>
+            <mat-label>Alimento</mat-label>
             <mat-select formControlName="foodId">
               @for (food of foods(); track food) {
               <mat-option [value]="food.id">{{ food.name }}</mat-option>
@@ -30,10 +30,10 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Quantity</mat-label>
+            <mat-label>Quantità</mat-label>
             <input matInput type="number" formControlName="quantity" />
             @if (item.get('quantity')?.hasError('min')) {
-            <mat-error>Must be at least 1</mat-error>
+            <mat-error>Deve essere almeno 1</mat-error>
             }
           </mat-form-field>
 
@@ -52,13 +52,13 @@
   </mat-dialog-content>
 </div>
 <mat-dialog-actions>
-  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Cancel</button>
+  <button matButton="text" (click)="dialogRef.close()" class="dialog-button">Annulla</button>
   <button
     matButton="filled"
     class="dialog-button"
     (click)="onSubmit()"
     [disabled]="!loadFormControl.valid"
   >
-    Save
+    Salva
   </button>
 </mat-dialog-actions>
