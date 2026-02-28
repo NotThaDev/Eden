@@ -128,6 +128,16 @@ namespace Eden.Api.Models
             return await GetDistributionByIdAsync(existingDistribution.Id ?? 0);
         }
 
+        /// <summary>
+        /// Builds a new distribution by allocating available food quantities across families,
+        /// prioritizing higher necessity levels first and then family size criteria.
+        /// Only the foods with quantity greater than zero will be considered for distribution.
+        /// </summary>
+        /// <param name="families">Families to include in the distribution.</param>
+        /// <param name="foods">Foods with current available quantities.</param>
+        /// <returns>
+        /// A distribution containing calculated <see cref="DistributionItem"/> entries and the current UTC distribution date.
+        /// </returns>
         public static async Task<Distribution> BuildDistributionFromFamilies(List<Family> families, List<Food> foods)
         {
             // Sort families by priority within each assistance level:
@@ -159,12 +169,13 @@ namespace Eden.Api.Models
             // For each food, distribute based on assistance level percentages
             foreach (var food in foods.Where(f => f.Quantity > 0))
             {
+                var totalQuantity = food.Quantity;
                 foreach (var assistanceLevel in familiesAssistanceLevelPercentages)
                 {
                     if (assistanceLevel.Value == 0) continue; // Skip if no families at this level
 
                     // Calculate quantity for this assistance level
-                    var quantityForLevel = (int)(food.Quantity * assistanceLevel.Value);
+                    var quantityForLevel = (int)(totalQuantity * assistanceLevel.Value);
 
                     // Get families at this assistance level (already sorted by Children desc, then Members desc)
                     if (familyGroupedByAssistanceLevel.TryGetValue(assistanceLevel.Key, out var familiesAtLevel))
@@ -177,7 +188,7 @@ namespace Eden.Api.Models
                         foreach (var family in familiesAtLevel)
                         {
                             var quantity = quantityPerFamily + (remainder > 0 ? 1 : 0);
-                            food.Quantity -= quantity; // Decrease the available quantity of the food
+                            totalQuantity -= quantity; // Decrease the available quantity of the food
 
                             if (quantity > 0)
                             {
