@@ -98,7 +98,6 @@ namespace Eden.Api.Models
             }
 
             existingDistribution.DistributionDate = distribution.DistributionDate;
-            existingDistribution.Items = distribution.Items;
 
             List<LoadItem> changedItems = [];
             existingDistribution.Items.ForEach(i =>
@@ -114,6 +113,7 @@ namespace Eden.Api.Models
                 }
             });
 
+            existingDistribution.Items = distribution.Items;
             await EdenAppContext.Context.WithDbContext(db =>
             {
                 db.Distributions.Update(existingDistribution);
