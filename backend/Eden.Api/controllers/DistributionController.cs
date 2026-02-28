@@ -8,51 +8,13 @@ namespace Eden.Api.Controllers
     [Route("api/distribution")]
     public class DistributionController : ControllerBase
     {
-        private async Task<IActionResult?> _validateDistributionRequest(DistributionDto distribution)
-        {
-            if (distribution.GroupedItems == null || distribution.GroupedItems.Count == 0)
-            {
-                return BadRequest("Distribution must contain at least one item.");
-            }
-
-            foreach (var item in distribution.GroupedItems)
-            {
-                var family = Family.GetFamilyByIdAsync(item.FamilyId);
-                if (family is null)
-                {
-                    return BadRequest($"Family not {item.FamilyId} found");
-                }
-
-                foreach (var distributionItem in item.Items)
-                {
-                    var food = await Food.GetFoodByIdAsync(distributionItem.FoodId);
-                    if (food is null)
-                    {
-                        return BadRequest($"Food with id {distributionItem.FoodId} not found");
-                    }
-
-                    if (food.Quantity < distributionItem.Quantity)
-                    {
-                        return BadRequest($"Not enough quantity for food {food.Name}. Available: {food.Quantity}, requested: {distributionItem.Quantity}");
-                    }
-
-                    if (distributionItem.Quantity < 0)
-                    {
-                        return BadRequest("Quantity cannot be negative.");
-                    }
-                }
-            }
-
-            return null;
-        }
-
         private Distribution _mapToDistribution(DistributionDto distributionDto)
         {
             return new Distribution
             {
                 Id = distributionDto.Id,
                 DistributionDate = distributionDto.DistributionDate,
-                Items = [.. distributionDto.GroupedItems.SelectMany(groupedItem => groupedItem.Items.Select(item => new DistributionItem
+                Items = [.. distributionDto.Items.SelectMany(groupedItem => groupedItem.DistributionItems.Select(item => new DistributionItem
                 {
                     FamilyId = groupedItem.FamilyId,
                     FoodId = item.FoodId,
@@ -65,11 +27,11 @@ namespace Eden.Api.Controllers
         {
             var items = distribution.Items
                 .GroupBy(i => i.FamilyId)
-                .Select(g => new GroupedItems
+                .Select(g => new DistributionFamilyDto
                 {
                     FamilyId = g.Key ?? 0,
                     Family = g.First().Family,
-                    Items = [.. g.Select(i => new DistributionItemDto
+                    DistributionItems = [.. g.Select(i => new DistributionItemDto
                     {
                         FoodId = i.FoodId ?? 0,
                         Quantity = i.Quantity,
@@ -81,8 +43,68 @@ namespace Eden.Api.Controllers
             {
                 Id = distribution.Id,
                 DistributionDate = distribution.DistributionDate,
-                GroupedItems = items
+                Items = items
             };
+        }
+
+        private async Task<IActionResult?> _validateDistributionRequest(DistributionDto distribution)
+        {
+            if (distribution.Items == null || distribution.Items.Count == 0)
+            {
+                return BadRequest("Distribution must contain at least one item.");
+            }
+
+            foreach (var familyDto in distribution.Items)
+            {
+                if (await _validateFamily(familyDto.FamilyId) is IActionResult familyErrorResult)
+                {
+                    return familyErrorResult;
+                }
+
+                if (await _validateDistributionFoods(familyDto.DistributionItems) is IActionResult foodErrorResult)
+                {
+                    return foodErrorResult;
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<IActionResult?> _validateDistributionFoods(List<DistributionItemDto> items)
+        {
+            foreach (var item in items)
+            {
+                var existingFood = await Food.GetFoodByIdAsync(item.FoodId);
+
+                if (item.Quantity <= 0)
+                {
+                    return BadRequest("Quantity must be greater than zero.");
+                }
+
+                if (existingFood == null)
+                {
+                    return BadRequest($"Food with ID {item.FoodId} does not exist.");
+                }
+
+                if (existingFood.Quantity < item.Quantity)
+                {
+                    return BadRequest($"Not enough quantity for food {existingFood.Name}. Available: {existingFood.Quantity}, requested: {item.Quantity}");
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<IActionResult?> _validateFamily(int? familyId)
+        {
+            var existingFamily = await Family.GetFamilyByIdAsync(familyId ?? 0);
+
+            if (existingFamily == null)
+            {
+                return BadRequest($"Family with ID {familyId} does not exist.");
+            }
+
+            return null;
         }
 
         [HttpGet()]
