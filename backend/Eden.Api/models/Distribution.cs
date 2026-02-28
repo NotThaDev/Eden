@@ -103,7 +103,15 @@ namespace Eden.Api.Models
             existingDistribution.Items.ForEach(i =>
             {
                 var matchingItem = distribution.Items.FirstOrDefault(di => di.Id == i.Id);
-                if (matchingItem != null && matchingItem.Quantity != i.Quantity)
+                if (matchingItem is null)
+                {
+                    changedItems.Add(new LoadItem
+                    {
+                        FoodId = i.FoodId ?? 0,
+                        Quantity = i.Quantity
+                    });
+                }
+                else if (matchingItem.Quantity != i.Quantity)
                 {
                     changedItems.Add(new LoadItem
                     {
@@ -111,6 +119,17 @@ namespace Eden.Api.Models
                         Quantity = matchingItem.Quantity - i.Quantity
                     });
                 }
+            });
+
+            // Handle new items added in the update
+            var newItems = distribution.Items.Where(di => existingDistribution.Items.All(ei => ei.Id != di.Id)).ToList();
+            newItems.ForEach(ni =>
+            {
+                changedItems.Add(new LoadItem
+                {
+                    FoodId = ni.FoodId ?? 0,
+                    Quantity = -ni.Quantity
+                });
             });
 
             existingDistribution.Items = distribution.Items;

@@ -5,8 +5,7 @@ namespace Eden.Api.DTOs
     public record DistributionDto
     {
         public int? Id { get; set; }
-        public DateTime DistributionDate { get; set; } = DateTime.Now;
-        // FamilyId -> DistributionItemDTO
+        public DateTime DistributionDate { get; set; } = DateTime.UtcNow;
         public List<DistributionFamilyDto> Items { get; set; } = [];
     }
 
