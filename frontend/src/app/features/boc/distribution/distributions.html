@@ -6,24 +6,31 @@
     </button>
   </div>
 
-  @for (distribution of dataSource.data; track $index) {
-    <accordion [title]="titleTemplate" [key]="'distribution-details'">
-      <distribution-table [distribution]="distribution"></distribution-table>
-    </accordion>
+  @if (dataSource.data.length === 0) {
+    <div class="empty-state">
+      <mat-icon>inventory_2</mat-icon>
+      <span>Non sono presenti distribuzioni</span>
+    </div>
+  } @else {
+    @for (distribution of dataSource.data; track $index) {
+      <accordion [title]="titleTemplate" [key]="'distribution-details'">
+        <distribution-table [distribution]="distribution"></distribution-table>
+      </accordion>
 
-    <ng-template #titleTemplate>
-      <div class="distribution-title">
-        <span class="distribution-title-text"> Dettagli Distribuzione </span>
-        <app-label-chip
-          class="distribution-date"
-          [label]="(distribution.distributionDate | date: 'dd/MM/yyyy') ?? ''"
-          [backgroundColor]="
-            getDistributionChipColors(distribution.distributionDate).backgroundColor
-          "
-          [borderColor]="getDistributionChipColors(distribution.distributionDate).borderColor"
-          [textColor]="getDistributionChipColors(distribution.distributionDate).textColor"
-        ></app-label-chip>
-      </div>
-    </ng-template>
+      <ng-template #titleTemplate>
+        <div class="distribution-title">
+          <span class="distribution-title-text"> Dettagli Distribuzione </span>
+          <app-label-chip
+            class="distribution-date"
+            [label]="(distribution.distributionDate | date: 'dd/MM/yyyy') ?? ''"
+            [backgroundColor]="
+              getDistributionChipColors(distribution.distributionDate).backgroundColor
+            "
+            [borderColor]="getDistributionChipColors(distribution.distributionDate).borderColor"
+            [textColor]="getDistributionChipColors(distribution.distributionDate).textColor"
+          ></app-label-chip>
+        </div>
+      </ng-template>
+    }
   }
 </app-page-header>
