@@ -12,7 +12,7 @@
       <span>Non sono presenti distribuzioni</span>
     </div>
   } @else {
-    @for (distribution of dataSource.data; track $index) {
+    @for (distribution of dataSource.data; track distribution.id) {
       <accordion
         [title]="titleTemplate"
         [key]="'distribution-details-' + (distribution.id ?? $index)"
