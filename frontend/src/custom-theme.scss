@@ -127,7 +127,6 @@ body {
   .eden-table-container {
     overflow-x: auto;
     overflow-y: visible;
-    border-radius: 8px;
 
     // Custom scrollbar styling
     &::-webkit-scrollbar {
@@ -155,8 +154,7 @@ body {
 
       .mat-mdc-header-row {
         background-color: var(--mat-sys-surface-container-high); // Light gray background
-        height: 32px;
-        font-weight: 400;
+        font-weight: 500;
 
         .mat-mdc-header-cell {
           border-bottom: none;
@@ -165,8 +163,6 @@ body {
       }
 
       tr {
-        height: 48px;
-
         .mat-mdc-cell {
           border-bottom: 1px solid var(--mat-sys-outline-variant); // Subtle border
           color: var(--mat-sys-on-surface-variant); // Medium gray text
@@ -177,6 +173,13 @@ body {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+      }
+
+      td,
+      th {
+        border: 1px solid var(--mat-sys-outline-variant);
+        padding: 10px 12px;
+        text-align: left;
       }
     }
 
