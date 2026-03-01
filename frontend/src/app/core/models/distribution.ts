@@ -9,12 +9,12 @@ export interface Distribution {
 
 export interface DistributionFamily {
   familyId: number;
-  family: Family;
+  family?: Family;
   distributionItems: DistributionItem[];
 }
 
 export interface DistributionItem {
   quantity: number;
   foodId: number;
-  food: Food;
+  food?: Food;
 }
