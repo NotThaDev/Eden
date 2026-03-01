@@ -1,0 +1,22 @@
+<div class="eden-table-container">
+  @if (dataSource.data.length === 0) {
+    <empty-state description="Nessun dato disponibile"></empty-state>
+  } @else {
+    <table mat-table [dataSource]="dataSource" class="eden-table">
+      <ng-container matColumnDef="familyName">
+        <th mat-header-cell *matHeaderCellDef>Famiglia</th>
+        <td mat-cell *matCellDef="let row" class="family-cell">{{ row.familyName }}</td>
+      </ng-container>
+
+      @for (food of foodColumns(); track food.id) {
+        <ng-container [matColumnDef]="food.key">
+          <th mat-header-cell *matHeaderCellDef>{{ food.label }}</th>
+          <td mat-cell *matCellDef="let row">{{ row[food.key] }}</td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+    </table>
+  }
+</div>

@@ -1,0 +1,22 @@
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.distribution-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  .distribution-title-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .distribution-date {
+    margin-right: 12px;
+  }
+}

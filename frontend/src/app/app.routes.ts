@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { BocFamily } from './features/boc/boc-family/boc-family';
 import { Storage } from './features/boc/storage/storage';
+import { Distributions } from './features/boc/distribution/distributions';
 
 interface EdenAppRoute extends Route {
   icon?: string;
@@ -31,6 +32,11 @@ export const routes: EdenAppRoutes = [
         path: 'storage',
         title: 'Magazzino',
         component: Storage,
+      },
+      {
+        path: 'distribution',
+        title: 'Distribuzioni',
+        component: Distributions,
       },
     ],
   },

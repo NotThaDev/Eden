@@ -1,0 +1,39 @@
+<app-page-header title="Distribuzioni">
+  <div class="header-actions">
+    <button matButton="filled" [disabled]="true">
+      <mat-icon>add</mat-icon>
+      Nuova Distribuzione
+    </button>
+  </div>
+
+  @if (dataSource.data.length === 0) {
+    <div [style]="{ width: '100%', height: ' 100%' }">
+      <empty-state description="Non sono presenti distribuzioni"></empty-state>
+    </div>
+  } @else {
+    @for (distribution of dataSource.data; track distribution.id) {
+      <accordion
+        [title]="titleTemplate"
+        [key]="'distribution-details-' + (distribution.id ?? $index)"
+        [style]="getAccordionStyle($index)"
+      >
+        <distribution-table [distribution]="distribution"></distribution-table>
+      </accordion>
+
+      <ng-template #titleTemplate>
+        <div class="distribution-title">
+          <span class="distribution-title-text"> Dettagli Distribuzione </span>
+          <app-label-chip
+            class="distribution-date"
+            [label]="(distribution.distributionDate | date: 'dd/MM/yyyy') ?? ''"
+            [backgroundColor]="
+              getDistributionChipColors(distribution.distributionDate).backgroundColor
+            "
+            [borderColor]="getDistributionChipColors(distribution.distributionDate).borderColor"
+            [textColor]="getDistributionChipColors(distribution.distributionDate).textColor"
+          ></app-label-chip>
+        </div>
+      </ng-template>
+    }
+  }
+</app-page-header>

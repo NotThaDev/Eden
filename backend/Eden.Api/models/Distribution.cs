@@ -21,9 +21,9 @@ namespace Eden.Api.Models
         {
             return EdenAppContext.Context.WithDbContext(db =>
                 db.Distributions
-                    .Include(d => d.Items)
+                    .Include(d => d.Items.Where(i => i.FoodId != null))
                     .ThenInclude(i => i.Family)
-                    .Include(d => d.Items)
+                    .Include(d => d.Items.Where(i => i.FoodId != null))
                     .ThenInclude(i => i.Food)
                     .OrderByDescending(d => d.DistributionDate)
                     .ToListAsync());
@@ -34,9 +34,9 @@ namespace Eden.Api.Models
             return EdenAppContext.Context.WithDbContext(db =>
                 db.Distributions
                     .Where(d => d.Id == id)
-                    .Include(d => d.Items)
+                    .Include(d => d.Items.Where(i => i.FoodId != null))
                     .ThenInclude(i => i.Family)
-                    .Include(d => d.Items)
+                    .Include(d => d.Items.Where(i => i.FoodId != null))
                     .ThenInclude(i => i.Food)
                     .FirstOrDefaultAsync());
         }
