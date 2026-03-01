@@ -7,9 +7,8 @@
   </div>
 
   @if (dataSource.data.length === 0) {
-    <div class="empty-state">
-      <mat-icon>inventory_2</mat-icon>
-      <span>Non sono presenti distribuzioni</span>
+    <div [style]="{ width: '100%', height: ' 100%' }">
+      <empty-state description="Non sono presenti distribuzioni"></empty-state>
     </div>
   } @else {
     @for (distribution of dataSource.data; track distribution.id) {

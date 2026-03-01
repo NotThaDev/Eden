@@ -6,6 +6,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatTableDataSource } from '@angular/material/table';
 import { Distribution } from '../../../core/models/distribution';
 import { Accordion } from '../../../shared/components/accordion/accordion';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
 import { DistributionService } from '../services/distribution.service';
@@ -13,7 +14,16 @@ import { DistributionTable } from './distribution-table/distribution-table';
 
 @Component({
   selector: 'app-distributions',
-  imports: [MatButton, PageHeader, Accordion, LabelChip, DatePipe, MatIcon, DistributionTable],
+  imports: [
+    MatButton,
+    PageHeader,
+    Accordion,
+    LabelChip,
+    DatePipe,
+    MatIcon,
+    DistributionTable,
+    EmptyState,
+  ],
   templateUrl: './distributions.html',
   styleUrl: './distributions.scss',
 })

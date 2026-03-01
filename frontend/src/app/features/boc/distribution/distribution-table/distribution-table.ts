@@ -1,6 +1,7 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Distribution } from '../../../../core/models/distribution';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 
 interface FoodColumn {
   key: string;
@@ -15,7 +16,7 @@ interface DistributionFamilyRow {
 
 @Component({
   selector: 'distribution-table',
-  imports: [MatTableModule],
+  imports: [MatTableModule, EmptyState],
   templateUrl: './distribution-table.html',
   styleUrl: './distribution-table.scss',
 })
