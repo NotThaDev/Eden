@@ -36,9 +36,9 @@ export class DistributionTable {
 
       for (const familyDistribution of currentDistribution.items) {
         for (const distributionItem of familyDistribution.distributionItems) {
-          if (!columnsMap.has(distributionItem.foodId)) {
+          if (distributionItem.food && !columnsMap.has(distributionItem.foodId)) {
             columnsMap.set(distributionItem.foodId, {
-              key: distributionItem.food.name,
+              key: `food-${distributionItem.foodId}`,
               id: distributionItem.foodId,
               label: distributionItem.food.name,
             });
@@ -52,7 +52,7 @@ export class DistributionTable {
 
       const rows = currentDistribution.items.map((familyDistribution) => {
         const row: DistributionFamilyRow = {
-          familyName: familyDistribution.family.name,
+          familyName: familyDistribution.family?.name ?? 'N/A',
         };
 
         for (const foodColumn of dynamicColumns) {
@@ -60,7 +60,10 @@ export class DistributionTable {
         }
 
         for (const distributionItem of familyDistribution.distributionItems) {
-          const columnKey = distributionItem.food.name;
+          if (!distributionItem.food) {
+            continue;
+          }
+          const columnKey = `food-${distributionItem.foodId}`;
           const currentValue = row[columnKey];
           const numericValue = typeof currentValue === 'number' ? currentValue : 0;
           row[columnKey] = numericValue + distributionItem.quantity;
