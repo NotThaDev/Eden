@@ -2,7 +2,7 @@ import { Food } from './food';
 import { Family } from './family';
 
 export interface Distribution {
-  id: number;
+  id?: number;
   distributionDate: Date;
   items: DistributionFamily[];
 }
