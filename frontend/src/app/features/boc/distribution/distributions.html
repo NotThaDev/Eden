@@ -15,7 +15,7 @@
     @for (distribution of dataSource.data; track $index) {
       <accordion
         [title]="titleTemplate"
-        [key]="'distribution-details'"
+        [key]="'distribution-details-' + (distribution.id ?? $index)"
         [style]="getAccordionStyle($index)"
       >
         <distribution-table [distribution]="distribution"></distribution-table>
