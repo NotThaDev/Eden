@@ -35,6 +35,16 @@ export class Distributions implements OnInit {
     this.distributionService.fetchDistributions();
   }
 
+  getAccordionStyle(idx: number): Partial<CSSStyleDeclaration> {
+    return {
+      borderTop: idx === 0 ? '' : 'none',
+      borderTopLeftRadius: idx === 0 ? '4px' : '0',
+      borderTopRightRadius: idx === 0 ? '4px' : '0',
+      borderBottomLeftRadius: idx === this.dataSource.data.length - 1 ? '4px' : '0',
+      borderBottomRightRadius: idx === this.dataSource.data.length - 1 ? '4px' : '0',
+    };
+  }
+
   isDistributionPast(distributionDate: Date | string): boolean {
     const distributionDay = new Date(distributionDate);
     const today = new Date();

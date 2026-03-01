@@ -13,7 +13,11 @@
     </div>
   } @else {
     @for (distribution of dataSource.data; track $index) {
-      <accordion [title]="titleTemplate" [key]="'distribution-details'">
+      <accordion
+        [title]="titleTemplate"
+        [key]="'distribution-details'"
+        [style]="getAccordionStyle($index)"
+      >
         <distribution-table [distribution]="distribution"></distribution-table>
       </accordion>
 
