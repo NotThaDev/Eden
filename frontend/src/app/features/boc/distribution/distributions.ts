@@ -3,14 +3,18 @@ import { Component, computed, effect, inject, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { Distribution } from '../../../core/models/distribution';
 import { Accordion } from '../../../shared/components/accordion/accordion';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
+import { Snackbar } from '../../../shared/components/snackbar/snackbar';
+import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { DistributionService } from '../services/distribution.service';
 import { DistributionTable } from './distribution-table/distribution-table';
+import { NewDistributionDialog } from './new-distribution-dialog/new-distribution-dialog';
 
 @Component({
   selector: 'app-distributions',
@@ -29,6 +33,7 @@ import { DistributionTable } from './distribution-table/distribution-table';
 })
 export class Distributions implements OnInit {
   private distributionService = inject(DistributionService);
+  readonly _snackBar = inject(MatSnackBar);
   readonly dialogRef = inject(MatDialog);
 
   dataSource = new MatTableDataSource<Distribution>([]);
@@ -43,6 +48,34 @@ export class Distributions implements OnInit {
 
   ngOnInit() {
     this.distributionService.fetchDistributions();
+  }
+
+  onNewDisitribution() {
+    const dialogRef = this.dialogRef.open(NewDistributionDialog);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        // save the distribution and show a snackbar
+        this.distributionService.createDistribution(result).subscribe({
+          error: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Impossibile creare la distribuzione.',
+                status: SnackbarStatus.ERROR,
+              },
+            });
+          },
+          complete: () => {
+            this._snackBar.openFromComponent(Snackbar, {
+              data: {
+                title: 'Distribuzione creata con successo!',
+                status: SnackbarStatus.SUCCESS,
+              },
+            });
+          },
+        });
+      }
+    });
   }
 
   getAccordionStyle(idx: number): Partial<CSSStyleDeclaration> {

@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Nuova Distribuzione</h2>
+
+<mat-dialog-content>
+  <mat-stepper [linear]="true" #stepper>
+    <ng-template matStepperIcon="family">
+      <mat-icon>groups</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="food">
+      <mat-icon>restaurant</mat-icon>
+    </ng-template>
+    <ng-template matStepperIcon="summary">
+      <mat-icon>fact_check</mat-icon>
+    </ng-template>
+
+    <mat-step [stepControl]="firstFormGroup" state="family">
+      <ng-template matStepLabel>Famiglie</ng-template>
+      <div class="families-step-container">
+        <p>Famiglia</p>
+        <mat-form-field appearance="outline" class="family-select">
+          <mat-select [multiple]="true" [(value)]="selectedFamilyIds">
+            <mat-select-trigger>
+              <mat-chip-set>
+                @for (id of selectedFamilyIds; track id) {
+                  <mat-chip (removed)="removeFamily(id)">
+                    {{ getFamilyName(id) }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </mat-chip-set>
+            </mat-select-trigger>
+            @for (family of families(); track family.id) {
+              <mat-option [value]="family.id">{{ family.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button matButton matStepperNext>Next</button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup" state="food">
+      <ng-template matStepLabel>Cibo</ng-template>
+      <span>Dettagli della distribuzione (Passaggio 2)</span>
+    </mat-step>
+    <mat-step state="summary">
+      <ng-template matStepLabel>Riepilogo</ng-template>
+      <p>Hai completato tutti i passaggi.</p>
+      <div>
+        <button matButton matStepperPrevious>Indietro</button>
+        <button matButton (click)="stepper.reset()">Reimposta</button>
+      </div>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>

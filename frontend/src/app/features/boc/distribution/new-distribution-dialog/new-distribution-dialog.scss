@@ -1,0 +1,11 @@
+.families-step-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+
+  & p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
