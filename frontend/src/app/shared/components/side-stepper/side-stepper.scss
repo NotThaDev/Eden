@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.side-stepper {
+  display: flex;
+  min-height: 540px;
+}
+
+.side-stepper-rail {
+  display: flex;
+  flex: 0 0 200px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 16px 8px 0;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+}
+
+.side-stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    background-color: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    font-weight: 500;
+  }
+}
+
+.side-stepper-marker {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--mat-sys-surface-container-highest);
+  font-size: 13px;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.side-stepper-step.active .side-stepper-marker,
+.side-stepper-step.completed .side-stepper-marker {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.side-stepper-content {
+  flex: 1;
+  min-width: 0;
+  padding-left: 24px;
+}
+
+// Phones: the rail becomes a row on top so the content keeps the full width
+@media (max-width: 600px) {
+  .side-stepper {
+    flex-direction: column;
+  }
+
+  .side-stepper-rail {
+    flex: none;
+    flex-direction: row;
+    padding: 0 0 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  .side-stepper-step {
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    width: auto;
+    padding: 8px 4px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .side-stepper-content {
+    padding-top: 16px;
+    padding-left: 0;
+  }
+}
