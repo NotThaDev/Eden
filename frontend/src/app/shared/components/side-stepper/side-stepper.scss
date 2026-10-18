@@ -78,10 +78,12 @@
 }
 
 // Connector between two markers: 8px button padding + 16px half marker - 1px half line
+// Lines grow so the steps spread over the whole rail height
 .side-stepper-line {
   display: block;
+  flex: 1;
   width: 2px;
-  height: 24px;
+  min-height: 24px;
   margin-left: 23px;
   background-color: var(--mat-sys-outline-variant);
 
@@ -146,6 +148,7 @@
     flex: 1;
     width: auto;
     height: 2px;
+    min-height: 0;
     margin: 0 4px;
   }
 
