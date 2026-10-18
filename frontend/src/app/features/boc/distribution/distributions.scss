@@ -2,21 +2,45 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 16px;
+
+  @media (max-width: 600px) {
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.empty-wrapper {
+  width: 100%;
+  height: 100%;
 }
 
 .distribution-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   width: 100%;
 
   .distribution-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .distribution-date-text {
     font-size: 16px;
     font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .distribution-families {
+    font-size: 13px;
     color: var(--mat-sys-on-surface-variant);
   }
 
-  .distribution-date {
+  .distribution-status {
     margin-right: 12px;
+    flex-shrink: 0;
   }
 }

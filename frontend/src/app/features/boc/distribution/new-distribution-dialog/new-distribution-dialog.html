@@ -1,7 +1,12 @@
 <h2 mat-dialog-title>Nuova Distribuzione</h2>
 
 <mat-dialog-content>
-  <mat-stepper [linear]="true" (selectionChange)="onStepChange($event)">
+  <mat-stepper
+    #stepper
+    [linear]="true"
+    labelPosition="bottom"
+    (selectionChange)="onStepChange($event)"
+  >
     <ng-template matStepperIcon="family">
       <mat-icon>groups</mat-icon>
     </ng-template>
@@ -23,7 +28,12 @@
                 @for (id of familiesForm.controls.familyIds.value; track id) {
                   <mat-chip (removed)="removeFamily(id)">
                     {{ getFamilyName(id) }}
-                    <mat-icon matChipRemove (click)="$event.stopPropagation()">cancel</mat-icon>
+                    <mat-icon
+                      matChipRemove
+                      (click)="$event.stopPropagation()"
+                      [attr.aria-label]="'Rimuovi ' + getFamilyName(id)"
+                      >cancel</mat-icon
+                    >
                   </mat-chip>
                 }
               </mat-chip-set>
@@ -34,9 +44,6 @@
           </mat-select>
         </mat-form-field>
       </form>
-      <div class="step-buttons">
-        <button matButton="filled" matStepperNext [disabled]="familiesForm.invalid">Avanti</button>
-      </div>
     </mat-step>
 
     <mat-step [stepControl]="foodsForm" state="food">
@@ -50,7 +57,12 @@
                 @for (id of foodsForm.controls.foodIds.value; track id) {
                   <mat-chip (removed)="removeFood(id)">
                     {{ getFoodName(id) }}
-                    <mat-icon matChipRemove (click)="$event.stopPropagation()">cancel</mat-icon>
+                    <mat-icon
+                      matChipRemove
+                      (click)="$event.stopPropagation()"
+                      [attr.aria-label]="'Rimuovi ' + getFoodName(id)"
+                      >cancel</mat-icon
+                    >
                   </mat-chip>
                 }
               </mat-chip-set>
@@ -61,10 +73,6 @@
           </mat-select>
         </mat-form-field>
       </form>
-      <div class="step-buttons">
-        <button matButton matStepperPrevious>Indietro</button>
-        <button matButton="filled" matStepperNext [disabled]="foodsForm.invalid">Avanti</button>
-      </div>
     </mat-step>
 
     <mat-step state="summary">
@@ -84,14 +92,20 @@
           }
         }
       </div>
-      <div class="step-buttons">
-        <button matButton matStepperPrevious>Indietro</button>
-      </div>
     </mat-step>
   </mat-stepper>
 </mat-dialog-content>
 
 <mat-dialog-actions>
   <button matButton="text" (click)="dialogRef.close()">Annulla</button>
-  <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+  @if (currentStep() > 0) {
+    <button matButton (click)="stepper.previous()">Indietro</button>
+  }
+  @if (currentStep() < SUMMARY_STEP_INDEX) {
+    <button matButton="filled" (click)="stepper.next()" [disabled]="currentStepInvalid()">
+      Avanti
+    </button>
+  } @else {
+    <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+  }
 </mat-dialog-actions>

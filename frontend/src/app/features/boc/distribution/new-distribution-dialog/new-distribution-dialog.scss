@@ -14,16 +14,18 @@
   width: 100%;
 }
 
-.step-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
 .preview-table {
   overflow-x: auto;
 }
 
 .preview-error {
   color: var(--mat-sys-error);
+}
+
+// Default 24px header padding truncates the step labels on phones; no stepper token covers it
+@media (max-width: 600px) {
+  :host ::ng-deep .mat-stepper-label-position-bottom .mat-horizontal-stepper-header {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }

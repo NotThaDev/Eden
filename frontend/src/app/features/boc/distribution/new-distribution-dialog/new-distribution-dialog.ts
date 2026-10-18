@@ -61,6 +61,9 @@ export class NewDistributionDialog implements OnInit {
   // Only foods in stock can be distributed
   foods = computed(() => this._foodService.foods().filter((f) => f.quantity > 0));
 
+  readonly SUMMARY_STEP_INDEX = SUMMARY_STEP_INDEX;
+  currentStep = signal(0);
+
   familiesForm = this._formBuilder.group({
     familyIds: this._formBuilder.nonNullable.control<number[]>([], Validators.required),
   });
@@ -79,6 +82,7 @@ export class NewDistributionDialog implements OnInit {
   }
 
   onStepChange(event: StepperSelectionEvent): void {
+    this.currentStep.set(event.selectedIndex);
     if (event.selectedIndex === SUMMARY_STEP_INDEX) {
       this.loadPreview();
     }
@@ -126,6 +130,10 @@ export class NewDistributionDialog implements OnInit {
 
   getFoodName(id: number): string {
     return this.foods().find((f) => f.id === id)?.name ?? '';
+  }
+
+  currentStepInvalid(): boolean {
+    return this.currentStep() === 0 ? this.familiesForm.invalid : this.foodsForm.invalid;
   }
 
   canCreate(): boolean {

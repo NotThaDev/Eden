@@ -152,6 +152,15 @@ body {
       min-width: 450px;
       width: 100%;
 
+      // Sticky columns need an opaque background so scrolled cells do not show through
+      .mat-mdc-header-cell.mat-mdc-table-sticky {
+        background-color: var(--mat-sys-surface-container-high);
+      }
+
+      .mat-mdc-cell.mat-mdc-table-sticky {
+        background-color: var(--mat-sys-surface);
+      }
+
       .mat-mdc-header-row {
         background-color: var(--mat-sys-surface-container-high); // Light gray background
         font-weight: 500;

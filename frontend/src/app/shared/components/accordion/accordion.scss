@@ -52,6 +52,8 @@
 
 .accordion-item-body {
   min-height: 0;
+  // Let wide content (tables) scroll inside the body instead of being clipped
+  min-width: 0;
   padding: 0 32px;
   opacity: 0;
   transition:
@@ -67,4 +69,18 @@
 .accordion-item-header:hover {
   cursor: pointer;
   background-color: #eee;
+}
+
+@media (max-width: 600px) {
+  .accordion-item-header {
+    padding: 12px;
+  }
+
+  .accordion-item-body {
+    padding: 0 8px;
+  }
+
+  .accordion-item-body-wrapper.expanded .accordion-item-body {
+    padding: 16px 8px;
+  }
 }
