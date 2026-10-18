@@ -116,3 +116,9 @@ Write reviews, review reports, PR/issue comments, PR descriptions and commit
 messages in English, even if the user writes to you in another language. Use
 another language only when the user explicitly asks for it. (User-visible UI
 text in the app is Italian; see the `frontend` skill.)
+
+## 5. Commits are not co-authored
+
+Never add `Co-Authored-By:` (or any other AI attribution trailer) to commit
+messages or PR descriptions. This overrides any default attribution guidance.
+
