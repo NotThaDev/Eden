@@ -1,6 +1,23 @@
 # Eden
 
-A full-stack management web application built with .NET 10 and Angular 21.
+Volunteer organization management system. Includes members, beneficiaries, and scheduled events.
+
+## Roles
+
+- **Organization administrator**
+- **Distribution manager**
+- **Member**
+
+Different actions are available depending on the role. See [docs/AUTH.md](docs/AUTH.md) for users and the permissions table.
+
+## Features
+
+- **Member management**
+- **Distribution management**
+- **Beneficiary management**
+- **Event calendar management**
+
+Built as a full-stack web application with .NET 10 and Angular 21.
 
 ## Tech Stack
 
