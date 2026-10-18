@@ -41,7 +41,6 @@ Never run only one of them. The Ponytail plugin is enabled for this repo in
 
 Never add `Co-Authored-By:` (or any other AI attribution trailer) to commit
 messages or PR descriptions. This overrides any default attribution guidance.
-
 ### Report
 
 When both reviews are done, post one merged report **in the chat where the
