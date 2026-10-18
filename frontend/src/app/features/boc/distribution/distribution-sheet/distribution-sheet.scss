@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Paper-like preview: a quarter of an A4 page (105 x 148.5 mm); the ratio is a minimum, content can grow
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 105 / 148.5;
+  margin: 0 auto;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+  color: #1f1f1f;
+  font-size: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.sheet-family {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 4px 6px;
+    border: 1px solid #c7c7c7;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+  }
+}
+
+.sheet-quantity {
+  text-align: center !important;
+}
+
+.sheet-label {
+  font-weight: 600;
+}
+
+.sheet-notes-box {
+  height: 48px;
+  margin-top: 4px;
+  border: 1px solid #c7c7c7;
+}
+
+.sheet-signatures {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.sheet-signature {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sheet-signature-line {
+  border-bottom: 1px solid #1f1f1f;
+  height: 20px;
+}
+
+.sheet-caption {
+  font-size: 10px;
+  font-style: italic;
+}

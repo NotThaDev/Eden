@@ -4,6 +4,7 @@ import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Distribution } from '../../../core/models/distribution';
 import { Accordion } from '../../../shared/components/accordion/accordion';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
@@ -13,6 +14,7 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { DistributionService } from '../services/distribution.service';
 import { DistributionTable } from './distribution-table/distribution-table';
 import { NewDistributionDialog } from './new-distribution-dialog/new-distribution-dialog';
+import { saveFile, sheetsFileName } from './utils';
 
 @Component({
   selector: 'app-distributions',
@@ -51,6 +53,7 @@ export class Distributions implements OnInit {
       if (result !== undefined) {
         // save the distribution and show a snackbar
         this.distributionService.createDistribution(result).subscribe({
+          next: (created) => this.downloadSheets(created),
           error: () => {
             this._snackBar.openFromComponent(Snackbar, {
               data: {
@@ -69,6 +72,28 @@ export class Distributions implements OnInit {
           },
         });
       }
+    });
+  }
+
+  onExportSheets(distribution: Distribution) {
+    this.downloadSheets(distribution);
+  }
+
+  private downloadSheets(distribution: Distribution) {
+    if (!distribution.id) {
+      return;
+    }
+
+    this.distributionService.downloadSheets(distribution.id).subscribe({
+      next: (blob) => saveFile(blob, sheetsFileName(distribution.distributionDate)),
+      error: () => {
+        this._snackBar.openFromComponent(Snackbar, {
+          data: {
+            title: 'Impossibile generare le schede.',
+            status: SnackbarStatus.ERROR,
+          },
+        });
+      },
     });
   }
 

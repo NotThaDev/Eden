@@ -69,3 +69,23 @@
   color: var(--mat-sys-error);
   font-weight: 500;
 }
+
+.sheet-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-carousel-count {
+  min-width: 96px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}

@@ -17,6 +17,12 @@
         [key]="'distribution-details-' + (distribution.id ?? $index)"
         [style]="getAccordionStyle($index)"
       >
+        <div class="distribution-actions">
+          <button matButton="outlined" (click)="onExportSheets(distribution)">
+            <mat-icon>download</mat-icon>
+            Esporta schede
+          </button>
+        </div>
         <distribution-table [distribution]="distribution"></distribution-table>
       </accordion>
 

@@ -18,9 +18,12 @@ import { SideStepper } from '../../../../shared/components/side-stepper/side-ste
 import { DistributionService } from '../../services/distribution.service';
 import { FamilyService } from '../../services/family.service';
 import { FoodService } from '../../services/food.service';
+import { DistributionSheet } from '../distribution-sheet/distribution-sheet';
+import { sheetFamilies } from '../utils';
 import { DistributionTable } from '../distribution-table/distribution-table';
 
 const SUMMARY_STEP_INDEX = 2;
+const LAST_STEP_INDEX = 3;
 
 @Component({
   selector: 'app-new-distribution-dialog',
@@ -43,6 +46,7 @@ const SUMMARY_STEP_INDEX = 2;
     MatChip,
     MatChipRemove,
     DistributionTable,
+    DistributionSheet,
   ],
   templateUrl: './new-distribution-dialog.html',
   styleUrl: './new-distribution-dialog.scss',
@@ -60,7 +64,13 @@ export class NewDistributionDialog implements OnInit {
 
   readonly today = DateTime.now().startOf('day');
   readonly SUMMARY_STEP_INDEX = SUMMARY_STEP_INDEX;
+  readonly LAST_STEP_INDEX = LAST_STEP_INDEX;
   currentStep = signal(0);
+  sheetIndex = signal(0);
+  sheetFamilies = computed(() => {
+    const preview = this.preview();
+    return preview ? sheetFamilies(preview) : [];
+  });
 
   familiesForm = this._formBuilder.group({
     distributionDate: this._formBuilder.control<DateTime | null>(this.today, Validators.required),
@@ -115,6 +125,7 @@ export class NewDistributionDialog implements OnInit {
     // Cancel an in-flight preview so an older response cannot overwrite a newer selection
     this._previewSubscription?.unsubscribe();
     this.preview.set(null);
+    this.sheetIndex.set(0);
     this.previewError.set(false);
     this.previewLoading.set(true);
 
@@ -172,7 +183,21 @@ export class NewDistributionDialog implements OnInit {
   }
 
   currentStepInvalid(): boolean {
-    return this.currentStep() === 0 ? this.familiesInvalid() : this.foodsInvalid();
+    switch (this.currentStep()) {
+      case 0:
+        return this.familiesInvalid();
+      case 1:
+        return this.foodsInvalid();
+      case 2:
+        return !this.canCreate();
+      default:
+        return false;
+    }
+  }
+
+  moveSheet(offset: number): void {
+    const count = this.sheetFamilies().length;
+    this.sheetIndex.update((index) => Math.min(Math.max(index + offset, 0), count - 1));
   }
 
   canCreate(): boolean {
