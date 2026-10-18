@@ -9,9 +9,8 @@
 
 .side-stepper-rail {
   display: flex;
-  flex: 0 0 200px;
+  flex: 0 0 180px;
   flex-direction: column;
-  gap: 4px;
   padding: 8px 16px 8px 0;
   border-right: 1px solid var(--mat-sys-outline-variant);
 }
@@ -21,8 +20,7 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  min-height: 48px;
-  padding: 8px 12px;
+  padding: 8px;
   border: none;
   border-radius: 8px;
   background: none;
@@ -41,8 +39,7 @@
   }
 
   &.active {
-    background-color: var(--mat-sys-secondary-container);
-    color: var(--mat-sys-on-secondary-container);
+    color: var(--mat-sys-on-surface);
     font-weight: 500;
   }
 }
@@ -52,11 +49,11 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background-color: var(--mat-sys-surface-container-highest);
-  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
 
   mat-icon {
     width: 18px;
@@ -71,13 +68,31 @@
   color: var(--mat-sys-on-primary);
 }
 
+.side-stepper-label {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+// Connector between two markers: 8px button padding + 16px half marker - 1px half line
+.side-stepper-line {
+  display: block;
+  width: 2px;
+  height: 24px;
+  margin-left: 23px;
+  background-color: var(--mat-sys-outline-variant);
+
+  &.completed {
+    background-color: var(--mat-sys-primary);
+  }
+}
+
 .side-stepper-content {
   flex: 1;
   min-width: 0;
   padding-left: 24px;
 }
 
-// Phones: the rail becomes a row on top so the content keeps the full width
+// Phones: horizontal row of markers and lines on top, labels hidden (buttons keep aria-label)
 @media (max-width: 600px) {
   .side-stepper {
     flex-direction: column;
@@ -86,19 +101,30 @@
   .side-stepper-rail {
     flex: none;
     flex-direction: row;
-    padding: 0 0 8px;
+    align-items: center;
+    padding: 0 0 12px;
     border-right: none;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
 
   .side-stepper-step {
-    flex: 1;
-    flex-direction: column;
-    gap: 4px;
+    flex: none;
+    justify-content: center;
     width: auto;
-    padding: 8px 4px;
-    font-size: 12px;
-    text-align: center;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+  }
+
+  .side-stepper-label {
+    display: none;
+  }
+
+  .side-stepper-line {
+    flex: 1;
+    width: auto;
+    height: 2px;
+    margin: 0 4px;
   }
 
   .side-stepper-content {

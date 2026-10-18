@@ -1,7 +1,11 @@
 <h2 mat-dialog-title>Nuova Distribuzione</h2>
 
 <mat-dialog-content>
-  <side-stepper [linear]="true" (selectionChange)="onStepChange($event)">
+  <side-stepper
+    [linear]="true"
+    [icons]="['groups', 'restaurant', 'fact_check']"
+    (selectionChange)="onStepChange($event)"
+  >
     <cdk-step [stepControl]="familiesForm" label="Data e famiglie">
       <form [formGroup]="familiesForm" class="step-container">
         <p>Scegli la data della distribuzione e le famiglie coinvolte</p>
@@ -18,7 +22,7 @@
           <mat-datepicker #datePicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="step-field">
+        <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
           <mat-label>Famiglie</mat-label>
           <mat-select multiple formControlName="familyIds">
             <mat-select-trigger>
@@ -65,7 +69,7 @@
       <form [formGroup]="foodsForm" class="step-container">
         <p>Seleziona gli alimenti da distribuire</p>
 
-        <mat-form-field appearance="outline" class="step-field">
+        <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
           <mat-label>Alimenti</mat-label>
           <mat-select multiple formControlName="foodIds">
             <mat-select-trigger>
