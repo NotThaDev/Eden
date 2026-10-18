@@ -25,7 +25,11 @@
     }
   </nav>
 
-  <section class="side-stepper-content">
-    <ng-container [ngTemplateOutlet]="selected?.content ?? null"></ng-container>
-  </section>
+  <div class="side-stepper-main">
+    <div class="side-stepper-header"><ng-content select="[sideStepperHeader]" /></div>
+    <section class="side-stepper-content">
+      <ng-container [ngTemplateOutlet]="selected?.content ?? null"></ng-container>
+    </section>
+    <div class="side-stepper-footer"><ng-content select="[sideStepperFooter]" /></div>
+  </div>
 </div>

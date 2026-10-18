@@ -2,17 +2,21 @@
   display: block;
 }
 
+// Fills the dialog: rail full height on the left, title / content / actions on the right
 .side-stepper {
   display: flex;
-  min-height: 540px;
+  min-height: min(540px, 90vh);
+  max-height: 90vh;
 }
 
 .side-stepper-rail {
   display: flex;
   flex: 0 0 180px;
   flex-direction: column;
-  padding: 8px 16px 8px 0;
+  padding: 24px 16px;
+  overflow-y: auto;
   border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
 }
 
 .side-stepper-step {
@@ -86,10 +90,28 @@
   }
 }
 
+.side-stepper-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.side-stepper-header,
+.side-stepper-footer {
+  flex: none;
+}
+
+.side-stepper-footer {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
 .side-stepper-content {
   flex: 1;
-  min-width: 0;
-  padding-left: 24px;
+  min-height: 0;
+  padding: 0 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 // Phones: horizontal row of markers and lines on top, labels hidden (buttons keep aria-label)
@@ -102,7 +124,7 @@
     flex: none;
     flex-direction: row;
     align-items: center;
-    padding: 0 0 12px;
+    padding: 12px 16px;
     border-right: none;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
   }
@@ -127,8 +149,16 @@
     margin: 0 4px;
   }
 
+  // Title above the dots: flatten the right column into the stepper's column
+  .side-stepper-main {
+    display: contents;
+  }
+
+  .side-stepper-header {
+    order: -1;
+  }
+
   .side-stepper-content {
-    padding-top: 16px;
-    padding-left: 0;
+    padding: 16px 24px 0;
   }
 }

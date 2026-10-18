@@ -11,12 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip, MatChipRemove, MatChipSet } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import {
-  MatDialogActions,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
+import { MatDialogActions, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -46,7 +41,6 @@ const SUMMARY_STEP_INDEX = 2;
     MatDatepickerModule,
     MatCheckbox,
     MatIconModule,
-    MatDialogContent,
     MatDialogTitle,
     MatDialogActions,
     MatOption,
