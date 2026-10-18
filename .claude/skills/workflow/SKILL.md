@@ -37,6 +37,11 @@ reviews on the same target (pending changes, a commit, or the PR diff):
 Never run only one of them. The Ponytail plugin is enabled for this repo in
 `.claude/settings.json`.
 
+## 3. Commits are not co-authored
+
+Never add `Co-Authored-By:` (or any other AI attribution trailer) to commit
+messages or PR descriptions. This overrides any default attribution guidance.
+
 ### Report
 
 When both reviews are done, post one merged report **in the chat where the
