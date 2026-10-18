@@ -22,9 +22,11 @@ interface DistributionFamilyRow {
 })
 export class DistributionTable {
   distribution = input.required<Distribution>();
+  showTotals = input(false);
 
   readonly dataSource = new MatTableDataSource<DistributionFamilyRow>([]);
   readonly foodColumns = signal<FoodColumn[]>([]);
+  readonly totals = signal<Record<string, number>>({});
   readonly displayedColumns = computed<string[]>(() => [
     'familyName',
     ...this.foodColumns().map((column) => column.key),
@@ -72,6 +74,15 @@ export class DistributionTable {
 
         return row;
       });
+
+      const totals: Record<string, number> = {};
+      for (const foodColumn of dynamicColumns) {
+        totals[foodColumn.key] = rows.reduce((sum, row) => {
+          const value = row[foodColumn.key];
+          return sum + (typeof value === 'number' ? value : 0);
+        }, 0);
+      }
+      this.totals.set(totals);
 
       this.foodColumns.set(dynamicColumns);
       this.dataSource.data = rows;

@@ -157,7 +157,8 @@ body {
         background-color: var(--mat-sys-surface-container-high);
       }
 
-      .mat-mdc-cell.mat-mdc-table-sticky {
+      .mat-mdc-cell.mat-mdc-table-sticky,
+      .mat-mdc-footer-cell.mat-mdc-table-sticky {
         background-color: var(--mat-sys-surface);
       }
 

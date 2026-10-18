@@ -1,0 +1,27 @@
+<div class="side-stepper">
+  <nav class="side-stepper-rail" aria-label="Passaggi">
+    @for (step of steps; track step; let i = $index) {
+      <button
+        type="button"
+        class="side-stepper-step"
+        [class.active]="selectedIndex === i"
+        [class.completed]="step.completed && selectedIndex !== i"
+        [attr.aria-current]="selectedIndex === i ? 'step' : null"
+        (click)="selectedIndex = i"
+      >
+        <span class="side-stepper-marker">
+          @if (step.completed && selectedIndex !== i) {
+            <mat-icon>check</mat-icon>
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+        <span class="side-stepper-label">{{ step.label }}</span>
+      </button>
+    }
+  </nav>
+
+  <section class="side-stepper-content">
+    <ng-container [ngTemplateOutlet]="selected?.content ?? null"></ng-container>
+  </section>
+</div>
