@@ -14,6 +14,8 @@ import { MatIcon } from '@angular/material/icon';
 export class SideStepper extends CdkStepper {
   // Material icon name per step, by index
   icons = input<string[]>([]);
+  // Short text under each step label, by index
+  descriptions = input<string[]>([]);
 
   protected iconFor(step: CdkStep, index: number): string {
     if (step.completed && this.selectedIndex !== index) {

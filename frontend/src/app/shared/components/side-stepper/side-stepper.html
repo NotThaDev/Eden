@@ -7,13 +7,18 @@
         [class.active]="selectedIndex === i"
         [class.completed]="step.completed && selectedIndex !== i"
         [attr.aria-current]="selectedIndex === i ? 'step' : null"
-        [attr.aria-label]="step.label"
+        [attr.aria-label]="descriptions()[i] ? step.label + ', ' + descriptions()[i] : step.label"
         (click)="selectedIndex = i"
       >
         <span class="side-stepper-marker">
           <mat-icon>{{ iconFor(step, i) }}</mat-icon>
         </span>
-        <span class="side-stepper-label">{{ step.label }}</span>
+        <span class="side-stepper-text">
+          <span class="side-stepper-label">{{ step.label }}</span>
+          @if (descriptions()[i]; as description) {
+            <span class="side-stepper-description">{{ description }}</span>
+          }
+        </span>
       </button>
       @if (!last) {
         <span
