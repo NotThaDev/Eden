@@ -7,6 +7,12 @@
     font-size: 14px;
     font-weight: 500;
   }
+
+  // Sit right under the select: offset the checkbox's 11px touch-area padding
+  mat-checkbox {
+    margin-top: -8px;
+    margin-left: -11px;
+  }
 }
 
 .step-field {

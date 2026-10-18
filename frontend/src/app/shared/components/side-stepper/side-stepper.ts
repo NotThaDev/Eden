@@ -1,6 +1,6 @@
-import { CdkStepper } from '@angular/cdk/stepper';
+import { CdkStep, CdkStepper } from '@angular/cdk/stepper';
 import { NgTemplateOutlet } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 
 // Vertical step rail on the left, selected step content on the right
@@ -11,4 +11,14 @@ import { MatIcon } from '@angular/material/icon';
   templateUrl: './side-stepper.html',
   styleUrl: './side-stepper.scss',
 })
-export class SideStepper extends CdkStepper {}
+export class SideStepper extends CdkStepper {
+  // Material icon name per step, by index
+  icons = input<string[]>([]);
+
+  protected iconFor(step: CdkStep, index: number): string {
+    if (step.completed && this.selectedIndex !== index) {
+      return 'check';
+    }
+    return this.icons()[index] || 'circle';
+  }
+}
