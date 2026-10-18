@@ -1,6 +1,42 @@
+<div align="center">
+
+<img src="docs/assets/logo.svg" alt="Eden logo" width="96" height="96" />
+
 # Eden
 
-A full-stack management web application built with .NET 10 and Angular 21.
+**Volunteer organization management system.**
+Members, beneficiaries, distributions, and scheduled events in one place.
+
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
+[![Angular Material](https://img.shields.io/badge/Angular_Material-21-3F51B5?logo=angular&logoColor=white)](https://material.angular.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Bun](https://img.shields.io/badge/Bun-1.1+-000000?logo=bun&logoColor=white)](https://bun.sh/)
+
+[Features](#-features) · [Roles](#-roles) · [Getting Started](#getting-started) · [Project Structure](#project-structure)
+
+</div>
+
+---
+
+## ✨ Features
+
+| | Feature | Description |
+|---|---------|-------------|
+| 👥 | **Member management** | Manage the organization's volunteers |
+| 📦 | **Distribution management** | Plan and track distributions to beneficiaries |
+| 🏠 | **Beneficiary management** | Keep beneficiary families and their needs up to date |
+| 📅 | **Event calendar management** | Schedule and organize events |
+
+## 🔐 Roles
+
+- 🛡️ **Organization administrator**
+- 🚚 **Distribution manager**
+- 🙋 **Member**
+
+Different actions are available depending on the role. See [docs/AUTH.md](docs/AUTH.md) for users and the permissions table.
 
 ## Tech Stack
 
