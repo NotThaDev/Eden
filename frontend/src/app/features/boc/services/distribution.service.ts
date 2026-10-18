@@ -1,9 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Family } from '../../../core/models/family';
 import { HttpHandler } from '../../../core/http/httpHandler';
 import { finalize, tap } from 'rxjs';
 import { Distribution } from '../../../core/models/distribution';
-import { Food } from '../../../core/models/food';
 
 @Injectable({
   providedIn: 'root',
@@ -14,10 +12,6 @@ export class DistributionService {
   // Signals for state management
   private distributionsSignal = signal<Distribution[]>([]);
   private loadingSignal = signal<boolean>(false);
-  private distributionPreviewSignal = signal<Distribution | null>(null);
-
-  // Expose as readonly signals
-  public distributionPreview = this.distributionPreviewSignal.asReadonly();
 
   // Expose as readonly signals
   public distributions = this.distributionsSignal.asReadonly();
@@ -36,7 +30,7 @@ export class DistributionService {
 
     return this.httpHandler.post<Distribution>('api/distribution', distribution).pipe(
       tap((newDistribution) => {
-        this.distributionsSignal.update((distributions) => [...distributions, newDistribution]);
+        this.distributionsSignal.update((distributions) => [newDistribution, ...distributions]);
       }),
       finalize(() => this.loadingSignal.set(false)),
     );
@@ -76,17 +70,7 @@ export class DistributionService {
     );
   }
 
-  previewDistribution(families: Family[], foods: Food[]) {
-    this.loadingSignal.set(true);
-
-    const familyIds = families.map((family) => family.id);
-    const foodIds = foods.map((food) => food.id);
-    const body = { familyIds, foodIds };
-    return this.httpHandler.post<Distribution>('api/distribution/preview', body).pipe(
-      tap((newDistribution) => {
-        this.distributionPreviewSignal.set(newDistribution);
-      }),
-      finalize(() => this.loadingSignal.set(false)),
-    );
+  previewDistribution(familyIds: number[], foodIds: number[]) {
+    return this.httpHandler.post<Distribution>('api/distribution/preview', { familyIds, foodIds });
   }
 }

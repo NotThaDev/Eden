@@ -1,4 +1,4 @@
-.families-step-container {
+.step-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -8,4 +8,22 @@
     font-size: 14px;
     font-weight: 500;
   }
+}
+
+.step-select {
+  width: 100%;
+}
+
+.step-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.preview-table {
+  overflow-x: auto;
+}
+
+.preview-error {
+  color: var(--mat-sys-error);
 }

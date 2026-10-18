@@ -1,11 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableDataSource } from '@angular/material/table';
-import { Distribution } from '../../../core/models/distribution';
 import { Accordion } from '../../../shared/components/accordion/accordion';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
@@ -36,22 +34,18 @@ export class Distributions implements OnInit {
   readonly _snackBar = inject(MatSnackBar);
   readonly dialogRef = inject(MatDialog);
 
-  dataSource = new MatTableDataSource<Distribution>([]);
+  distributions = this.distributionService.distributions;
   loading = computed(() => this.distributionService.loading());
-
-  constructor() {
-    effect(() => {
-      const data = this.distributionService.distributions();
-      this.dataSource.data = data;
-    });
-  }
 
   ngOnInit() {
     this.distributionService.fetchDistributions();
   }
 
-  onNewDisitribution() {
-    const dialogRef = this.dialogRef.open(NewDistributionDialog);
+  onNewDistribution() {
+    const dialogRef = this.dialogRef.open(NewDistributionDialog, {
+      width: '800px',
+      maxWidth: '95vw',
+    });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
@@ -83,8 +77,8 @@ export class Distributions implements OnInit {
       borderTop: idx === 0 ? '' : 'none',
       borderTopLeftRadius: idx === 0 ? '4px' : '0',
       borderTopRightRadius: idx === 0 ? '4px' : '0',
-      borderBottomLeftRadius: idx === this.dataSource.data.length - 1 ? '4px' : '0',
-      borderBottomRightRadius: idx === this.dataSource.data.length - 1 ? '4px' : '0',
+      borderBottomLeftRadius: idx === this.distributions().length - 1 ? '4px' : '0',
+      borderBottomRightRadius: idx === this.distributions().length - 1 ? '4px' : '0',
     };
   }
 
