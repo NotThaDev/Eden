@@ -7,9 +7,9 @@
   <h2 mat-dialog-title sideStepperHeader>Nuova Distribuzione</h2>
   <cdk-step [stepControl]="familiesForm" label="Data e famiglie">
     <form [formGroup]="familiesForm" class="step-container">
-      <p>Scegli la data della distribuzione e le famiglie coinvolte</p>
+      <p class="step-intro">Scegli la data della distribuzione e le famiglie coinvolte</p>
 
-      <mat-form-field appearance="outline" class="step-field">
+      <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
         <mat-label>Data distribuzione</mat-label>
         <input
           matInput
@@ -21,39 +21,43 @@
         <mat-datepicker #datePicker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
-        <mat-label>Famiglie</mat-label>
-        <mat-select multiple formControlName="familyIds">
-          <mat-select-trigger>
-            {{ selectedLabel(familyIds().length, 'famiglia selezionata', 'famiglie selezionate') }}
-          </mat-select-trigger>
-          @for (family of families(); track family.id) {
-            <mat-option [value]="family.id">{{ family.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <div class="field-group">
+        <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
+          <mat-label>Famiglie</mat-label>
+          <mat-select multiple formControlName="familyIds">
+            <mat-select-trigger>
+              {{
+                selectedLabel(familyIds().length, 'famiglia selezionata', 'famiglie selezionate')
+              }}
+            </mat-select-trigger>
+            @for (family of families(); track family.id) {
+              <mat-option [value]="family.id">{{ family.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-      <mat-checkbox
-        [checked]="allFamiliesSelected()"
-        [indeterminate]="someFamiliesSelected()"
-        [disabled]="families().length === 0"
-        (change)="toggleAllFamilies($event.checked)"
-      >
-        Seleziona tutte
-      </mat-checkbox>
+        <mat-checkbox
+          [checked]="allFamiliesSelected()"
+          [indeterminate]="someFamiliesSelected()"
+          [disabled]="families().length === 0"
+          (change)="toggleAllFamilies($event.checked)"
+        >
+          Seleziona tutte
+        </mat-checkbox>
 
-      @if (familyIds().length > 0) {
-        <mat-chip-set class="selected-chips" aria-label="Famiglie selezionate">
-          @for (id of familyIds(); track id) {
-            <mat-chip (removed)="removeFamily(id)">
-              {{ getFamilyName(id) }}
-              <button matChipRemove [attr.aria-label]="'Rimuovi ' + getFamilyName(id)">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-          }
-        </mat-chip-set>
-      }
+        @if (familyIds().length > 0) {
+          <mat-chip-set class="selected-chips" aria-label="Famiglie selezionate">
+            @for (id of familyIds(); track id) {
+              <mat-chip (removed)="removeFamily(id)">
+                {{ getFamilyName(id) }}
+                <button matChipRemove [attr.aria-label]="'Rimuovi ' + getFamilyName(id)">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </mat-chip-set>
+        }
+      </div>
     </form>
     <div class="step-buttons">
       <button type="button" matButton="filled" cdkStepperNext [disabled]="familiesInvalid()">
@@ -64,41 +68,43 @@
 
   <cdk-step [stepControl]="foodsForm" label="Alimenti">
     <form [formGroup]="foodsForm" class="step-container">
-      <p>Seleziona gli alimenti da distribuire</p>
+      <p class="step-intro">Seleziona gli alimenti da distribuire</p>
 
-      <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
-        <mat-label>Alimenti</mat-label>
-        <mat-select multiple formControlName="foodIds">
-          <mat-select-trigger>
-            {{ selectedLabel(foodIds().length, 'alimento selezionato', 'alimenti selezionati') }}
-          </mat-select-trigger>
-          @for (food of foods(); track food.id) {
-            <mat-option [value]="food.id">{{ food.name }} ({{ food.quantity }})</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <div class="field-group">
+        <mat-form-field appearance="outline" class="step-field" subscriptSizing="dynamic">
+          <mat-label>Alimenti</mat-label>
+          <mat-select multiple formControlName="foodIds">
+            <mat-select-trigger>
+              {{ selectedLabel(foodIds().length, 'alimento selezionato', 'alimenti selezionati') }}
+            </mat-select-trigger>
+            @for (food of foods(); track food.id) {
+              <mat-option [value]="food.id">{{ food.name }} ({{ food.quantity }})</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-      <mat-checkbox
-        [checked]="allFoodsSelected()"
-        [indeterminate]="someFoodsSelected()"
-        [disabled]="foods().length === 0"
-        (change)="toggleAllFoods($event.checked)"
-      >
-        Seleziona tutti
-      </mat-checkbox>
+        <mat-checkbox
+          [checked]="allFoodsSelected()"
+          [indeterminate]="someFoodsSelected()"
+          [disabled]="foods().length === 0"
+          (change)="toggleAllFoods($event.checked)"
+        >
+          Seleziona tutti
+        </mat-checkbox>
 
-      @if (foodIds().length > 0) {
-        <mat-chip-set class="selected-chips" aria-label="Alimenti selezionati">
-          @for (id of foodIds(); track id) {
-            <mat-chip (removed)="removeFood(id)">
-              {{ getFoodName(id) }}
-              <button matChipRemove [attr.aria-label]="'Rimuovi ' + getFoodName(id)">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-          }
-        </mat-chip-set>
-      }
+        @if (foodIds().length > 0) {
+          <mat-chip-set class="selected-chips" aria-label="Alimenti selezionati">
+            @for (id of foodIds(); track id) {
+              <mat-chip (removed)="removeFood(id)">
+                {{ getFoodName(id) }}
+                <button matChipRemove [attr.aria-label]="'Rimuovi ' + getFoodName(id)">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            }
+          </mat-chip-set>
+        }
+      </div>
     </form>
     <div class="step-buttons">
       <button type="button" matButton cdkStepperPrevious>Indietro</button>
@@ -110,10 +116,13 @@
 
   <cdk-step label="Riepilogo">
     <div class="step-container">
+      <p class="step-intro">Controlla la distribuzione prima di crearla</p>
       @if (previewLoading()) {
-        <p>Calcolo in corso...</p>
+        <p class="step-status">Calcolo in corso...</p>
       } @else if (previewError()) {
-        <p class="preview-error">Impossibile calcolare l'anteprima della distribuzione.</p>
+        <p class="step-status preview-error">
+          Impossibile calcolare l'anteprima della distribuzione.
+        </p>
       } @else if (preview(); as distribution) {
         <dl class="preview-summary">
           <div>
@@ -126,7 +135,7 @@
           </div>
         </dl>
         @if (distribution.items.length === 0) {
-          <p>Nessun alimento da distribuire.</p>
+          <p class="step-status">Nessun alimento da distribuire.</p>
         } @else {
           <div class="preview-table">
             <distribution-table
