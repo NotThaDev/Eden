@@ -1,0 +1,43 @@
+<app-page-header title="Impostazioni">
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <mat-tab-group>
+      <mat-tab label="Associazione">
+        <div class="settings-tab">
+          <mat-form-field appearance="outline"><mat-label>Nome associazione</mat-label><input matInput formControlName="name" required /></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Indirizzo</mat-label><input matInput formControlName="address" /></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Telefono</mat-label><input matInput formControlName="phone" /></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" /></mat-form-field>
+        </div>
+      </mat-tab>
+      <mat-tab label="Schede">
+        <div class="settings-tab">
+          <mat-form-field appearance="outline">
+            <mat-label>Titolo delle schede</mat-label>
+            <input matInput formControlName="sheetTitle" />
+            <mat-hint>Se vuoto viene usato il nome dell'associazione</mat-hint>
+          </mat-form-field>
+          <div class="logo-section">
+            <span class="logo-label">Logo (PNG o JPEG, massimo 1 MB)</span>
+            @if (logoUrl(); as logo) {
+              <img class="logo-preview" [src]="logo" alt="Logo associazione" />
+            }
+            <div class="logo-actions">
+              <input #logoInput type="file" accept="image/png,image/jpeg" hidden (change)="onLogoSelected($event)" />
+              <button matButton="outlined" type="button" [disabled]="loading()" (click)="logoInput.click()">
+                <mat-icon>upload</mat-icon>{{ logoUrl() ? 'Sostituisci logo' : 'Carica logo' }}
+              </button>
+              @if (logoUrl()) {
+                <button matButton type="button" [disabled]="loading()" (click)="onRemoveLogo()">
+                  <mat-icon>delete</mat-icon>Rimuovi logo
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+    <div class="settings-actions">
+      <button matButton="filled" type="submit" [disabled]="loading()">Salva</button>
+    </div>
+  </form>
+</app-page-header>

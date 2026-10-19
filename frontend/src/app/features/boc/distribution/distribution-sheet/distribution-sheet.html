@@ -1,5 +1,11 @@
 <article class="sheet" [attr.aria-label]="'Scheda ' + (family().family?.name ?? '')">
   <header class="sheet-header">
+    <div class="sheet-title-row">
+      <span class="sheet-title">{{ title() }}</span>
+      @if (logoUrl(); as logo) {
+        <img class="sheet-logo" [src]="logo" alt="Logo associazione" />
+      }
+    </div>
     <h3 class="sheet-family">{{ family().family?.name }}</h3>
     <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
     <p>Componenti: {{ family().family?.members }} (minori: {{ family().family?.children }})</p>

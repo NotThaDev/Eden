@@ -19,6 +19,7 @@ Operators print one sheet per family and use it while handing out the food. Shee
 
 - `GET api/distribution/{id}/sheets` returns `schede-distribuzione-yyyy-MM-dd.xlsx`, built by `DistributionSheetsExcel` (backend helper, ClosedXML).
 - "Esporta schede" in each distribution's accordion downloads the same file at any time.
+- Each sheet starts with a title row: the settings sheet title, else the association name, else "Scheda distribuzione". The association logo (if set) sits at the right of the title. Both come from `GET api/settings` (see Impostazioni).
 - Each sheet: family name, date, members (and children), a table with every food of the distribution (name, unit size, quantity for that family, 0 if none), a notes box and two signature lines ("Firma operatore", "Firma beneficiario").
 - Layout: one worksheet, A4 portrait, 4 sheets per page in a 2×2 grid, families ordered by name. Every sheet has the same height (all foods are listed), so the page height is known: the helper inserts a manual page break after each page and sets a fixed print scale that fits one page. It does not use "fit to page", because Excel ignores manual page breaks with it.
 

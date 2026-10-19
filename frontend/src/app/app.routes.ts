@@ -40,4 +40,11 @@ export const routes: EdenAppRoutes = [
       },
     ],
   },
+  {
+    path: 'settings',
+    icon: 'tune',
+    title: 'Impostazioni',
+    // Lazy: keeps the settings page out of the initial bundle
+    loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
+  },
 ];

@@ -1,0 +1,5 @@
+.settings-tab { display: flex; flex-direction: column; gap: 8px; max-width: 480px; padding: 16px 0; }
+.logo-section { display: flex; flex-direction: column; gap: 8px; }
+.logo-label { color: var(--mat-sys-on-surface-variant); }
+.logo-preview { max-width: 160px; max-height: 80px; object-fit: contain; border: 1px solid var(--mat-sys-outline-variant); padding: 4px; background: #fff; }
+.logo-actions, .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }

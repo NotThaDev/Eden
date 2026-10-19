@@ -1,4 +1,7 @@
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using Eden.Api.Models;
 
 namespace Eden.Api.Helpers
@@ -7,8 +10,9 @@ namespace Eden.Api.Helpers
     {
         private const double RowHeight = 15;
         private const double NameRowHeight = 20;
+        private const double TitleRowHeight = 30;
 
-        public static byte[] Build(Distribution distribution)
+        public static byte[] Build(Distribution distribution, AssociationSettings settings)
         {
             var families = distribution.Items
                 .GroupBy(i => i.FamilyId)
@@ -23,9 +27,9 @@ namespace Eden.Api.Helpers
                 .OrderBy(f => f!.Name)
                 .ToList();
 
-            // name + date + members + blank + header + n foods + blank + "Note" + 3 notes
-            // + 2 blank + line + label + 2 blank + line + label = n + 18
-            var blockHeight = foods.Count + 18;
+            // title + name + date + members + blank + header + n foods + blank + "Note" + 3 notes
+            // + 2 blank + line + label + 2 blank + line + label = n + 19
+            var blockHeight = foods.Count + 19;
             var pageRows = 2 * blockHeight + 2;
             var date = $"Data: {distribution.DistributionDate.ToLocalTime():dd/MM/yyyy}";
 
@@ -48,11 +52,11 @@ namespace Eden.Api.Helpers
             {
                 var top = 1 + (i / 4) * pageRows + ((i % 4) / 2) * (blockHeight + 2);
                 var col = i % 2 == 0 ? 1 : 5;
-                WriteBlock(ws, top, col, families[i].Family, families[i].Items, foods!, date);
+                WriteBlock(ws, top, col, families[i].Family, families[i].Items, foods!, date, settings);
             }
 
             // Fixed scale instead of FitToPages: Excel ignores manual page breaks with FitToPages.
-            var pageHeightPt = 2 * (RowHeight * blockHeight + (NameRowHeight - RowHeight)) + 2 * RowHeight;
+            var pageHeightPt = 2 * (RowHeight * blockHeight + (NameRowHeight - RowHeight) + (TitleRowHeight - RowHeight)) + 2 * RowHeight;
             var availableHeight = 842 - 2 * 0.4 * 72;
             var availableWidth = 595 - 2 * 0.4 * 72;
             var widthPt = (24 + 11 + 10 + 3 + 24 + 11 + 10) * 5.6;
@@ -75,14 +79,55 @@ namespace Eden.Api.Helpers
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
-            return stream.ToArray();
+            return settings.Logo != null ? DeduplicateMedia(stream.ToArray()) : stream.ToArray();
+        }
+
+        // ClosedXML embeds a separate copy of the image for every AddPicture call; point all pictures at one copy.
+        // Assumes the logo is the only media in the workbook (the sheets have no other images).
+        private static byte[] DeduplicateMedia(byte[] xlsx)
+        {
+            using var ms = new MemoryStream();
+            ms.Write(xlsx);
+            using (var zip = new ZipArchive(ms, ZipArchiveMode.Update, leaveOpen: true))
+            {
+                var media = zip.Entries.Where(e => e.FullName.StartsWith("xl/media/")).OrderBy(e => e.FullName.Length).ThenBy(e => e.FullName).ToList();
+                if (media.Count < 2) return xlsx;
+                var keep = "/" + media[0].FullName;
+                foreach (var rels in zip.Entries.Where(e => e.FullName.StartsWith("xl/drawings/_rels/")).ToList())
+                {
+                    string xml;
+                    using (var reader = new StreamReader(rels.Open())) xml = reader.ReadToEnd();
+                    xml = Regex.Replace(xml, "Target=\"/?xl/media/[^\"]+\"", $"Target=\"{keep}\"");
+                    rels.Delete();
+                    using var writer = new StreamWriter(zip.CreateEntry(rels.FullName).Open());
+                    writer.Write(xml);
+                }
+                foreach (var dup in media.Skip(1)) dup.Delete();
+            }
+            return ms.ToArray();
         }
 
         private static void WriteBlock(IXLWorksheet ws, int top, int col, Family? family,
-            List<DistributionItem> items, List<Food?> foods, string date)
+            List<DistributionItem> items, List<Food?> foods, string date, AssociationSettings settings)
         {
             var r = top;
             var right = col + 2;
+
+            var title = ws.Range(r, col, r, col + 1).Merge();
+            title.Value = settings.EffectiveSheetTitle;
+            title.Style.Font.Bold = true;
+            title.Style.Font.FontSize = 12;
+            title.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            ws.Row(r).Height = TitleRowHeight;
+            if (settings.Logo != null)
+            {
+                var picture = ws.AddPicture(new MemoryStream(settings.Logo));
+                picture.Placement = XLPicturePlacement.Move; // default MoveAndSize forbids setting height
+                // Fit inside the 3rd column of the title row (~70 x 36 px)
+                picture.Scale(Math.Min(36.0 / picture.OriginalHeight, 70.0 / picture.OriginalWidth));
+                picture.MoveTo(ws.Cell(r, right), 2, 2);
+            }
+            r++;
 
             var name = ws.Range(r, col, r, right).Merge();
             name.Value = family?.Name ?? string.Empty;
