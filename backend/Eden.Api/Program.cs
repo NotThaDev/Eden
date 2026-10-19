@@ -40,3 +40,5 @@ catch (Exception ex)
     Console.WriteLine($"Unhandled exception: {ex.Message}");
     throw;
 }
+
+public partial class Program;
