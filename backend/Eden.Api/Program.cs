@@ -41,4 +41,3 @@ catch (Exception ex)
     throw;
 }
 
-public partial class Program;
