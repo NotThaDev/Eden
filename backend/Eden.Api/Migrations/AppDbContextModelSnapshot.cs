@@ -38,6 +38,33 @@ namespace Eden.Api.Migrations
                     b.ToTable("Distributions");
                 });
 
+            modelBuilder.Entity("Eden.Api.Models.DistributionAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DistributionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Present")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("DistributionId", "FamilyId")
+                        .IsUnique();
+
+                    b.ToTable("DistributionAttendances");
+                });
+
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>
                 {
                     b.Property<int>("Id")
@@ -188,6 +215,21 @@ namespace Eden.Api.Migrations
                     b.HasIndex("LoadId");
 
                     b.ToTable("LoadItems");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.DistributionAttendance", b =>
+                {
+                    b.HasOne("Eden.Api.Models.Distribution", null)
+                        .WithMany()
+                        .HasForeignKey("DistributionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eden.Api.Models.Family", null)
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>

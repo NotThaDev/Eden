@@ -18,3 +18,10 @@ export interface DistributionItem {
   foodId: number;
   food?: Food;
 }
+
+export interface DistributionAttendance {
+  familyId: number;
+  familyName?: string;
+  // null = not recorded yet
+  present: boolean | null;
+}

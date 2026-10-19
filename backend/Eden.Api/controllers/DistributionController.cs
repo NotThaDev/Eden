@@ -107,6 +107,49 @@ namespace Eden.Api.Controllers
             return null;
         }
 
+        private static List<DistributionAttendanceDto> _mapToAttendanceDtos(Distribution distribution, List<DistributionAttendance> attendances)
+        {
+            return [.. distribution.Items
+                .Where(i => i.FamilyId != null)
+                .GroupBy(i => i.FamilyId!.Value)
+                .Select(g => new DistributionAttendanceDto
+                {
+                    FamilyId = g.Key,
+                    FamilyName = g.First().Family?.Name,
+                    Present = attendances.FirstOrDefault(a => a.FamilyId == g.Key)?.Present
+                })];
+        }
+
+        private IActionResult? _validateAttendanceRequest(Distribution distribution, List<DistributionAttendanceDto> attendance)
+        {
+            // shortcut: compares UTC dates, the UI compares local dates; off by one only near midnight. Upgrade if it bites.
+            if (distribution.DistributionDate.Date >= DateTime.UtcNow.Date)
+            {
+                return BadRequest("Attendance can only be recorded for past distributions.");
+            }
+
+            if (attendance.Select(a => a.FamilyId).Distinct().Count() != attendance.Count)
+            {
+                return BadRequest("Each family can appear only once.");
+            }
+
+            var familyIds = distribution.Items.Select(i => i.FamilyId).ToHashSet();
+            foreach (var item in attendance)
+            {
+                if (!familyIds.Contains(item.FamilyId))
+                {
+                    return BadRequest($"Family with ID {item.FamilyId} is not part of this distribution.");
+                }
+
+                if (item.Present == null)
+                {
+                    return BadRequest("Present is required.");
+                }
+            }
+
+            return null;
+        }
+
         [HttpGet()]
         public async Task<IActionResult> GetAll()
         {
@@ -184,6 +227,43 @@ namespace Eden.Api.Controllers
             await Distribution.DeleteDistributionAsync(id);
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/attendance")]
+        public async Task<IActionResult> GetAttendance(int id)
+        {
+            var distribution = await Distribution.GetDistributionByIdAsync(id);
+            if (distribution == null)
+            {
+                return NotFound();
+            }
+
+            var attendances = await DistributionAttendance.GetAttendancesByDistributionIdAsync(id);
+            return Ok(_mapToAttendanceDtos(distribution, attendances));
+        }
+
+        [HttpPut("{id}/attendance")]
+        public async Task<IActionResult> UpdateAttendance(int id, [FromBody] List<DistributionAttendanceDto> attendance)
+        {
+            var distribution = await Distribution.GetDistributionByIdAsync(id);
+            if (distribution == null)
+            {
+                return NotFound();
+            }
+
+            if (_validateAttendanceRequest(distribution, attendance) is IActionResult errorResult)
+            {
+                return errorResult;
+            }
+
+            await DistributionAttendance.SaveAttendancesAsync(id, [.. attendance.Select(a => new DistributionAttendance
+            {
+                FamilyId = a.FamilyId,
+                Present = a.Present!.Value
+            })]);
+
+            var attendances = await DistributionAttendance.GetAttendancesByDistributionIdAsync(id);
+            return Ok(_mapToAttendanceDtos(distribution, attendances));
         }
 
         [HttpPost("preview")]

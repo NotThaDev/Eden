@@ -11,6 +11,7 @@ namespace Eden.Api.Data
         public DbSet<LoadItem> LoadItems => Set<LoadItem>();
         public DbSet<Distribution> Distributions => Set<Distribution>();
         public DbSet<DistributionItem> DistributionItems => Set<DistributionItem>();
+        public DbSet<DistributionAttendance> DistributionAttendances => Set<DistributionAttendance>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +33,18 @@ namespace Eden.Api.Data
                 .WithMany()
                 .HasForeignKey(i => i.FoodId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<DistributionAttendance>()
+                .HasOne<Distribution>()
+                .WithMany()
+                .HasForeignKey(a => a.DistributionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DistributionAttendance>()
+                .HasOne<Family>()
+                .WithMany()
+                .HasForeignKey(a => a.FamilyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {

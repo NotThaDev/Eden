@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Family } from '../../../core/models/family';
 import { HttpHandler } from '../../../core/http/httpHandler';
 import { finalize, tap } from 'rxjs';
-import { Distribution } from '../../../core/models/distribution';
+import { Distribution, DistributionAttendance } from '../../../core/models/distribution';
 import { Food } from '../../../core/models/food';
 
 @Injectable({
@@ -74,6 +74,17 @@ export class DistributionService {
       }),
       finalize(() => this.loadingSignal.set(false)),
     );
+  }
+
+  getAttendance(distributionId: number) {
+    return this.httpHandler.get<DistributionAttendance[]>(`api/distribution/${distributionId}/attendance`);
+  }
+
+  updateAttendance(distributionId: number, attendance: DistributionAttendance[]) {
+    this.loadingSignal.set(true);
+    return this.httpHandler
+      .put<DistributionAttendance[]>(`api/distribution/${distributionId}/attendance`, attendance)
+      .pipe(finalize(() => this.loadingSignal.set(false)));
   }
 
   previewDistribution(families: Family[], foods: Food[]) {
