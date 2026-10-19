@@ -113,6 +113,10 @@ When running in development mode, Swagger UI is available at:
 
 - http://localhost:5190
 
+## 🧪 Tests
+
+Backend tests live in `backend/Eden.Api.Tests` (xUnit, integration tests through HTTP). Run them from the repo root with `dotnet test Eden.sln`. They need Docker running, because Testcontainers starts a PostgreSQL 16 container. CI runs the backend and frontend checks on every pull request.
+
 ## Project Structure
 
 ```

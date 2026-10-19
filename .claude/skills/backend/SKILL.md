@@ -88,7 +88,12 @@ Put logic that does not need the database in a static helper in `helpers/`. Call
 
 ## Tests
 
-There is no backend test project yet. When you add pure logic (a calculation, matching, a helper) that needs a test, propose adding `backend/Eden.Api.Tests` (xUnit) and ask before creating it.
+- Project: `backend/Eden.Api.Tests` (xUnit, in `Eden.sln`).
+- Integration tests call the API over HTTP through one shared `EdenApiFactory` (`Fixtures/`). It starts Postgres 16 with Testcontainers and applies migrations once per run.
+- Each test creates its own uniquely named data via `TestData` (`Helpers/`) and asserts only on that data.
+- Pure logic (`Family.CalculateNeedLevel`, `Distribution.BuildDistributionFromFamilies`) gets plain unit tests with no host.
+- To add an integration test, create a class with `[Collection("api")]` and a constructor taking `EdenApiFactory`.
+- Run with `dotnet test Eden.sln` (Docker required).
 
 ## Do not
 
