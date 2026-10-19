@@ -17,6 +17,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Family } from '../../../../core/models/family';
 
 @Component({
@@ -32,13 +33,14 @@ import { Family } from '../../../../core/models/family';
     MatDialogContent,
     MatDialogActions,
     MatGridListModule,
+    MatSlideToggleModule,
   ],
 })
 // #TODO use a more generic name like (e.g., FamilyDialog) since it is also used for editing
 export class CreateFamilyDialog implements OnInit {
   membersValidationError = signal<string>('');
 
-  readonly data = inject<{ family?: Family }>(MAT_DIALOG_DATA, { optional: true });
+  readonly data = inject<{ family?: Family; isOccasional?: boolean }>(MAT_DIALOG_DATA, { optional: true });
   readonly title = this.data?.family ? `Modifica ${this.data.family.name}` : 'Aggiungi una Nuova Famiglia';
   readonly formBuilder = inject(FormBuilder);
   readonly familyFormControl: FormGroup = this.formBuilder.group({
@@ -46,6 +48,7 @@ export class CreateFamilyDialog implements OnInit {
     members: [null, [Validators.required, Validators.min(1), this.membersValidator.bind(this)]],
     children: [null, [Validators.required, this.childrenValidator.bind(this)]],
     isee: [null, [Validators.required, Validators.min(0), Validators.max(10040)]],
+    isOccasional: [this.data?.isOccasional ?? false],
   });
 
   readonly dialogRef = inject(MatDialogRef<CreateFamilyDialog>);
@@ -109,6 +112,7 @@ export class CreateFamilyDialog implements OnInit {
       this.familyFormControl.get('members')?.setValue(family.members);
       this.familyFormControl.get('children')?.setValue(family.children);
       this.familyFormControl.get('isee')?.setValue(family.isee);
+      this.familyFormControl.get('isOccasional')?.setValue(family.isOccasional);
     }
   }
 }

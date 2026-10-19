@@ -7,6 +7,16 @@
       </button>
     </div>
 
+    <nav mat-tab-nav-bar mat-stretch-tabs="false" [tabPanel]="tabPanel">
+      <a mat-tab-link [active]="!showOccasional()" (click)="showOccasional.set(false)">
+        Assistiti ({{ regularCount() }})
+      </a>
+      <a mat-tab-link [active]="showOccasional()" (click)="showOccasional.set(true)">
+        Saltuari ({{ occasionalCount() }})
+      </a>
+    </nav>
+    <mat-tab-nav-panel #tabPanel>
+
     <div class="eden-table-container">
       <table mat-table [dataSource]="dataSource" class="eden-table">
         <!-- Name Column -->
@@ -65,5 +75,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
     </div>
+    </mat-tab-nav-panel>
   </div>
 </app-page-header>
