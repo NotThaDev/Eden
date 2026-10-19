@@ -1,0 +1,6 @@
+.history-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.history-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant); font-size: 14px; font-weight: 500;
+}
+.history-empty { color: var(--mat-sys-on-surface-variant); font-size: 14px; }

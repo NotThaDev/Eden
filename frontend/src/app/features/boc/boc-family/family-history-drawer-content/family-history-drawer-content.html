@@ -1,0 +1,16 @@
+<ul class="history-list">
+  @for (row of history(); track row.distributionId) {
+    @let props = statusProps(row.present);
+    <li class="history-row">
+      <span class="history-date">{{ row.distributionDate | date: 'dd/MM/yyyy' }}</span>
+      <app-label-chip
+        [label]="props.label"
+        [textColor]="props.textColor"
+        [backgroundColor]="props.backgroundColor"
+        [borderColor]="props.borderColor"
+      ></app-label-chip>
+    </li>
+  } @empty {
+    <li class="history-empty">Nessuna distribuzione.</li>
+  }
+</ul>

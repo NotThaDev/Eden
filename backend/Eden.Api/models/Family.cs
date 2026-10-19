@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Eden.Api.DTOs;
 using Eden.Api.Helpers;
 using Microsoft.EntityFrameworkCore;
 
@@ -74,6 +75,41 @@ namespace Eden.Api.Models
             });
 
             return true;
+        }
+
+        // One query for every family (familyId == null) or for one family: avoids N+1 on the family list.
+        public static Task<List<FamilyDistributionDto>> GetDistributionHistoryAsync(int? familyId = null)
+        {
+            return EdenAppContext.Context.WithDbContext(db =>
+                (from i in db.DistributionItems
+                 where i.FamilyId != null && (familyId == null || i.FamilyId == familyId)
+                 join d in db.Distributions on (int?)i.DistributionId equals d.Id
+                 join a in db.DistributionAttendances
+                     on new { i.DistributionId, FamilyId = i.FamilyId!.Value } equals new { a.DistributionId, a.FamilyId } into att
+                 from a in att.DefaultIfEmpty()
+                 select new FamilyDistributionDto
+                 {
+                     FamilyId = i.FamilyId!.Value,
+                     DistributionId = i.DistributionId,
+                     DistributionDate = d.DistributionDate,
+                     Present = a != null ? a.Present : null
+                 })
+                .Distinct() // one row per (family, distribution), not per food item
+                .OrderByDescending(h => h.DistributionDate)
+                .ToListAsync());
+        }
+
+        // Consecutive absences counted back from the newest past distribution. Present stops the streak;
+        // not recorded (null) is skipped over, so a forgotten check-in neither hides nor adds an absence.
+        public static int CountSkippedStreak(IEnumerable<FamilyDistributionDto> history, DateTime today)
+        {
+            var streak = 0;
+            foreach (var row in history.Where(h => h.DistributionDate.Date < today.Date).OrderByDescending(h => h.DistributionDate))
+            {
+                if (row.Present == true) break;
+                if (row.Present == false) streak++;
+            }
+            return streak;
         }
 
         /// <summary>

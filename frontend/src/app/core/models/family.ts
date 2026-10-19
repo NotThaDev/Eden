@@ -14,3 +14,11 @@ export enum AssistanceLevel {
   High = 'High',
   VeryHigh = 'VeryHigh',
 }
+
+export interface FamilyDistribution {
+  familyId: number;
+  distributionId: number;
+  distributionDate: Date;
+  // null = not recorded
+  present: boolean | null;
+}

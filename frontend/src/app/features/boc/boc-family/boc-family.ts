@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -24,6 +25,8 @@ import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
 import { NecessityLevelChipProps } from './utils';
+import { Drawer } from '../../../shared/components/drawer/drawer';
+import { FamilyHistoryDrawerContent } from './family-history-drawer-content/family-history-drawer-content';
 
 @Component({
   selector: 'app-boc-family',
@@ -39,6 +42,8 @@ import { NecessityLevelChipProps } from './utils';
     MatInputModule,
     MatIconModule,
     LabelChip,
+    Drawer,
+    FamilyHistoryDrawerContent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './boc-family.html',
@@ -54,6 +59,12 @@ export class BocFamily implements OnInit {
 
   dataSource = new MatTableDataSource<Family>([]);
   loading = computed(() => this.familyService.loading());
+  selectedFamily = signal<Family | null>(null);
+  private skippedStreaks = this.familyService.skippedStreaks;
+
+  skippedCount(family: Family): number {
+    return family.id ? (this.skippedStreaks()[family.id] ?? 0) : 0;
+  }
 
   constructor() {
     effect(() => {
