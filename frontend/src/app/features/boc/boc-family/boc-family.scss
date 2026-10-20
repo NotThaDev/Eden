@@ -34,3 +34,8 @@
     height: 18px;
   }
 }
+
+// 2-3 skipped in a row: yellow; 4+: red; 6+: whole row red too (issue #60).
+.action-button.history-warn mat-icon { color: #f9a825; }
+.action-button.history-alert mat-icon { color: var(--mat-sys-error); }
+tr.skip-alert { background-color: var(--mat-sys-error-container); }
