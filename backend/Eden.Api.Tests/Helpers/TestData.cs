@@ -48,6 +48,14 @@ public static class TestData
         ]
     };
 
+    public static async Task<DistributionDto> CreateDistributionAsync(HttpClient client, int familyId, int foodId, DateTime date)
+    {
+        var request = SingleFamilyDistribution(familyId, foodId, 1) with { DistributionDate = date };
+        var response = await client.PostAsJsonAsync("/api/distribution", request);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<DistributionDto>())!;
+    }
+
     public static async Task<Food> GetFoodAsync(HttpClient client, int id)
     {
         var food = await client.GetFromJsonAsync<Food>($"/api/food/{id}");
