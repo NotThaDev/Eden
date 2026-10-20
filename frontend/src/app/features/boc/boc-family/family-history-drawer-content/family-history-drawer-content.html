@@ -14,3 +14,12 @@
     <li class="history-empty">Nessuna distribuzione.</li>
   }
 </ul>
+@if (suggestion(); as s) {
+  <div class="suggestion" [class.alert]="s.level === 'alert'" role="note">
+    <mat-icon>lightbulb</mat-icon>
+    <div>
+      <strong>Suggerimento</strong>
+      <p>{{ s.text }} ({{ skipped() }} assenze consecutive)</p>
+    </div>
+  </div>
+}

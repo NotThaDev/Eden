@@ -9,7 +9,7 @@ public class FamilySkippedStreakTests
     private static readonly DateTime Today = new(2026, 10, 19, 0, 0, 0, DateTimeKind.Utc);
 
     // daysAgo > 0 = past, 0 = today, < 0 = future
-    private static FamilyDistributionDto Row(int daysAgo, bool? present) =>
+    private static FamilyDistributionDto Row(int daysAgo, bool present) =>
         new() { DistributionDate = Today.AddDays(-daysAgo).AddHours(10), Present = present };
 
     private static int Streak(params FamilyDistributionDto[] rows) => Family.CountSkippedStreak(rows, Today);
@@ -43,18 +43,6 @@ public class FamilySkippedStreakTests
     public void NewestPresent_Returns0()
     {
         Assert.Equal(0, Streak(Row(1, true), Row(2, false), Row(3, false)));
-    }
-
-    [Fact]
-    public void NotRecorded_IsSkippedOver()
-    {
-        Assert.Equal(2, Streak(Row(1, false), Row(2, null), Row(3, false), Row(4, true)));
-    }
-
-    [Fact]
-    public void OnlyNotRecorded_Returns0()
-    {
-        Assert.Equal(0, Streak(Row(1, null), Row(2, null)));
     }
 
     [Fact]

@@ -27,7 +27,7 @@ public class FamilyHistoryTests(EdenApiFactory factory)
         for (var i = 0; i < present.Length; i++)
         {
             (await _client.PutAsJsonAsync($"/api/distribution/{ids[i]}/attendance",
-                new List<DistributionAttendanceDto> { new() { FamilyId = family.Id!.Value, Present = present[i] } })).EnsureSuccessStatusCode();
+                new List<DistributionAttendance> { new() { FamilyId = family.Id!.Value, Present = present[i] } })).EnsureSuccessStatusCode();
         }
         return (family, ids);
     }
@@ -42,7 +42,7 @@ public class FamilyHistoryTests(EdenApiFactory factory)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var history = await response.Content.ReadFromJsonAsync<List<FamilyDistributionDto>>();
         Assert.Equal(new[] { ids[3], ids[2], ids[1], ids[0] }, history!.Select(r => r.DistributionId));
-        Assert.Equal(new bool?[] { null, false, false, true }, history!.Select(r => r.Present));
+        Assert.Equal(new[] { false, false, false, true }, history!.Select(r => r.Present));
     }
 
     [Fact]

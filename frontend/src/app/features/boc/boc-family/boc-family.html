@@ -3,8 +3,12 @@
   (onClose)="selectedFamily.set(null)"
   [title]="'Storico Distribuzioni'"
 >
-  @if (selectedFamily()?.id; as familyId) {
-    <app-family-history-drawer-content [familyId]="familyId"></app-family-history-drawer-content>
+  @if (selectedFamily(); as family) {
+    <app-family-history-drawer-content
+      [familyId]="family.id!"
+      [skipped]="skippedCount(family)"
+      [isOccasional]="family.isOccasional"
+    ></app-family-history-drawer-content>
   }
 </app-drawer>
 

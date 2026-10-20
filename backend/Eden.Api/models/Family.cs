@@ -93,22 +93,22 @@ namespace Eden.Api.Models
                      FamilyId = i.FamilyId!.Value,
                      DistributionId = i.DistributionId,
                      DistributionDate = d.DistributionDate,
-                     Present = a != null ? a.Present : null
+                     Present = a != null && a.Present
                  })
                 .Distinct() // one row per (family, distribution), not per food item
                 .OrderByDescending(h => h.DistributionDate)
                 .ToListAsync());
         }
 
-        // Consecutive absences counted back from the newest past distribution. Present stops the streak;
-        // not recorded (null) is skipped over, so a forgotten check-in neither hides nor adds an absence.
+        // Absences counted back from the newest past distribution; present stops the streak;
+        // unrecorded attendance counts as absent.
         public static int CountSkippedStreak(IEnumerable<FamilyDistributionDto> history, DateTime today)
         {
             var streak = 0;
             foreach (var row in history.Where(h => h.DistributionDate.Date < today.Date).OrderByDescending(h => h.DistributionDate))
             {
-                if (row.Present == true) break;
-                if (row.Present == false) streak++;
+                if (row.Present) break;
+                streak++;
             }
             return streak;
         }
