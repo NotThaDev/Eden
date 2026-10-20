@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Eden.Api.Data;
 using Eden.Api.DTOs;
+using Eden.Api.Models;
 using Eden.Api.Tests.Fixtures;
 using Eden.Api.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -25,18 +26,18 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
     private static string AttendanceUrl(int distributionId) => $"/api/distribution/{distributionId}/attendance";
 
     [Fact]
-    public async Task Get_NewDistribution_ListsFamilyAsNotRecorded()
+    public async Task Get_NewDistribution_ListsFamilyAsAbsent()
     {
         var (family, distribution) = await PastDistributionAsync();
 
         var response = await _client.GetAsync(AttendanceUrl(distribution.Id!.Value));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var attendance = await response.Content.ReadFromJsonAsync<List<DistributionAttendanceDto>>();
+        var attendance = await response.Content.ReadFromJsonAsync<List<DistributionAttendance>>();
         var row = Assert.Single(attendance!);
         Assert.Equal(family.Id, row.FamilyId);
-        Assert.Equal(family.Name, row.FamilyName);
-        Assert.Null(row.Present);
+        Assert.Equal(family.Name, row.Family?.Name);
+        Assert.False(row.Present);
     }
 
     [Fact]
@@ -45,14 +46,14 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
         var (family, distribution) = await PastDistributionAsync();
         var url = AttendanceUrl(distribution.Id!.Value);
 
-        var first = await _client.PutAsJsonAsync(url, new List<DistributionAttendanceDto> { new() { FamilyId = family.Id!.Value, Present = true } });
+        var first = await _client.PutAsJsonAsync(url, new List<DistributionAttendance> { new() { FamilyId = family.Id!.Value, Present = true } });
         Assert.Equal(HttpStatusCode.OK, first.StatusCode);
-        var afterFirst = await _client.GetFromJsonAsync<List<DistributionAttendanceDto>>(url);
+        var afterFirst = await _client.GetFromJsonAsync<List<DistributionAttendance>>(url);
         Assert.True(Assert.Single(afterFirst!).Present);
 
-        var second = await _client.PutAsJsonAsync(url, new List<DistributionAttendanceDto> { new() { FamilyId = family.Id!.Value, Present = false } });
+        var second = await _client.PutAsJsonAsync(url, new List<DistributionAttendance> { new() { FamilyId = family.Id!.Value, Present = false } });
         Assert.Equal(HttpStatusCode.OK, second.StatusCode);
-        var afterSecond = await _client.GetFromJsonAsync<List<DistributionAttendanceDto>>(url);
+        var afterSecond = await _client.GetFromJsonAsync<List<DistributionAttendance>>(url);
         Assert.False(Assert.Single(afterSecond!).Present);
     }
 
@@ -64,7 +65,7 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
         var distribution = await TestData.CreateDistributionAsync(_client, family.Id!.Value, food.Id!.Value, DateTime.UtcNow.AddDays(1));
 
         var response = await _client.PutAsJsonAsync(AttendanceUrl(distribution.Id!.Value),
-            new List<DistributionAttendanceDto> { new() { FamilyId = family.Id!.Value, Present = true } });
+            new List<DistributionAttendance> { new() { FamilyId = family.Id!.Value, Present = true } });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -76,11 +77,11 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
         var other = await TestData.CreateFamilyAsync(_client);
         var url = AttendanceUrl(distribution.Id!.Value);
 
-        var response = await _client.PutAsJsonAsync(url, new List<DistributionAttendanceDto> { new() { FamilyId = other.Id!.Value, Present = true } });
+        var response = await _client.PutAsJsonAsync(url, new List<DistributionAttendance> { new() { FamilyId = other.Id!.Value, Present = true } });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var attendance = await _client.GetFromJsonAsync<List<DistributionAttendanceDto>>(url);
-        Assert.Null(Assert.Single(attendance!, a => a.FamilyId == family.Id!.Value).Present);
+        var attendance = await _client.GetFromJsonAsync<List<DistributionAttendance>>(url);
+        Assert.False(Assert.Single(attendance!, a => a.FamilyId == family.Id!.Value).Present);
     }
 
     [Fact]
@@ -89,7 +90,7 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
         var url = AttendanceUrl(int.MaxValue);
 
         var get = await _client.GetAsync(url);
-        var put = await _client.PutAsJsonAsync(url, new List<DistributionAttendanceDto>());
+        var put = await _client.PutAsJsonAsync(url, new List<DistributionAttendance>());
 
         Assert.Equal(HttpStatusCode.NotFound, get.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, put.StatusCode);
@@ -100,7 +101,7 @@ public class DistributionAttendanceTests(EdenApiFactory factory)
     {
         var (family, distribution) = await PastDistributionAsync();
         await _client.PutAsJsonAsync(AttendanceUrl(distribution.Id!.Value),
-            new List<DistributionAttendanceDto> { new() { FamilyId = family.Id!.Value, Present = true } });
+            new List<DistributionAttendance> { new() { FamilyId = family.Id!.Value, Present = true } });
 
         var response = await _client.DeleteAsync($"/api/distribution/{distribution.Id}");
 

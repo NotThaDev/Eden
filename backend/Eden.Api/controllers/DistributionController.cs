@@ -107,20 +107,21 @@ namespace Eden.Api.Controllers
             return null;
         }
 
-        private static List<DistributionAttendanceDto> _mapToAttendanceDtos(Distribution distribution, List<DistributionAttendance> attendances)
+        // One entry per family in the distribution; families not recorded yet count as absent.
+        private static List<DistributionAttendance> _withAllFamilies(Distribution distribution, List<DistributionAttendance> attendances)
         {
             return [.. distribution.Items
                 .Where(i => i.FamilyId != null)
                 .GroupBy(i => i.FamilyId!.Value)
-                .Select(g => new DistributionAttendanceDto
+                .Select(g => attendances.FirstOrDefault(a => a.FamilyId == g.Key) ?? new DistributionAttendance
                 {
+                    DistributionId = distribution.Id!.Value,
                     FamilyId = g.Key,
-                    FamilyName = g.First().Family?.Name,
-                    Present = attendances.FirstOrDefault(a => a.FamilyId == g.Key)?.Present
-                })];
+                })
+                .Select(a => { a.Family = distribution.Items.First(i => i.FamilyId == a.FamilyId).Family; return a; })];
         }
 
-        private IActionResult? _validateAttendanceRequest(Distribution distribution, List<DistributionAttendanceDto> attendance)
+        private IActionResult? _validateAttendanceRequest(Distribution distribution, List<DistributionAttendance> attendance)
         {
             // shortcut: compares UTC dates, the UI compares local dates; off by one only near midnight. Upgrade if it bites.
             if (distribution.DistributionDate.Date >= DateTime.UtcNow.Date)
@@ -139,11 +140,6 @@ namespace Eden.Api.Controllers
                 if (!familyIds.Contains(item.FamilyId))
                 {
                     return BadRequest($"Family with ID {item.FamilyId} is not part of this distribution.");
-                }
-
-                if (item.Present == null)
-                {
-                    return BadRequest("Present is required.");
                 }
             }
 
@@ -239,11 +235,11 @@ namespace Eden.Api.Controllers
             }
 
             var attendances = await DistributionAttendance.GetAttendancesByDistributionIdAsync(id);
-            return Ok(_mapToAttendanceDtos(distribution, attendances));
+            return Ok(_withAllFamilies(distribution, attendances));
         }
 
         [HttpPut("{id}/attendance")]
-        public async Task<IActionResult> UpdateAttendance(int id, [FromBody] List<DistributionAttendanceDto> attendance)
+        public async Task<IActionResult> UpdateAttendance(int id, [FromBody] List<DistributionAttendance> attendance)
         {
             var distribution = await Distribution.GetDistributionByIdAsync(id);
             if (distribution == null)
@@ -259,11 +255,11 @@ namespace Eden.Api.Controllers
             await DistributionAttendance.SaveAttendancesAsync(id, [.. attendance.Select(a => new DistributionAttendance
             {
                 FamilyId = a.FamilyId,
-                Present = a.Present!.Value
+                Present = a.Present
             })]);
 
             var attendances = await DistributionAttendance.GetAttendancesByDistributionIdAsync(id);
-            return Ok(_mapToAttendanceDtos(distribution, attendances));
+            return Ok(_withAllFamilies(distribution, attendances));
         }
 
         [HttpPost("preview")]

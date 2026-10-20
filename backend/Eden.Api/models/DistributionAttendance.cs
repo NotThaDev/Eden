@@ -9,6 +9,7 @@ namespace Eden.Api.Models
         public int? Id { get; set; }
         public int DistributionId { get; set; }
         public int FamilyId { get; set; }
+        public Family? Family { get; set; }
         public bool Present { get; set; }
 
         public static Task<List<DistributionAttendance>> GetAttendancesByDistributionIdAsync(int distributionId)

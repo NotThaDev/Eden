@@ -12,8 +12,7 @@ import { DistributionAttendance } from '../../../../core/models/distribution';
 export class AttendanceDialog {
   readonly data = inject<{ attendance: DistributionAttendance[] }>(MAT_DIALOG_DATA);
   readonly dialogRef = inject(MatDialogRef<AttendanceDialog>);
-  // Unrecorded families start unchecked; saving records them as absent.
-  readonly rows = signal(this.data.attendance.map((a) => ({ ...a, present: a.present ?? false })));
+  readonly rows = signal(this.data.attendance);
 
   setPresent(familyId: number, present: boolean): void {
     this.rows.update((rows) => rows.map((r) => (r.familyId === familyId ? { ...r, present } : r)));
