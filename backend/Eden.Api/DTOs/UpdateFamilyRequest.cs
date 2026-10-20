@@ -6,5 +6,6 @@ namespace Eden.Api.DTOs
         public uint? Members { get; set; }
         public uint? Children { get; set; }
         public int? Isee { get; set; }
+        public bool? IsOccasional { get; set; }
     }
 }
