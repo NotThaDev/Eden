@@ -17,7 +17,10 @@
     >
       @if(!isMobile()) {
       <div class="logo-container" (click)="toggleNavbarCollapse()">
-        <span class="logo-text">{{ isNavbarCollapsed() ? 'E' : 'Eden' }}</span>
+        <img class="logo-image" src="logo.svg" alt="Eden logo" width="32" height="32" />
+        @if (!isNavbarCollapsed()) {
+        <span class="logo-text">Eden</span>
+        }
       </div>
       }
       <mat-nav-list>

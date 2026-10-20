@@ -17,6 +17,16 @@
         [key]="'distribution-details-' + (distribution.id ?? $index)"
         [style]="getAccordionStyle($index)"
       >
+        <div class="distribution-actions">
+          <button
+            matButton="outlined"
+            [disabled]="!isDistributionPast(distribution.distributionDate)"
+            (click)="onOpenAttendance(distribution.id)"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            Presenze
+          </button>
+        </div>
         <distribution-table [distribution]="distribution"></distribution-table>
       </accordion>
 

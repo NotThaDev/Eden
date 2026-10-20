@@ -44,3 +44,9 @@
     flex-shrink: 0;
   }
 }
+
+.distribution-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}

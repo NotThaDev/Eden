@@ -4,6 +4,7 @@ export interface Family {
   members: number;
   children: number;
   isee: number;
+  isOccasional: boolean;
   necessityLevel: AssistanceLevel;
 }
 
@@ -13,4 +14,11 @@ export enum AssistanceLevel {
   Medium = 'Medium',
   High = 'High',
   VeryHigh = 'VeryHigh',
+}
+
+export interface FamilyDistribution {
+  familyId: number;
+  distributionId: number;
+  distributionDate: Date;
+  present: boolean;
 }
