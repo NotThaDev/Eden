@@ -1,12 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { AssistanceLevel, Family } from '../../../core/models/family';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
@@ -44,6 +37,7 @@ import { FamilyHistoryDrawerContent } from './family-history-drawer-content/fami
     LabelChip,
     Drawer,
     FamilyHistoryDrawerContent,
+    NgTemplateOutlet,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './boc-family.html',
@@ -57,7 +51,6 @@ export class BocFamily implements OnInit {
 
   displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'necessityLevel', 'actions'];
 
-  dataSource = new MatTableDataSource<Family>([]);
   loading = computed(() => this.familyService.loading());
   selectedFamily = signal<Family | null>(null);
   private skippedStreaks = this.familyService.skippedStreaks;
@@ -66,12 +59,9 @@ export class BocFamily implements OnInit {
     return family.id ? (this.skippedStreaks()[family.id] ?? 0) : 0;
   }
 
-  constructor() {
-    effect(() => {
-      const data = this.familyService.families();
-      this.dataSource.data = data;
-    });
-  }
+  families = this.familyService.families;
+  regularFamilies = computed(() => this.families().filter((f) => !f.isOccasional));
+  occasionalFamilies = computed(() => this.families().filter((f) => f.isOccasional));
 
   ngOnInit() {
     this.familyService.fetchFamilies();

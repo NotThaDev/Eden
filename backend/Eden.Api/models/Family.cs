@@ -13,6 +13,7 @@ namespace Eden.Api.Models
         public uint Members { get; set; }
         public uint Children { get; set; }
         public int Isee { get; set; }
+        public bool IsOccasional { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AssistanceLevel NecessityLevel { get; set; } = AssistanceLevel.VeryLow;
 

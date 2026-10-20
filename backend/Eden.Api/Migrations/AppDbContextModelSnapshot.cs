@@ -112,6 +112,9 @@ namespace Eden.Api.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<bool>("IsOccasional")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("Isee")
                         .HasColumnType("integer");
 

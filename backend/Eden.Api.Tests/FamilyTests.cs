@@ -57,6 +57,38 @@ public class FamilyTests(EdenApiFactory factory)
     }
 
     [Fact]
+    public async Task Create_DefaultFamily_IsNotOccasional()
+    {
+        var family = await TestData.CreateFamilyAsync(_client);
+
+        Assert.False(family.IsOccasional);
+    }
+
+    [Fact]
+    public async Task Create_OccasionalFamily_PersistsFlag()
+    {
+        var family = await TestData.CreateFamilyAsync(_client, isOccasional: true);
+
+        var response = await _client.GetAsync($"/api/family/{family.Id}");
+        var fetched = await response.Content.ReadFromJsonAsync<Family>();
+        Assert.True(fetched!.IsOccasional);
+    }
+
+    [Fact]
+    public async Task Update_IsOccasional_IsKeptWhenOtherFieldsChange()
+    {
+        var family = await TestData.CreateFamilyAsync(_client);
+
+        var toggled = await _client.PutAsJsonAsync($"/api/family/{family.Id}", new UpdateFamilyRequest { IsOccasional = true });
+        Assert.True((await toggled.Content.ReadFromJsonAsync<Family>())!.IsOccasional);
+
+        var renamed = await _client.PutAsJsonAsync($"/api/family/{family.Id}", new UpdateFamilyRequest { Name = "Renamed" });
+        var updated = await renamed.Content.ReadFromJsonAsync<Family>();
+        Assert.True(updated!.IsOccasional);
+        Assert.Equal("Renamed", updated.Name);
+    }
+
+    [Fact]
     public async Task Delete_Returns204_ThenNotFound()
     {
         var family = await TestData.CreateFamilyAsync(_client);

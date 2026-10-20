@@ -5,6 +5,23 @@
   margin-bottom: 16px;
 }
 
+.family-section + .family-section {
+  margin-top: 32px;
+}
+
+// Both section tables share fixed column widths so their columns line up.
+.family-section .eden-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .load-details {
   // #TODO we can remove the hover effect
   width: 18px;

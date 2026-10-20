@@ -4,6 +4,7 @@ export interface Family {
   members: number;
   children: number;
   isee: number;
+  isOccasional: boolean;
   necessityLevel: AssistanceLevel;
 }
 
