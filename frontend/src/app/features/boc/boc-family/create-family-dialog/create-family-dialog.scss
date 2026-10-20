@@ -38,3 +38,25 @@ $members-container-gap: 16px;
   height: 36px;
   padding: 0 12px;
 }
+
+.family-actions {
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.occasional-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--mat-sys-body-medium);
+
+  input {
+    accent-color: var(--mat-sys-primary);
+    width: 18px;
+    height: 18px;
+  }
+}
