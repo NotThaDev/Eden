@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Presenze</h2>
+<mat-dialog-content>
+  <div class="attendance-list">
+    @for (row of rows(); track row.familyId) {
+      <label class="attendance-row">
+        <input
+          type="checkbox"
+          [checked]="row.present"
+          (change)="setPresent(row.familyId, $any($event.target).checked)"
+        />
+        {{ row.family?.name ?? 'Famiglia ' + row.familyId }}
+      </label>
+    } @empty {
+      <span>Nessuna famiglia in questa distribuzione</span>
+    }
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton="text" (click)="dialogRef.close()">Annulla</button>
+  <button matButton="filled" (click)="dialogRef.close(rows())">Salva</button>
+</mat-dialog-actions>

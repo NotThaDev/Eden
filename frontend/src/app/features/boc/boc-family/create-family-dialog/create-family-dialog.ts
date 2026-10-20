@@ -46,7 +46,9 @@ export class CreateFamilyDialog implements OnInit {
     members: [null, [Validators.required, Validators.min(1), this.membersValidator.bind(this)]],
     children: [null, [Validators.required, this.childrenValidator.bind(this)]],
     isee: [null, [Validators.required, Validators.min(0), Validators.max(10040)]],
+    isOccasional: [false],
   });
+  readonly isOccasionalControl = this.familyFormControl.get('isOccasional') as FormControl<boolean>;
 
   readonly dialogRef = inject(MatDialogRef<CreateFamilyDialog>);
 
@@ -109,6 +111,7 @@ export class CreateFamilyDialog implements OnInit {
       this.familyFormControl.get('members')?.setValue(family.members);
       this.familyFormControl.get('children')?.setValue(family.children);
       this.familyFormControl.get('isee')?.setValue(family.isee);
+      this.familyFormControl.get('isOccasional')?.setValue(family.isOccasional);
     }
   }
 }

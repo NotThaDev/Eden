@@ -18,3 +18,11 @@ export interface DistributionItem {
   foodId: number;
   food?: Food;
 }
+
+export interface DistributionAttendance {
+  id?: number;
+  distributionId: number;
+  familyId: number;
+  family?: Family;
+  present: boolean;
+}

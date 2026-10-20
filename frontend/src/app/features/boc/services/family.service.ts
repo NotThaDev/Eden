@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpHandler } from '../../../core/http/httpHandler';
-import { Family } from '../../../core/models/family';
+import { Family, FamilyDistribution } from '../../../core/models/family';
 import { finalize, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -10,10 +10,14 @@ export class FamilyService {
   // Signals for state management
   private familiesSignal = signal<Family[]>([]);
   private loadingSignal = signal<boolean>(false);
+  private skippedStreaksSignal = signal<Record<number, number>>({});
+  private familyHistorySignal = signal<FamilyDistribution[]>([]);
 
   // Expose as readonly signals
   public families = this.familiesSignal.asReadonly();
   public loading = this.loadingSignal.asReadonly();
+  public skippedStreaks = this.skippedStreaksSignal.asReadonly();
+  public familyHistory = this.familyHistorySignal.asReadonly();
 
   // Computed signal for total count (example of computed usage)
   public familiesCount = computed(() => this.familiesSignal().length);
@@ -24,6 +28,20 @@ export class FamilyService {
       .get<Family[]>('api/family')
       .pipe(finalize(() => this.loadingSignal.set(false)))
       .subscribe((families) => this.familiesSignal.set(families));
+    this.fetchSkippedStreaks();
+  }
+
+  fetchSkippedStreaks() {
+    this.httpHandler
+      .get<Record<number, number>>('api/family/history-summary')
+      .subscribe((streaks) => this.skippedStreaksSignal.set(streaks));
+  }
+
+  fetchFamilyHistory(familyId: number) {
+    this.familyHistorySignal.set([]);
+    this.httpHandler
+      .get<FamilyDistribution[]>(`api/family/${familyId}/distributions`)
+      .subscribe((history) => this.familyHistorySignal.set(history));
   }
 
   createFamily(family: Family) {

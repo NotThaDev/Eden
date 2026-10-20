@@ -11,6 +11,7 @@ import { PageHeader } from '../../../shared/components/layouts/page-header/page-
 import { Snackbar } from '../../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { DistributionService } from '../services/distribution.service';
+import { AttendanceDialog } from './attendance-dialog/attendance-dialog';
 import { DistributionTable } from './distribution-table/distribution-table';
 import { NewDistributionDialog } from './new-distribution-dialog/new-distribution-dialog';
 
@@ -80,6 +81,34 @@ export class Distributions implements OnInit {
       borderBottomLeftRadius: idx === this.distributions().length - 1 ? '4px' : '0',
       borderBottomRightRadius: idx === this.distributions().length - 1 ? '4px' : '0',
     };
+  }
+
+  onOpenAttendance(distributionId?: number): void {
+    if (!distributionId) {
+      return;
+    }
+
+    this.distributionService.getAttendance(distributionId).subscribe({
+      error: () => this.showSnackbar('Impossibile caricare le presenze.', SnackbarStatus.ERROR),
+      next: (attendance) => {
+        this.dialogRef
+          .open(AttendanceDialog, { data: { attendance } })
+          .afterClosed()
+          .subscribe((result) => {
+            if (result === undefined) {
+              return;
+            }
+            this.distributionService.updateAttendance(distributionId, result).subscribe({
+              error: () => this.showSnackbar('Impossibile salvare le presenze.', SnackbarStatus.ERROR),
+              complete: () => this.showSnackbar('Presenze salvate con successo!', SnackbarStatus.SUCCESS),
+            });
+          });
+      },
+    });
+  }
+
+  private showSnackbar(title: string, status: SnackbarStatus): void {
+    this._snackBar.openFromComponent(Snackbar, { data: { title, status } });
   }
 
   isDistributionPast(distributionDate: Date | string): boolean {
