@@ -5,12 +5,12 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-// Custom white theme palette with blue accent
+// Custom white theme palette with green accent (matches docs/assets/logo.svg)
 html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$blue-palette,
+        primary: mat.$green-palette,
         tertiary: mat.$orange-palette,
         error: mat.$red-palette,
       ),
@@ -23,11 +23,11 @@ html {
   --info-blue-border: #90caf9;
   --info-blue-dark: #1565c0;
 
-  // Primary color (Blue)
-  --mat-sys-primary: #0062a8;
+  // Primary color (Green, from the logo)
+  --mat-sys-primary: #2e7d32;
   --mat-sys-on-primary: #ffffff;
-  --mat-sys-primary-container: #d1e4ff;
-  --mat-sys-on-primary-container: #001d35;
+  --mat-sys-primary-container: #c8e6c9;
+  --mat-sys-on-primary-container: #1b5e20;
 
   // Error/Warn color (Red)
   --mat-sys-error: #ba1a1a;
