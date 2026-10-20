@@ -1,12 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,8 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { AssistanceLevel, Family } from '../../../core/models/family';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
@@ -41,7 +33,7 @@ import { NecessityLevelChipProps } from './utils';
     MatInputModule,
     MatIconModule,
     LabelChip,
-    MatTabsModule,
+    NgTemplateOutlet,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './boc-family.html',
@@ -55,19 +47,11 @@ export class BocFamily implements OnInit {
 
   displayedColumns: string[] = ['name', 'members', 'children', 'isee', 'necessityLevel', 'actions'];
 
-  dataSource = new MatTableDataSource<Family>([]);
   loading = computed(() => this.familyService.loading());
 
-  showOccasional = signal(false);
   families = this.familyService.families;
-  regularCount = computed(() => this.families().filter((f) => !f.isOccasional).length);
-  occasionalCount = computed(() => this.families().filter((f) => f.isOccasional).length);
-
-  constructor() {
-    effect(() => {
-      this.dataSource.data = this.families().filter((f) => !!f.isOccasional === this.showOccasional());
-    });
-  }
+  regularFamilies = computed(() => this.families().filter((f) => !f.isOccasional));
+  occasionalFamilies = computed(() => this.families().filter((f) => f.isOccasional));
 
   ngOnInit() {
     this.familyService.fetchFamilies();
@@ -184,9 +168,7 @@ export class BocFamily implements OnInit {
   }
 
   openDialog(): void {
-    const dialogRef = this.dialogRef.open(CreateFamilyDialog, {
-      data: { isOccasional: this.showOccasional() },
-    });
+    const dialogRef = this.dialogRef.open(CreateFamilyDialog);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result !== undefined) {
