@@ -39,6 +39,7 @@ namespace Eden.Api.Controllers
             existingFamily.Members = family.Members ?? existingFamily.Members;
             existingFamily.Children = family.Children ?? existingFamily.Children;
             existingFamily.Isee = family.Isee ?? existingFamily.Isee;
+            existingFamily.IsOccasional = family.IsOccasional ?? existingFamily.IsOccasional;
 
             if (existingFamily.Members < existingFamily.Children)
             {
