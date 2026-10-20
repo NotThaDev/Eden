@@ -1,3 +1,17 @@
+<app-drawer
+  [isOpen]="selectedFamily() !== null"
+  (onClose)="selectedFamily.set(null)"
+  [title]="'Storico Distribuzioni'"
+>
+  @if (selectedFamily(); as family) {
+    <app-family-history-drawer-content
+      [familyId]="family.id!"
+      [skipped]="skippedCount(family)"
+      [isOccasional]="family.isOccasional"
+    ></app-family-history-drawer-content>
+  }
+</app-drawer>
+
 <app-page-header [title]="'Famiglie'">
   <div class="content-container">
     <div class="toolbar">
@@ -7,63 +21,93 @@
       </button>
     </div>
 
-    <div class="eden-table-container">
-      <table mat-table [dataSource]="dataSource" class="eden-table">
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nome</th>
-          <td mat-cell *matCellDef="let family">{{ family.name }}</td>
-        </ng-container>
+    <section class="family-section">
+      <h3 class="section-title">Assistiti</h3>
+      <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: regularFamilies() }" />
+    </section>
 
-        <!-- Members Column -->
-        <ng-container matColumnDef="members">
-          <th mat-header-cell *matHeaderCellDef>Membri</th>
-          <td mat-cell *matCellDef="let family">{{ family.members }}</td>
-        </ng-container>
+    @if (occasionalFamilies().length > 0) {
+      <section class="family-section">
+        <h3 class="section-title">Saltuari</h3>
+        <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: occasionalFamilies() }" />
+      </section>
+    }
 
-        <!-- Children Column -->
-        <ng-container matColumnDef="children">
-          <th mat-header-cell *matHeaderCellDef>Minori</th>
-          <td mat-cell *matCellDef="let family">{{ family.children }}</td>
-        </ng-container>
+    <ng-template #familyTable let-rows>
+      <div class="eden-table-container">
+        <table mat-table [dataSource]="rows" class="eden-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nome</th>
+            <td mat-cell *matCellDef="let family">{{ family.name }}</td>
+          </ng-container>
 
-        <!-- ISEE Column -->
-        <ng-container matColumnDef="isee">
-          <th mat-header-cell *matHeaderCellDef>ISEE</th>
-          <td mat-cell *matCellDef="let family">{{ family.isee }}</td>
-        </ng-container>
+          <!-- Members Column -->
+          <ng-container matColumnDef="members">
+            <th mat-header-cell *matHeaderCellDef>Membri</th>
+            <td mat-cell *matCellDef="let family">{{ family.members }}</td>
+          </ng-container>
 
-        <!-- Necessity Level Column -->
-        <ng-container matColumnDef="necessityLevel">
-          <th mat-header-cell *matHeaderCellDef>Grado di Necessità</th>
-          <td mat-cell *matCellDef="let family">
-            @if (getNecessityGradeLabelProp(family.necessityLevel); as props) {
-              <app-label-chip
-                [label]="props.label"
-                [borderColor]="props.borderColor"
-                [backgroundColor]="props.backgroundColor"
-                [textColor]="props.textColor"
+          <!-- Children Column -->
+          <ng-container matColumnDef="children">
+            <th mat-header-cell *matHeaderCellDef>Minori</th>
+            <td mat-cell *matCellDef="let family">{{ family.children }}</td>
+          </ng-container>
+
+          <!-- ISEE Column -->
+          <ng-container matColumnDef="isee">
+            <th mat-header-cell *matHeaderCellDef>ISEE</th>
+            <td mat-cell *matCellDef="let family">{{ family.isee }}</td>
+          </ng-container>
+
+          <!-- Necessity Level Column -->
+          <ng-container matColumnDef="necessityLevel">
+            <th mat-header-cell *matHeaderCellDef>Grado di Necessità</th>
+            <td mat-cell *matCellDef="let family">
+              @if (getNecessityGradeLabelProp(family.necessityLevel); as props) {
+                <app-label-chip
+                  [label]="props.label"
+                  [borderColor]="props.borderColor"
+                  [backgroundColor]="props.backgroundColor"
+                  [textColor]="props.textColor"
+                >
+                </app-label-chip>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef [style]="{ width: '160px' }"></th>
+            <td mat-cell *matCellDef="let family">
+              @let skipped = skippedCount(family);
+              <button
+                matIconButton
+                class="action-button"
+                [class.history-warn]="skipped >= 2 && skipped < 4"
+                [class.history-alert]="skipped >= 4"
+                title="Storico distribuzioni"
+                aria-label="Storico distribuzioni"
+                (click)="selectedFamily.set(family)"
               >
-              </app-label-chip>
-            }
-          </td>
-        </ng-container>
+                <mat-icon>history</mat-icon>
+              </button>
+              <button matIconButton class="action-button" (click)="editFamily(family)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button matIconButton class="action-button" (click)="deleteFamily(family)">
+                <mat-icon class="delete-icon">delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef [style]="{ width: '120px' }"></th>
-          <td mat-cell *matCellDef="let family">
-            <button matIconButton class="action-button" (click)="editFamily(family)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button matIconButton class="action-button" (click)="deleteFamily(family)">
-              <mat-icon class="delete-icon">delete_outline</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-    </div>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.skip-alert]="skippedCount(row) > 5"
+          ></tr>
+        </table>
+      </div>
+    </ng-template>
   </div>
 </app-page-header>

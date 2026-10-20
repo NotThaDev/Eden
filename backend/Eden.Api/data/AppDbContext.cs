@@ -12,6 +12,7 @@ namespace Eden.Api.Data
         public DbSet<Distribution> Distributions => Set<Distribution>();
         public DbSet<DistributionItem> DistributionItems => Set<DistributionItem>();
         public DbSet<AssociationSettings> AssociationSettings => Set<AssociationSettings>();
+        public DbSet<DistributionAttendance> DistributionAttendances => Set<DistributionAttendance>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +38,18 @@ namespace Eden.Api.Data
             modelBuilder.Entity<AssociationSettings>()
                 .Property(s => s.Id)
                 .ValueGeneratedNever();
+
+            modelBuilder.Entity<DistributionAttendance>()
+                .HasOne<Distribution>()
+                .WithMany()
+                .HasForeignKey(a => a.DistributionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DistributionAttendance>()
+                .HasOne(a => a.Family)
+                .WithMany()
+                .HasForeignKey(a => a.FamilyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {

@@ -18,6 +18,14 @@
         [style]="getAccordionStyle($index)"
       >
         <div class="distribution-actions">
+          <button
+            matButton="outlined"
+            [disabled]="!isDistributionPast(distribution.distributionDate)"
+            (click)="onOpenAttendance(distribution.id)"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            Presenze
+          </button>
           <button matButton="outlined" (click)="onExportSheets(distribution)">
             <mat-icon>download</mat-icon>
             Esporta schede

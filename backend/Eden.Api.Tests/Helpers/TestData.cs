@@ -17,10 +17,10 @@ public static class TestData
         return (await response.Content.ReadFromJsonAsync<Food>())!;
     }
 
-    public static async Task<Family> CreateFamilyAsync(HttpClient client, uint members = 4, uint children = 2, int isee = 4500)
+    public static async Task<Family> CreateFamilyAsync(HttpClient client, uint members = 4, uint children = 2, int isee = 4500, bool isOccasional = false)
     {
         var response = await client.PostAsJsonAsync("/api/family",
-            new Family { Name = UniqueName("Family"), Members = members, Children = children, Isee = isee });
+            new Family { Name = UniqueName("Family"), Members = members, Children = children, Isee = isee, IsOccasional = isOccasional });
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<Family>())!;
     }
@@ -47,6 +47,14 @@ public static class TestData
             }
         ]
     };
+
+    public static async Task<DistributionDto> CreateDistributionAsync(HttpClient client, int familyId, int foodId, DateTime date)
+    {
+        var request = SingleFamilyDistribution(familyId, foodId, 1) with { DistributionDate = date };
+        var response = await client.PostAsJsonAsync("/api/distribution", request);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<DistributionDto>())!;
+    }
 
     public static async Task<Food> GetFoodAsync(HttpClient client, int id)
     {

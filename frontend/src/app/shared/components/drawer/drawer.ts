@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, input, output } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
@@ -12,6 +12,13 @@ export class Drawer {
   title = input.required<string>();
   isOpen = input.required<boolean>();
   onClose = output<void>();
+
+  constructor() {
+    const host = inject(ElementRef<HTMLElement>).nativeElement;
+    // Render at the end of <body> so the backdrop covers the sidebar too (page content has its own stacking context).
+    afterNextRender(() => document.body.appendChild(host));
+    inject(DestroyRef).onDestroy(() => host.remove());
+  }
 
   normalizedWidth = computed(() => {
     const w = this.width();
