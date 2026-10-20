@@ -1,5 +1,5 @@
-:host { display: flex; flex-direction: column; height: 100%; }
-.history-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; overflow-y: auto; flex: 1 1 auto; }
+:host { display: flex; flex-direction: column; flex: 1 0 auto; gap: 16px; }
+.history-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
 .suggestion {
   margin-top: auto;
   display: flex; gap: 12px; align-items: flex-start;
