@@ -8,7 +8,7 @@
           [checked]="row.present"
           (change)="setPresent(row.familyId, $any($event.target).checked)"
         />
-        {{ row.familyName ?? 'Famiglia ' + row.familyId }}
+        {{ row.family?.name ?? 'Famiglia ' + row.familyId }}
       </label>
     } @empty {
       <span>Nessuna famiglia in questa distribuzione</span>

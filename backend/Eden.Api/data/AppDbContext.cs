@@ -41,7 +41,7 @@ namespace Eden.Api.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DistributionAttendance>()
-                .HasOne<Family>()
+                .HasOne(a => a.Family)
                 .WithMany()
                 .HasForeignKey(a => a.FamilyId)
                 .OnDelete(DeleteBehavior.Cascade);

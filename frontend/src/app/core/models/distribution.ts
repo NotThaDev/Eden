@@ -20,8 +20,9 @@ export interface DistributionItem {
 }
 
 export interface DistributionAttendance {
+  id?: number;
+  distributionId: number;
   familyId: number;
-  familyName?: string;
-  // null = not recorded yet
-  present: boolean | null;
+  family?: Family;
+  present: boolean;
 }
