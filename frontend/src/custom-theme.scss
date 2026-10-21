@@ -5,7 +5,7 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-// Custom white theme palette with green accent (matches docs/assets/logo.svg)
+// Light and dark theme with green accent (matches docs/assets/logo.svg)
 html {
   @include mat.theme(
     (
@@ -19,43 +19,53 @@ html {
     )
   );
 
-  --info-blue-light: #e3f2fd;
-  --info-blue-border: #90caf9;
-  --info-blue-dark: #1565c0;
+  color-scheme: light dark;
+
+  &.theme-light {
+    color-scheme: light;
+  }
+
+  &.theme-dark {
+    color-scheme: dark;
+  }
+
+  --info-blue-light: light-dark(#e3f2fd, #0d2a42);
+  --info-blue-border: light-dark(#90caf9, #1e5a8a);
+  --info-blue-dark: light-dark(#1565c0, #90caf9);
 
   // Primary color (Green, from the logo)
-  --mat-sys-primary: #2e7d32;
-  --mat-sys-on-primary: #ffffff;
-  --mat-sys-primary-container: #c8e6c9;
-  --mat-sys-on-primary-container: #1b5e20;
+  --mat-sys-primary: light-dark(#2e7d32, #81c784);
+  --mat-sys-on-primary: light-dark(#ffffff, #0a3912);
+  --mat-sys-primary-container: light-dark(#c8e6c9, #1b5e20);
+  --mat-sys-on-primary-container: light-dark(#1b5e20, #c8e6c9);
 
   // Error/Warn color (Red)
-  --mat-sys-error: #ba1a1a;
-  --mat-sys-on-error: #ffffff;
-  --mat-sys-error-container: #ffdad6;
-  --mat-sys-on-error-container: #410002;
+  --mat-sys-error: light-dark(#ba1a1a, #ffb4ab);
+  --mat-sys-on-error: light-dark(#ffffff, #690005);
+  --mat-sys-error-container: light-dark(#ffdad6, #93000a);
+  --mat-sys-on-error-container: light-dark(#410002, #ffdad6);
 
-  // Surface colors (Clean white palette)
-  --mat-sys-surface: #fafbfc; // Main background - very light blue-gray
-  --mat-sys-surface-dim: #f5f6f7; // Slightly darker surface
-  --mat-sys-surface-bright: #ffffff; // Bright white for cards/elevated content
-  --mat-sys-surface-container: #ffffff; // Container background (white)
-  --mat-sys-surface-container-low: #f9fafb;
-  --mat-sys-surface-container-lowest: #ffffff;
-  --mat-sys-surface-container-high: #f3f4f6;
-  --mat-sys-surface-container-highest: #ebedef;
+  // Surface colors (Clean white palette / dark palette)
+  --mat-sys-surface: light-dark(#fafbfc, #121513); // Main background - very light blue-gray
+  --mat-sys-surface-dim: light-dark(#f5f6f7, #0f1210); // Slightly darker surface
+  --mat-sys-surface-bright: light-dark(#ffffff, #2a2e2b); // Bright white for cards/elevated content
+  --mat-sys-surface-container: light-dark(#ffffff, #1c201d); // Container background (white)
+  --mat-sys-surface-container-low: light-dark(#f9fafb, #171a18);
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0c0f0d);
+  --mat-sys-surface-container-high: light-dark(#f3f4f6, #232825);
+  --mat-sys-surface-container-highest: light-dark(#ebedef, #2c322e);
 
   // Text colors
-  --mat-sys-on-surface: #1a1d21; // Primary text - dark gray
-  --mat-sys-on-surface-variant: #5f6368; // Secondary text - medium gray
+  --mat-sys-on-surface: light-dark(#1a1d21, #e2e5e1); // Primary text - dark gray
+  --mat-sys-on-surface-variant: light-dark(#5f6368, #b8beb8); // Secondary text - medium gray
 
   // Border and divider colors
-  --mat-sys-outline: #dadce0; // Subtle borders
-  --mat-sys-outline-variant: #e8eaed; // Very subtle borders
+  --mat-sys-outline: light-dark(#dadce0, #8a938c); // Subtle borders
+  --mat-sys-outline-variant: light-dark(#e8eaed, #2e3530); // Very subtle borders
 
   // Background colors for different states
-  --mat-sys-background: #fafbfc;
-  --mat-sys-on-background: #1a1d21;
+  --mat-sys-background: light-dark(#fafbfc, #121513);
+  --mat-sys-on-background: light-dark(#1a1d21, #e2e5e1);
 }
 
 body {
@@ -113,8 +123,6 @@ body {
   .mdc-snackbar__surface {
     box-shadow: none !important;
   }
-
-  color-scheme: light;
 
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
