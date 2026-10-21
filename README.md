@@ -26,7 +26,7 @@ Members, beneficiaries, distributions, and scheduled events in one place.
 | | Feature | Description |
 |---|---------|-------------|
 | 👥 | **Member management** | Manage the organization's volunteers |
-| 📦 | **Distribution management** | Plan and track distributions to beneficiaries |
+| 📦 | **Distribution management** | Plan and track distributions to beneficiaries ([how it works](docs/DISTRIBUTIONS.md)) |
 | 🏠 | **Beneficiary management** | Keep beneficiary families and their needs up to date |
 | 📅 | **Event calendar management** | Schedule and organize events |
 

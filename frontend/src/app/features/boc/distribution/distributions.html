@@ -1,17 +1,17 @@
 <app-page-header title="Distribuzioni">
   <div class="header-actions">
-    <button matButton="filled" [disabled]="true">
+    <button matButton="filled" (click)="onNewDistribution()">
       <mat-icon>add</mat-icon>
       Nuova Distribuzione
     </button>
   </div>
 
-  @if (dataSource.data.length === 0) {
+  @if (distributions().length === 0) {
     <div [style]="{ width: '100%', height: ' 100%' }">
       <empty-state description="Non sono presenti distribuzioni"></empty-state>
     </div>
   } @else {
-    @for (distribution of dataSource.data; track distribution.id) {
+    @for (distribution of distributions(); track distribution.id) {
       <accordion
         [title]="titleTemplate"
         [key]="'distribution-details-' + (distribution.id ?? $index)"
