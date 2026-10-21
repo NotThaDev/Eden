@@ -15,9 +15,13 @@
       [opened]="isMobileNavOpen() || !isMobile()"
       [ngClass]="isNavbarCollapsed() && !isMobile() ? 'collapsed' : ''"
     >
+      <div class="sidenav-body">
       @if(!isMobile()) {
       <div class="logo-container" (click)="toggleNavbarCollapse()">
-        <span class="logo-text">{{ isNavbarCollapsed() ? 'E' : 'Eden' }}</span>
+        <img class="logo-image" src="logo.svg" alt="Eden logo" width="32" height="32" />
+        @if (!isNavbarCollapsed()) {
+        <span class="logo-text">Eden</span>
+        }
       </div>
       }
       <mat-nav-list>
@@ -54,6 +58,16 @@
         <app-sub-menu [navEntry]="route" />
         } }
       </mat-nav-list>
+      <button
+        matIconButton
+        class="theme-toggle"
+        (click)="toggleTheme()"
+        [matTooltip]="isDark() ? 'Tema chiaro' : 'Tema scuro'"
+        [attr.aria-label]="isDark() ? 'Attiva tema chiaro' : 'Attiva tema scuro'"
+      >
+        <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      </div>
     </mat-sidenav>
 
     <mat-sidenav-content class="layout-content">

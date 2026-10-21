@@ -2,7 +2,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser, NgClass } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -59,7 +59,11 @@ export class MainLayout implements OnDestroy, OnInit {
   protected readonly isMobile = signal(true);
   protected readonly isMobileNavOpen = signal(false);
   protected readonly isNavbarCollapsed = signal(false);
+  protected readonly isDark = signal(false);
 
+  private readonly _document = inject(DOCUMENT);
+  private readonly _darkQuery: MediaQueryList;
+  private readonly _darkQueryListener: () => void;
   private readonly _mobileQuery: MediaQueryList;
   private readonly _mobileQueryListener: () => void;
   private readonly _router = inject(Router);
@@ -76,6 +80,27 @@ export class MainLayout implements OnDestroy, OnInit {
     if (!this.isMobile()) return;
     this.isMobileNavOpen.set(!this.isMobileNavOpen());
     this.sidenav.toggle();
+  }
+
+  protected toggleTheme(): void {
+    const theme = this.isDark() ? 'light' : 'dark';
+    const classList = this._document.documentElement.classList;
+    classList.remove('theme-light', 'theme-dark');
+    classList.add(`theme-${theme}`);
+    this.isDark.set(theme === 'dark');
+
+    try {
+      localStorage.setItem('eden-theme', theme);
+    } catch {
+      // Storage unavailable (private mode): the choice lasts for this page only
+    }
+  }
+
+  private resolveIsDark(): boolean {
+    const classList = this._document.documentElement.classList;
+    if (classList.contains('theme-dark')) return true;
+    if (classList.contains('theme-light')) return false;
+    return this._darkQuery.matches;
   }
 
   isRouteActive(path: string): boolean {
@@ -104,14 +129,20 @@ export class MainLayout implements OnDestroy, OnInit {
     this.isMobile.set(this._mobileQuery.matches);
     this._mobileQueryListener = () => this.isMobile.set(this._mobileQuery.matches);
 
+    this._darkQuery = media.matchMedia('(prefers-color-scheme: dark)');
+    this._darkQueryListener = () => this.isDark.set(this.resolveIsDark());
+
     if (isPlatformBrowser(this.platformId)) {
       this._mobileQuery.addEventListener('change', this._mobileQueryListener);
+      this.isDark.set(this.resolveIsDark());
+      this._darkQuery.addEventListener('change', this._darkQueryListener);
     }
   }
 
   ngOnDestroy(): void {
     if (isPlatformBrowser(this.platformId)) {
       this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
+      this._darkQuery.removeEventListener('change', this._darkQueryListener);
     }
   }
 

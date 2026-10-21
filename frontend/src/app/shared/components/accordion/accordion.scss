@@ -2,7 +2,7 @@
   display: block;
 
   display: block;
-  border: solid 1px #ccc;
+  border: solid 1px var(--mat-sys-outline-variant);
 }
 
 .accordion-item-header {
@@ -18,12 +18,12 @@
 }
 
 .accordion-item-header.expanded {
-  background-color: #eeeeee76;
+  background-color: var(--mat-sys-surface-container-high);
 }
 
 .accordion-item-description {
   font-size: 0.85em;
-  color: #999;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .arrow-icon {
@@ -66,5 +66,5 @@
 
 .accordion-item-header:hover {
   cursor: pointer;
-  background-color: #eee;
+  background-color: var(--mat-sys-surface-container-high);
 }

@@ -8,7 +8,7 @@
 .page-header-title {
   font-size: 32px;
   font-weight: 600;
-  color: #343a40;
+  color: var(--mat-sys-on-surface);
   margin: 0 0 32px 0;
   letter-spacing: -0.02em;
 }

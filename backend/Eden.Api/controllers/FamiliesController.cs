@@ -26,6 +26,24 @@ namespace Eden.Api.Controllers
             return Ok(family);
         }
 
+        [HttpGet("history-summary")]
+        public async Task<IActionResult> GetHistorySummary()
+        {
+            var history = await Family.GetDistributionHistoryAsync();
+            var today = DateTime.UtcNow.Date;
+            return Ok(history.GroupBy(h => h.FamilyId).ToDictionary(g => g.Key, g => Family.CountSkippedStreak(g, today)));
+        }
+
+        [HttpGet("{id}/distributions")]
+        public async Task<IActionResult> GetDistributions(int id)
+        {
+            if (await Family.GetFamilyByIdAsync(id) == null)
+            {
+                return NotFound();
+            }
+            return Ok(await Family.GetDistributionHistoryAsync(id));
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateFamilyRequest family)
         {
@@ -39,6 +57,7 @@ namespace Eden.Api.Controllers
             existingFamily.Members = family.Members ?? existingFamily.Members;
             existingFamily.Children = family.Children ?? existingFamily.Children;
             existingFamily.Isee = family.Isee ?? existingFamily.Isee;
+            existingFamily.IsOccasional = family.IsOccasional ?? existingFamily.IsOccasional;
 
             if (existingFamily.Members < existingFamily.Children)
             {
