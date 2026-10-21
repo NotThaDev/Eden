@@ -56,7 +56,7 @@
     top: 0;
     height: 100%;
     min-width: 350px;
-    background-color: #fff;
+    background-color: var(--mat-sys-surface-container);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
     padding: 16px;
     z-index: 1001;
@@ -67,7 +67,7 @@
     position: fixed;
     top: 0;
     height: 100%;
-    background-color: #fff;
+    background-color: var(--mat-sys-surface-container);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
     padding: 16px;
     z-index: 1001;
