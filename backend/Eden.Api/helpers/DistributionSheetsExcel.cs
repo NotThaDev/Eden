@@ -130,7 +130,8 @@ namespace Eden.Api.Helpers
             // Rows top..top+2: logo on the left, family code on the right
             var pic = ws.AddPicture(new MemoryStream(logo));
             pic.Placement = XLPicturePlacement.Move; // must be set before sizing
-            pic.MoveTo(ws.Cell(r, col)).WithSize(LogoPx, LogoPx);
+            // Keep the aspect ratio: at most LogoPx high and 2.5 * LogoPx wide (column A is ~170 px)
+            pic.MoveTo(ws.Cell(r, col)).Scale(Math.Min((double)LogoPx / pic.OriginalHeight, 2.5 * LogoPx / pic.OriginalWidth));
             // shortcut: the family code is the DB id until families get a proper code, then show that instead
             var code = ws.Cell(r, right);
             code.Value = $"Codice: {familyId}";

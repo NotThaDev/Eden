@@ -7,6 +7,9 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Indirizzo</mat-label><input matInput formControlName="address" /></mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Telefono</mat-label><input matInput formControlName="phone" /></mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" /></mat-form-field>
+          <div class="settings-actions">
+            <button matButton="filled" type="submit" [disabled]="loading()">Salva</button>
+          </div>
         </div>
       </mat-tab>
       <mat-tab label="Schede">
@@ -32,8 +35,5 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-    <div class="settings-actions">
-      <button matButton="filled" type="submit" [disabled]="loading()">Salva</button>
-    </div>
   </form>
 </app-page-header>

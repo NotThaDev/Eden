@@ -1,7 +1,7 @@
 <article class="sheet" [attr.aria-label]="'Scheda ' + family().familyId">
   <header class="sheet-header">
     <div class="sheet-brand">
-      <img [src]="logoUrl() ?? 'logo.svg'" alt="" width="40" height="40" />
+      <img class="sheet-logo" [src]="logoUrl() ?? 'logo.svg'" alt="" />
       <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
     </div>
     <!-- shortcut: the family code is the DB id until families get a proper code -->
