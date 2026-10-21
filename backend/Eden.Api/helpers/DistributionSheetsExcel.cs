@@ -9,15 +9,27 @@ namespace Eden.Api.Helpers
     public static class DistributionSheetsExcel
     {
         private const double RowHeight = 15;
-        private const double NameRowHeight = 20;
-        private const double TitleRowHeight = 30;
+        private const int MinFoodRows = 10;
+        private const int LogoPx = 56; // ~3 rows of 15pt (45pt = 60px)
 
-        public static byte[] Build(Distribution distribution, AssociationSettings settings)
+        private static readonly Lazy<byte[]> AppLogo = new(() =>
         {
+            using var stream = typeof(DistributionSheetsExcel).Assembly.GetManifestResourceStream("Eden.Api.assets.app-logo.png")!;
+            using var copy = new MemoryStream();
+            stream.CopyTo(copy);
+            return copy.ToArray();
+        });
+
+        // logo: seam for the association logo (PR #67); defaults to the app logo
+        public static byte[] Build(Distribution distribution, byte[]? logo = null)
+        {
+            logo ??= AppLogo.Value;
+
+            // Sheets carry no family name anymore, so they are ordered by family code (id)
             var families = distribution.Items
                 .GroupBy(i => i.FamilyId)
-                .Select(g => (Family: g.First().Family, Items: g.ToList()))
-                .OrderBy(g => g.Family?.Name ?? string.Empty)
+                .OrderBy(g => g.Key)
+                .Select(g => (FamilyId: g.Key, Items: g.ToList()))
                 .ToList();
 
             var foods = distribution.Items
@@ -27,10 +39,11 @@ namespace Eden.Api.Helpers
                 .OrderBy(f => f!.Name)
                 .ToList();
 
-            // title + name + date + members + blank + header + n foods + blank + "Note" + 3 notes
-            // + 2 blank + line + label + 2 blank + line + label = n + 19
-            var blockHeight = foods.Count + 19;
-            var pageRows = 2 * blockHeight + 2;
+            // 3 logo rows + date + blank + header + n food rows + 2 blank + signature line + label = n + 10,
+            // n = max(10, foods): the table always has at least 10 rows, more foods grow the block
+            var tableRows = Math.Max(MinFoodRows, foods.Count);
+            var blockHeight = tableRows + 10;
+            var pageRows = 2 * blockHeight + 2; // block + 2 gap rows + block; the page break follows the second block
             var date = $"Data: {distribution.DistributionDate.ToLocalTime():dd/MM/yyyy}";
 
             using var workbook = new XLWorkbook();
@@ -45,18 +58,19 @@ namespace Eden.Api.Helpers
             ws.Column("G").Width = 10;
 
             var pageCount = Math.Max(1, (families.Count + 3) / 4);
-            var lastRow = pageCount * pageRows - 2;
+            var lastRow = pageCount * pageRows;
             ws.Rows(1, lastRow).Height = RowHeight;
 
             for (var i = 0; i < families.Count; i++)
             {
                 var top = 1 + (i / 4) * pageRows + ((i % 4) / 2) * (blockHeight + 2);
                 var col = i % 2 == 0 ? 1 : 5;
-                WriteBlock(ws, top, col, families[i].Family, families[i].Items, foods!, date, settings);
+                WriteBlock(ws, top, col, families[i].FamilyId, families[i].Items, foods!, tableRows, date, logo);
             }
 
             // Fixed scale instead of FitToPages: Excel ignores manual page breaks with FitToPages.
-            var pageHeightPt = 2 * (RowHeight * blockHeight + (NameRowHeight - RowHeight) + (TitleRowHeight - RowHeight)) + 2 * RowHeight;
+            // All rows are RowHeight high, so one printed page is pageRows rows.
+            var pageHeightPt = RowHeight * pageRows;
             var availableHeight = 842 - 2 * 0.4 * 72;
             var availableWidth = 595 - 2 * 0.4 * 72;
             var widthPt = (24 + 11 + 10 + 3 + 24 + 11 + 10) * 5.6;
@@ -79,7 +93,7 @@ namespace Eden.Api.Helpers
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
-            return settings.Logo != null ? DeduplicateMedia(stream.ToArray()) : stream.ToArray();
+            return DeduplicateMedia(stream.ToArray());
         }
 
         // ClosedXML embeds a separate copy of the image for every AddPicture call; point all pictures at one copy.
@@ -107,37 +121,25 @@ namespace Eden.Api.Helpers
             return ms.ToArray();
         }
 
-        private static void WriteBlock(IXLWorksheet ws, int top, int col, Family? family,
-            List<DistributionItem> items, List<Food?> foods, string date, AssociationSettings settings)
+        private static void WriteBlock(IXLWorksheet ws, int top, int col, int? familyId,
+            List<DistributionItem> items, List<Food?> foods, int tableRows, string date, byte[] logo)
         {
             var r = top;
             var right = col + 2;
 
-            var title = ws.Range(r, col, r, col + 1).Merge();
-            title.Value = settings.EffectiveSheetTitle;
-            title.Style.Font.Bold = true;
-            title.Style.Font.FontSize = 12;
-            title.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-            ws.Row(r).Height = TitleRowHeight;
-            if (settings.Logo != null)
-            {
-                var picture = ws.AddPicture(new MemoryStream(settings.Logo));
-                picture.Placement = XLPicturePlacement.Move; // default MoveAndSize forbids setting height
-                // Fit inside the 3rd column of the title row (~70 x 36 px)
-                picture.Scale(Math.Min(36.0 / picture.OriginalHeight, 70.0 / picture.OriginalWidth));
-                picture.MoveTo(ws.Cell(r, right), 2, 2);
-            }
-            r++;
-
-            var name = ws.Range(r, col, r, right).Merge();
-            name.Value = family?.Name ?? string.Empty;
-            name.Style.Font.Bold = true;
-            name.Style.Font.FontSize = 14;
-            ws.Row(r).Height = NameRowHeight;
-            r++;
+            // Rows top..top+2: logo on the left, family code on the right
+            var pic = ws.AddPicture(new MemoryStream(logo));
+            pic.Placement = XLPicturePlacement.Move; // must be set before sizing
+            pic.MoveTo(ws.Cell(r, col)).WithSize(LogoPx, LogoPx);
+            // shortcut: the family code is the DB id until families get a proper code, then show that instead
+            var code = ws.Cell(r, right);
+            code.Value = $"Codice: {familyId}";
+            code.Style.Font.Bold = true;
+            code.Style.Font.FontSize = 12;
+            code.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+            r += 3;
 
             ws.Cell(r++, col).Value = date;
-            ws.Cell(r++, col).Value = $"Componenti: {family?.Members ?? 0} (minori: {family?.Children ?? 0})";
             r++;
 
             var header = ws.Range(r, col, r, right);
@@ -160,30 +162,20 @@ namespace Eden.Api.Helpers
                 ws.Cell(r, col + 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 r++;
             }
-            if (foods.Count > 0)
-            {
-                var body = ws.Range(firstFood, col, r - 1, right);
-                body.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                body.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-            }
+            // Pad to tableRows with empty bordered rows
+            r = firstFood + tableRows;
+            var body = ws.Range(firstFood, col, r - 1, right);
+            body.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            body.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+            r += 2;
+            ws.Range(r, col + 1, r, right).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
             r++;
-
-            ws.Cell(r++, col).Value = "Note";
-            ws.Cell(r - 1, col).Style.Font.Bold = true;
-            var notes = ws.Range(r, col, r + 2, right).Merge();
-            notes.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            r += 3;
-
-            foreach (var label in new[] { "Firma operatore", "Firma beneficiario" })
-            {
-                r += 2;
-                ws.Range(r, col, r, right).Style.Border.BottomBorder = XLBorderStyleValues.Thin;
-                r++;
-                var cell = ws.Cell(r++, col);
-                cell.Value = label;
-                cell.Style.Font.FontSize = 8;
-                cell.Style.Font.Italic = true;
-            }
+            var label = ws.Range(r, col + 1, r, right).Merge();
+            label.Value = "Firma beneficiario";
+            label.Style.Font.FontSize = 8;
+            label.Style.Font.Italic = true;
+            label.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
         }
     }
 }

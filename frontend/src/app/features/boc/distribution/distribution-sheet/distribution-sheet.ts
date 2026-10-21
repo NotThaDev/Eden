@@ -16,9 +16,10 @@ export class DistributionSheet {
   family = input.required<DistributionFamily>();
 
   readonly foods = computed(() => sheetFoods(this.distribution()));
+  // Excel pads the table to at least 10 rows
+  readonly emptyRows = computed(() => Array.from({ length: Math.max(0, 10 - this.foods().length) }));
 
   private settingsService = inject(SettingsService);
-  readonly title = computed(() => this.settingsService.settings()?.effectiveSheetTitle ?? 'Scheda distribuzione');
   readonly logoUrl = this.settingsService.logoUrl;
 
   constructor() {

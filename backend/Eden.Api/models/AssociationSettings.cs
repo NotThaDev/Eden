@@ -9,14 +9,12 @@ namespace Eden.Api.Models
     public class AssociationSettings
     {
         public const int SingletonId = 1;
-        public const string DefaultSheetTitle = "Scheda distribuzione";
 
         public int Id { get; set; } = SingletonId;
         public string Name { get; set; } = string.Empty;
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public string? SheetTitle { get; set; }
 
         [JsonIgnore]
         public byte[]? Logo { get; set; }
@@ -25,12 +23,6 @@ namespace Eden.Api.Models
 
         [NotMapped]
         public bool HasLogo => Logo != null;
-
-        [NotMapped]
-        public string EffectiveSheetTitle =>
-            !string.IsNullOrWhiteSpace(SheetTitle) ? SheetTitle.Trim()
-            : !string.IsNullOrWhiteSpace(Name) ? Name.Trim()
-            : DefaultSheetTitle;
 
         // Returns the saved row, or an unsaved default when nothing was saved yet
         public static Task<AssociationSettings> GetSettingsAsync()

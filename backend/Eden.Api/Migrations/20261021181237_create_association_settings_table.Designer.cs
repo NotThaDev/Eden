@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eden.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261019182119_create_association_settings_table")]
+    [Migration("20261021181237_create_association_settings_table")]
     partial class create_association_settings_table
     {
         /// <inheritdoc />
@@ -49,9 +49,6 @@ namespace Eden.Api.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
-                    b.Property<string>("SheetTitle")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("AssociationSettings");
@@ -71,6 +68,33 @@ namespace Eden.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Distributions");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.DistributionAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DistributionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Present")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("DistributionId", "FamilyId")
+                        .IsUnique();
+
+                    b.ToTable("DistributionAttendances");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>
@@ -119,6 +143,9 @@ namespace Eden.Api.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsOccasional")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Isee")
                         .HasColumnType("integer");
@@ -223,6 +250,23 @@ namespace Eden.Api.Migrations
                     b.HasIndex("LoadId");
 
                     b.ToTable("LoadItems");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.DistributionAttendance", b =>
+                {
+                    b.HasOne("Eden.Api.Models.Distribution", null)
+                        .WithMany()
+                        .HasForeignKey("DistributionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eden.Api.Models.Family", "Family")
+                        .WithMany()
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>

@@ -177,7 +177,7 @@ namespace Eden.Api.Controllers
             }
 
             var settings = await AssociationSettings.GetSettingsAsync();
-            var content = DistributionSheetsExcel.Build(distribution, settings);
+            var content = DistributionSheetsExcel.Build(distribution, settings.Logo);
             var fileName = $"schede-distribuzione-{distribution.DistributionDate.ToLocalTime():yyyy-MM-dd}.xlsx";
             return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }

@@ -29,7 +29,6 @@ namespace Eden.Api.Controllers
             settings.Address = request.Address;
             settings.Phone = request.Phone;
             settings.Email = request.Email;
-            settings.SheetTitle = request.SheetTitle;
             await settings.SaveAsync();
             return Ok(settings);
         }

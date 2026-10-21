@@ -3,7 +3,5 @@ export interface AssociationSettings {
   address?: string | null;
   phone?: string | null;
   email?: string | null;
-  sheetTitle?: string | null;
   hasLogo?: boolean;
-  effectiveSheetTitle?: string;
 }

@@ -34,7 +34,6 @@ export class Settings implements OnInit {
     address: [''],
     phone: [''],
     email: ['', Validators.email],
-    sheetTitle: [''],
   });
 
   constructor() {
@@ -42,7 +41,7 @@ export class Settings implements OnInit {
       const s = this.settingsService.settings();
       if (s) {
         this.form.patchValue({
-          name: s.name, address: s.address ?? '', phone: s.phone ?? '', email: s.email ?? '', sheetTitle: s.sheetTitle ?? '',
+          name: s.name, address: s.address ?? '', phone: s.phone ?? '', email: s.email ?? '',
         });
       }
     });

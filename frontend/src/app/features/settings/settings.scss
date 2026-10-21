@@ -24,8 +24,14 @@
   margin-top: 8px;
 }
 
-.logo-label {
+.logo-label,
+.tab-hint {
   color: var(--mat-sys-on-surface-variant);
+}
+
+.tab-hint {
+  margin: 0;
+  font-size: 12px;
 }
 
 .logo-preview {

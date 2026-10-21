@@ -19,7 +19,6 @@ namespace Eden.Api.Migrations
                     Address = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: true),
-                    SheetTitle = table.Column<string>(type: "text", nullable: true),
                     Logo = table.Column<byte[]>(type: "bytea", nullable: true),
                     LogoContentType = table.Column<string>(type: "text", nullable: true)
                 },

@@ -34,7 +34,6 @@ public class SettingsTests(EdenApiFactory factory)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var settings = await response.Content.ReadFromJsonAsync<AssociationSettings>();
         Assert.NotNull(settings);
-        Assert.False(string.IsNullOrEmpty(settings!.EffectiveSheetTitle));
     }
 
     [Fact]
@@ -42,13 +41,12 @@ public class SettingsTests(EdenApiFactory factory)
     {
         var name = TestData.UniqueName("Assoc");
 
-        var put = await _client.PutAsJsonAsync("/api/settings", new AssociationSettings { Name = name, Phone = "123", SheetTitle = null });
+        var put = await _client.PutAsJsonAsync("/api/settings", new AssociationSettings { Name = name, Phone = "123" });
         Assert.Equal(HttpStatusCode.OK, put.StatusCode);
 
         var saved = await _client.GetFromJsonAsync<AssociationSettings>("/api/settings");
         Assert.Equal(name, saved!.Name);
         Assert.Equal("123", saved.Phone);
-        Assert.Equal(name, saved.EffectiveSheetTitle);
     }
 
     [Fact]
@@ -108,9 +106,9 @@ public class SettingsTests(EdenApiFactory factory)
     }
 
     [Fact]
-    public async Task GetSheets_WithLogo_ReturnsWorkbookWithTitleAndLogo()
+    public async Task GetSheets_WithLogo_UsesAssociationLogo()
     {
-        await _client.PutAsJsonAsync("/api/settings", new AssociationSettings { Name = TestData.UniqueName("Assoc"), SheetTitle = "Scheda Test" });
+        await _client.PutAsJsonAsync("/api/settings", new AssociationSettings { Name = TestData.UniqueName("Assoc") });
         await _client.PutAsync("/api/settings/logo", LogoForm(Png));
         var food = await TestData.CreateFoodAsync(_client, quantity: 10);
         var family = await TestData.CreateFamilyAsync(_client);
@@ -120,13 +118,18 @@ public class SettingsTests(EdenApiFactory factory)
         var response = await _client.GetAsync($"/api/distribution/{distribution.Id}/sheets");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var buffer = new MemoryStream();
-        await response.Content.CopyToAsync(buffer);
-        buffer.Position = 0;
-        using var workbook = new XLWorkbook(buffer);
-        var ws = workbook.Worksheet(1);
-        Assert.Equal("Scheda Test", ws.Cell(1, 1).GetString());
-        Assert.Single(ws.Pictures);
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+        using (var zip = new System.IO.Compression.ZipArchive(new MemoryStream(bytes)))
+        {
+            // Deduplicated: exactly one embedded image, and it is the association logo
+            var media = Assert.Single(zip.Entries, e => e.FullName.StartsWith("xl/media/"));
+            using var entry = media.Open();
+            using var copy = new MemoryStream();
+            await entry.CopyToAsync(copy);
+            Assert.Equal(Png, copy.ToArray());
+        }
+        using var workbook = new XLWorkbook(new MemoryStream(bytes));
+        Assert.Single(workbook.Worksheet(1).Pictures);
     }
 
     [Fact]

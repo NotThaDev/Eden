@@ -46,9 +46,6 @@ namespace Eden.Api.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
-                    b.Property<string>("SheetTitle")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("AssociationSettings");
@@ -260,11 +257,13 @@ namespace Eden.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eden.Api.Models.Family", null)
+                    b.HasOne("Eden.Api.Models.Family", "Family")
                         .WithMany()
                         .HasForeignKey("FamilyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>
