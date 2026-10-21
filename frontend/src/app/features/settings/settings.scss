@@ -1,5 +1,51 @@
-.settings-tab { display: flex; flex-direction: column; gap: 8px; max-width: 480px; padding: 16px 0; }
-.logo-section { display: flex; flex-direction: column; gap: 8px; }
-.logo-label { color: var(--mat-sys-on-surface-variant); }
-.logo-preview { max-width: 160px; max-height: 80px; object-fit: contain; border: 1px solid var(--mat-sys-outline-variant); padding: 4px; background: #fff; }
-.logo-actions, .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 560px;
+}
+
+.settings-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 24px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.logo-label {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.logo-preview {
+  max-width: 160px;
+  max-height: 80px;
+  object-fit: contain;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  padding: 4px;
+  background: #fff; // logo is printed on white sheets
+}
+
+.logo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+}

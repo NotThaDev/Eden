@@ -1,4 +1,5 @@
-import { MatMenuModule } from '@angular/material/menu';
+import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
@@ -21,7 +22,9 @@ import { filter } from 'rxjs';
   styleUrl: './main-layout.scss',
   imports: [
     MatToolbarModule,
-    MatMenuModule,
+    CdkConnectedOverlay,
+    CdkOverlayOrigin,
+    CdkTrapFocus,
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
@@ -60,6 +63,35 @@ export class MainLayout implements OnDestroy, OnInit {
   protected readonly isMobileNavOpen = signal(false);
   protected readonly isNavbarCollapsed = signal(false);
   protected readonly isDark = signal(false);
+  protected readonly isSettingsMenuOpen = signal(false);
+  // Open to the right of the entry, growing upward; fall back to above it so it stays on screen
+  protected readonly settingsMenuPositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'bottom', offsetX: 8 },
+    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },
+  ];
+
+  protected closeSettingsMenu(): void {
+    this.isSettingsMenuOpen.set(false);
+  }
+
+  protected onSettingsMenuOutsideClick(event: MouseEvent, trigger: HTMLElement): void {
+    // Clicks on the trigger are handled by its own (click) toggle
+    if (trigger.contains(event.target as Node)) return;
+    // cdkTrapFocus returns focus to the trigger on close: give it back to what the user clicked
+    const clicked = this._document.activeElement as HTMLElement | null;
+    this.closeSettingsMenu();
+    if (clicked && clicked !== this._document.body) setTimeout(() => clicked.focus());
+  }
+
+  // Escape is handled by cdkConnectedOverlay; role="menu" expects arrow keys to move between items
+  protected onSettingsMenuKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    const items = Array.from(this._document.querySelectorAll<HTMLElement>('.settings-menu-item'));
+    const current = items.indexOf(this._document.activeElement as HTMLElement);
+    const step = event.key === 'ArrowDown' ? 1 : -1;
+    items[(current + step + items.length) % items.length]?.focus();
+  }
 
   private readonly _document = inject(DOCUMENT);
   private readonly _darkQuery: MediaQueryList;

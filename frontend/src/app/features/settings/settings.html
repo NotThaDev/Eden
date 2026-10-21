@@ -1,17 +1,17 @@
 <app-page-header title="Impostazioni">
-  <form [formGroup]="form" (ngSubmit)="onSave()">
+  <form class="settings-form" [formGroup]="form" (ngSubmit)="onSave()">
     <mat-tab-group>
       <mat-tab label="Associazione">
         <div class="settings-tab">
-          <mat-form-field appearance="outline"><mat-label>Nome associazione</mat-label><input matInput formControlName="name" required /></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>Indirizzo</mat-label><input matInput formControlName="address" /></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>Telefono</mat-label><input matInput formControlName="phone" /></mat-form-field>
-          <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" /></mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Nome associazione</mat-label><input matInput formControlName="name" required /></mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Indirizzo</mat-label><input matInput formControlName="address" /></mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Telefono</mat-label><input matInput formControlName="phone" /></mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" /></mat-form-field>
         </div>
       </mat-tab>
       <mat-tab label="Schede">
         <div class="settings-tab">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Titolo delle schede</mat-label>
             <input matInput formControlName="sheetTitle" />
             <mat-hint>Se vuoto viene usato il nome dell'associazione</mat-hint>

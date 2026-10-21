@@ -58,15 +58,56 @@
         <app-sub-menu [navEntry]="route" />
         } }
       </mat-nav-list>
-      <button
-        matIconButton
-        class="theme-toggle"
-        (click)="toggleTheme()"
-        [matTooltip]="isDark() ? 'Tema chiaro' : 'Tema scuro'"
-        [attr.aria-label]="isDark() ? 'Attiva tema chiaro' : 'Attiva tema scuro'"
+      <mat-nav-list class="settings-nav">
+        <button
+          mat-list-item
+          type="button"
+          class="nav-entry"
+          cdkOverlayOrigin
+          #settingsOrigin="cdkOverlayOrigin"
+          [activated]="isRouteActive('settings')"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isSettingsMenuOpen()"
+          aria-label="Impostazioni"
+          [matTooltip]="isNavbarCollapsed() && !isMobileNavOpen() ? 'Impostazioni' : ''"
+          matTooltipPosition="right"
+          [matTooltipDisabled]="isSettingsMenuOpen()"
+          (click)="isSettingsMenuOpen.set(!isSettingsMenuOpen())"
+        >
+          <mat-icon matListItemIcon>settings</mat-icon>
+          @if (!isNavbarCollapsed() || isMobileNavOpen()) {
+          <span matListItemTitle>Impostazioni</span>
+          }
+        </button>
+      </mat-nav-list>
+
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="settingsOrigin"
+        [cdkConnectedOverlayOpen]="isSettingsMenuOpen()"
+        [cdkConnectedOverlayPositions]="settingsMenuPositions"
+        (overlayOutsideClick)="onSettingsMenuOutsideClick($event, settingsOrigin.elementRef.nativeElement)"
+        (overlayKeydown)="onSettingsMenuKeydown($event)"
+        (detach)="closeSettingsMenu()"
       >
-        <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
+        <div class="settings-menu" role="menu" aria-label="Impostazioni" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+          <button
+            type="button"
+            class="settings-menu-item"
+            role="menuitemcheckbox"
+            [attr.aria-checked]="isDark()"
+            (click)="toggleTheme()"
+          >
+            <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            <span>Tema scuro</span>
+            <span class="settings-menu-state">{{ isDark() ? 'Attivo' : 'Spento' }}</span>
+          </button>
+          <a class="settings-menu-item" role="menuitem" routerLink="/settings" (click)="closeSettingsMenu()">
+            <mat-icon>tune</mat-icon>
+            <span>Impostazioni</span>
+          </a>
+        </div>
+      </ng-template>
       </div>
     </mat-sidenav>
 

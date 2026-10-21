@@ -96,8 +96,51 @@
   height: 100%;
 }
 
-.theme-toggle {
+.settings-nav {
   margin-top: auto;
   margin-bottom: 8px;
-  align-self: center;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  padding-top: 8px;
+}
+
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  padding: 4px 0;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface);
+  box-shadow: var(--mat-sys-level2);
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--mat-sys-surface-container-highest);
+    outline: none;
+  }
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.settings-menu-state {
+  margin-left: auto;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
 }
