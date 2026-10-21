@@ -1,8 +1,11 @@
-<article class="sheet" [attr.aria-label]="'Scheda ' + (family().family?.name ?? '')">
+<article class="sheet" [attr.aria-label]="'Scheda ' + family().familyId">
   <header class="sheet-header">
-    <h3 class="sheet-family">{{ family().family?.name }}</h3>
-    <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
-    <p>Componenti: {{ family().family?.members }} (minori: {{ family().family?.children }})</p>
+    <div class="sheet-brand">
+      <img src="logo.svg" alt="" width="40" height="40" />
+      <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
+    </div>
+    <!-- shortcut: the family code is the DB id until families get a proper code -->
+    <p class="sheet-code">Codice: {{ family().familyId }}</p>
   </header>
 
   <table class="sheet-table">
@@ -21,22 +24,18 @@
           <td class="sheet-quantity">{{ quantity(food.id!) }}</td>
         </tr>
       }
+      @for (row of emptyRows(); track $index) {
+        <tr class="sheet-empty-row">
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      }
     </tbody>
   </table>
 
-  <div class="sheet-notes">
-    <span class="sheet-label">Note</span>
-    <div class="sheet-notes-box"></div>
-  </div>
-
-  <div class="sheet-signatures">
-    <div class="sheet-signature">
-      <span class="sheet-signature-line"></span>
-      <span class="sheet-caption">Firma operatore</span>
-    </div>
-    <div class="sheet-signature">
-      <span class="sheet-signature-line"></span>
-      <span class="sheet-caption">Firma beneficiario</span>
-    </div>
+  <div class="sheet-signature">
+    <span class="sheet-signature-line"></span>
+    <span class="sheet-caption">Firma beneficiario</span>
   </div>
 </article>

@@ -35,9 +35,7 @@ export function sheetQuantity(family: DistributionFamily, foodId: number): numbe
     .reduce((sum, item) => sum + item.quantity, 0);
 }
 
-// Sheet order: by family name (matches the Excel export)
+// Sheet order: by family code (id), sheets show no family name (matches the Excel export)
 export function sheetFamilies(distribution: Distribution): DistributionFamily[] {
-  return [...distribution.items].sort((left, right) =>
-    (left.family?.name ?? '').localeCompare(right.family?.name ?? ''),
-  );
+  return [...distribution.items].sort((left, right) => left.familyId - right.familyId);
 }

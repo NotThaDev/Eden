@@ -15,6 +15,8 @@ export class DistributionSheet {
   family = input.required<DistributionFamily>();
 
   readonly foods = computed(() => sheetFoods(this.distribution()));
+  // Excel pads the table to at least 10 rows
+  readonly emptyRows = computed(() => Array.from({ length: Math.max(0, 10 - this.foods().length) }));
 
   quantity(foodId: number): number {
     return sheetQuantity(this.family(), foodId);
