@@ -1,0 +1,181 @@
+:host {
+  display: block;
+}
+
+// Fills the dialog: rail full height on the left, title / content / actions on the right
+.side-stepper {
+  display: flex;
+  min-height: min(540px, 90vh);
+  max-height: 90vh;
+}
+
+.side-stepper-rail {
+  display: flex;
+  flex: 0 0 210px;
+  flex-direction: column;
+  padding: 48px 16px;
+  overflow-y: auto;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+}
+
+.side-stepper-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    color: var(--mat-sys-on-surface);
+    font-weight: 500;
+  }
+}
+
+.side-stepper-marker {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.side-stepper-step.active .side-stepper-marker,
+.side-stepper-step.completed .side-stepper-marker {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.side-stepper-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.side-stepper-label {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.side-stepper-description {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Connector between two markers: 8px button padding + 16px half marker - 1px half line
+// Lines grow so the steps spread over the whole rail height
+.side-stepper-line {
+  display: block;
+  flex: 1;
+  width: 2px;
+  min-height: 24px;
+  margin-left: 23px;
+  background-color: var(--mat-sys-outline-variant);
+
+  &.completed {
+    background-color: var(--mat-sys-primary);
+  }
+}
+
+.side-stepper-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.side-stepper-header,
+.side-stepper-footer {
+  flex: none;
+}
+
+.side-stepper-footer {
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.side-stepper-content {
+  flex: 1;
+  min-height: 0;
+  padding: 0 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+// Phones: horizontal row of markers and lines on top, labels hidden (buttons keep aria-label)
+@media (max-width: 600px) {
+  .side-stepper {
+    flex-direction: column;
+  }
+
+  .side-stepper-rail {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  .side-stepper-step {
+    flex: none;
+    justify-content: center;
+    width: auto;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+  }
+
+  .side-stepper-text {
+    display: none;
+  }
+
+  .side-stepper-line {
+    flex: 1;
+    width: auto;
+    height: 2px;
+    min-height: 0;
+    margin: 0 4px;
+  }
+
+  // Title above the dots: flatten the right column into the stepper's column
+  .side-stepper-main {
+    display: contents;
+  }
+
+  .side-stepper-header {
+    order: -1;
+  }
+
+  .side-stepper-content {
+    padding: 16px 24px 0;
+  }
+}
