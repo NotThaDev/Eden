@@ -31,7 +31,7 @@ export class FamilyHistoryDrawerContent {
   }
 
   statusProps(present: boolean): NecessityLevelChipProps {
-    if (present) return { label: 'Presente', textColor: '#1B5E20', backgroundColor: '#E8F5E9', borderColor: '#4CAF50' };
-    return { label: 'Assente', textColor: '#C62828', backgroundColor: '#FFEBEE', borderColor: '#E53935' };
+    if (present) return { label: 'Presente', textColor: 'light-dark(#1B5E20, #A5D6A7)', backgroundColor: 'light-dark(#E8F5E9, #12291a)', borderColor: '#4CAF50' };
+    return { label: 'Assente', textColor: 'light-dark(#C62828, #FFCDD2)', backgroundColor: 'light-dark(#FFEBEE, #3b1214)', borderColor: '#E53935' };
   }
 }
