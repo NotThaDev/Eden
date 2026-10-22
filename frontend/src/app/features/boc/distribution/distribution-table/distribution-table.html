@@ -3,7 +3,7 @@
     <empty-state description="Nessun dato disponibile"></empty-state>
   } @else {
     <table mat-table [dataSource]="dataSource" class="eden-table">
-      <ng-container matColumnDef="familyName">
+      <ng-container matColumnDef="familyName" sticky>
         <th mat-header-cell *matHeaderCellDef>Famiglia</th>
         <td mat-cell *matCellDef="let row" class="family-cell">{{ row.familyName }}</td>
         <td mat-footer-cell *matFooterCellDef>Totale</td>

@@ -1,4 +1,5 @@
 <side-stepper
+  #stepper
   [linear]="true"
   [icons]="['groups', 'restaurant', 'fact_check']"
   [descriptions]="['Quando e a chi', 'Cosa distribuire', 'Controlla e conferma']"
@@ -59,11 +60,6 @@
         }
       </div>
     </form>
-    <div class="step-buttons">
-      <button type="button" matButton="filled" cdkStepperNext [disabled]="familiesInvalid()">
-        Avanti
-      </button>
-    </div>
   </cdk-step>
 
   <cdk-step [stepControl]="foodsForm" label="Alimenti">
@@ -106,12 +102,6 @@
         }
       </div>
     </form>
-    <div class="step-buttons">
-      <button type="button" matButton cdkStepperPrevious>Indietro</button>
-      <button type="button" matButton="filled" cdkStepperNext [disabled]="foodsInvalid()">
-        Avanti
-      </button>
-    </div>
   </cdk-step>
 
   <cdk-step label="Riepilogo">
@@ -146,12 +136,18 @@
         }
       }
     </div>
-    <div class="step-buttons">
-      <button type="button" matButton cdkStepperPrevious>Indietro</button>
-    </div>
   </cdk-step>
   <mat-dialog-actions sideStepperFooter>
     <button matButton="text" (click)="dialogRef.close()">Annulla</button>
-    <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+    @if (currentStep() > 0) {
+      <button matButton (click)="stepper.previous()">Indietro</button>
+    }
+    @if (currentStep() < SUMMARY_STEP_INDEX) {
+      <button matButton="filled" (click)="stepper.next()" [disabled]="currentStepInvalid()">
+        Avanti
+      </button>
+    } @else {
+      <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+    }
   </mat-dialog-actions>
 </side-stepper>

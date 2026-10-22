@@ -7,7 +7,7 @@
   </div>
 
   @if (distributions().length === 0) {
-    <div [style]="{ width: '100%', height: ' 100%' }">
+    <div class="empty-wrapper">
       <empty-state description="Non sono presenti distribuzioni"></empty-state>
     </div>
   } @else {
@@ -32,10 +32,20 @@
 
       <ng-template #titleTemplate>
         <div class="distribution-title">
-          <span class="distribution-title-text"> Dettagli Distribuzione </span>
+          <div class="distribution-title-text">
+            <span class="distribution-date-text">
+              {{ distribution.distributionDate | date: 'dd/MM/yyyy' }}
+            </span>
+            <span class="distribution-families">
+              {{ distribution.items.length }}
+              {{ distribution.items.length === 1 ? 'famiglia' : 'famiglie' }}
+            </span>
+          </div>
           <app-label-chip
-            class="distribution-date"
-            [label]="(distribution.distributionDate | date: 'dd/MM/yyyy') ?? ''"
+            class="distribution-status"
+            [label]="
+              isDistributionPast(distribution.distributionDate) ? 'Conclusa' : 'In programma'
+            "
             [backgroundColor]="
               getDistributionChipColors(distribution.distributionDate).backgroundColor
             "

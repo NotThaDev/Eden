@@ -1,9 +1,4 @@
-import {
-  CdkStep,
-  CdkStepperNext,
-  CdkStepperPrevious,
-  StepperSelectionEvent,
-} from '@angular/cdk/stepper';
+import { CdkStep, StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -32,8 +27,6 @@ const SUMMARY_STEP_INDEX = 2;
   imports: [
     MatButtonModule,
     CdkStep,
-    CdkStepperNext,
-    CdkStepperPrevious,
     SideStepper,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -66,6 +59,8 @@ export class NewDistributionDialog implements OnInit {
   foods = computed(() => this._foodService.foods().filter((f) => f.quantity > 0));
 
   readonly today = DateTime.now().startOf('day');
+  readonly SUMMARY_STEP_INDEX = SUMMARY_STEP_INDEX;
+  currentStep = signal(0);
 
   familiesForm = this._formBuilder.group({
     distributionDate: this._formBuilder.control<DateTime | null>(this.today, Validators.required),
@@ -110,6 +105,7 @@ export class NewDistributionDialog implements OnInit {
   }
 
   onStepChange(event: StepperSelectionEvent): void {
+    this.currentStep.set(event.selectedIndex);
     if (event.selectedIndex === SUMMARY_STEP_INDEX) {
       this.loadPreview();
     }
@@ -173,6 +169,10 @@ export class NewDistributionDialog implements OnInit {
 
   selectedLabel(count: number, singular: string, plural: string): string {
     return count === 1 ? `1 ${singular}` : `${count} ${plural}`;
+  }
+
+  currentStepInvalid(): boolean {
+    return this.currentStep() === 0 ? this.familiesInvalid() : this.foodsInvalid();
   }
 
   canCreate(): boolean {
