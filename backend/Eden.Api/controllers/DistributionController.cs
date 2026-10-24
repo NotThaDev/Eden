@@ -1,4 +1,5 @@
 using Eden.Api.DTOs;
+using Eden.Api.Helpers;
 using Eden.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -164,6 +165,20 @@ namespace Eden.Api.Controllers
             }
 
             return Ok(_mapToDistributionDto(distribution));
+        }
+
+        [HttpGet("{id}/sheets")]
+        public async Task<IActionResult> GetSheets(int id)
+        {
+            var distribution = await Distribution.GetDistributionByIdAsync(id);
+            if (distribution == null)
+            {
+                return NotFound();
+            }
+
+            var content = DistributionSheetsExcel.Build(distribution);
+            var fileName = $"schede-distribuzione-{distribution.DistributionDate.ToLocalTime():yyyy-MM-dd}.xlsx";
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [HttpPut("{id}")]

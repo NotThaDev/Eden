@@ -1,8 +1,13 @@
 <side-stepper
   #stepper
   [linear]="true"
-  [icons]="['groups', 'restaurant', 'fact_check']"
-  [descriptions]="['Quando e a chi', 'Cosa distribuire', 'Controlla e conferma']"
+  [icons]="['groups', 'restaurant', 'fact_check', 'print']"
+  [descriptions]="[
+    'Quando e a chi',
+    'Cosa distribuire',
+    'Controlla e conferma',
+    'Anteprima e stampa',
+  ]"
   (selectionChange)="onStepChange($event)"
 >
   <h2 mat-dialog-title sideStepperHeader>Nuova Distribuzione</h2>
@@ -105,7 +110,7 @@
   </cdk-step>
 
   <cdk-step label="Riepilogo">
-    <div class="step-container">
+    <div class="step-container fill">
       <p class="step-intro">Controlla la distribuzione prima di crearla</p>
       @if (previewLoading()) {
         <p class="step-status">Calcolo in corso...</p>
@@ -137,17 +142,63 @@
       }
     </div>
   </cdk-step>
+
+  <cdk-step label="Genera schede">
+    <div class="step-container fill">
+      <p class="step-intro">
+        Controlla le schede: alla conferma la distribuzione viene creata e le schede scaricate in
+        Excel
+      </p>
+      @if (preview(); as distribution) {
+        @if (distribution.items.length > 0) {
+          <div class="sheet-carousel">
+            <app-distribution-sheet
+              [distribution]="distribution"
+              [family]="sheetFamilies()[sheetIndex()]"
+            ></app-distribution-sheet>
+            <div class="sheet-carousel-nav">
+              <button
+                matIconButton
+                type="button"
+                aria-label="Scheda precedente"
+                [disabled]="sheetIndex() === 0"
+                (click)="moveSheet(-1)"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="sheet-carousel-count">
+                Scheda {{ sheetIndex() + 1 }} di {{ sheetFamilies().length }}
+              </span>
+              <button
+                matIconButton
+                type="button"
+                aria-label="Scheda successiva"
+                [disabled]="sheetIndex() === sheetFamilies().length - 1"
+                (click)="moveSheet(1)"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @else {
+          <p class="step-status">Nessuna scheda da generare.</p>
+        }
+      }
+    </div>
+  </cdk-step>
   <mat-dialog-actions sideStepperFooter>
     <button matButton="text" (click)="dialogRef.close()">Annulla</button>
     @if (currentStep() > 0) {
       <button matButton (click)="stepper.previous()">Indietro</button>
     }
-    @if (currentStep() < SUMMARY_STEP_INDEX) {
+    @if (currentStep() < LAST_STEP_INDEX) {
       <button matButton="filled" (click)="stepper.next()" [disabled]="currentStepInvalid()">
         Avanti
       </button>
     } @else {
-      <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+      <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">
+        Crea e scarica schede
+      </button>
     }
   </mat-dialog-actions>
 </side-stepper>

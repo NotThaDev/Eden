@@ -48,5 +48,13 @@
 .distribution-actions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+
+  @media (max-width: 600px) {
+    button {
+      width: 100%;
+    }
+  }
 }

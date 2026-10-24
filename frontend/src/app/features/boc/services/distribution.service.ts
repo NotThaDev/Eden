@@ -84,4 +84,10 @@ export class DistributionService {
   previewDistribution(familyIds: number[], foodIds: number[]) {
     return this.httpHandler.post<Distribution>('api/distribution/preview', { familyIds, foodIds });
   }
+
+  downloadSheets(distributionId: number) {
+    return this.httpHandler.get<Blob>(`api/distribution/${distributionId}/sheets`, {
+      responseType: 'blob',
+    });
+  }
 }
