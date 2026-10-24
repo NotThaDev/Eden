@@ -1,7 +1,14 @@
-<article class="sheet" [attr.aria-label]="'Scheda ' + family().familyId">
+<article
+  class="sheet"
+  [attr.aria-label]="'Scheda ' + family().familyId"
+  [style.--sheet-rows]="foods().length + emptyRows().length"
+>
   <header class="sheet-header">
     <div class="sheet-brand">
-      <img src="logo.svg" alt="" width="40" height="40" />
+      <div class="sheet-logo">
+        <img src="logo.svg" alt="" width="40" height="40" />
+        <span class="sheet-title">Distribuzione Alimentare</span>
+      </div>
       <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
     </div>
     <!-- shortcut: the family code is the DB id until families get a proper code -->

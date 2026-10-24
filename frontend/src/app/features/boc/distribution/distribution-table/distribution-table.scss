@@ -1,3 +1,14 @@
+// Shrinks inside a height-capped parent so the container scrolls and the sticky header / totals hold
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.eden-table-container {
+  min-height: 0;
+}
+
 .mat-mdc-footer-cell {
   font-weight: 600;
   border-top: 2px solid var(--mat-sys-outline-variant);

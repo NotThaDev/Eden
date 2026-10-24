@@ -100,10 +100,15 @@ namespace Eden.Api.Helpers
             var r = top;
             var right = col + 2;
 
-            // Rows top..top+2: logo on the left, family code on the right
+            // Rows top..top+2: logo and title on the left, family code on the right
             var pic = ws.AddPicture(new MemoryStream(logo));
             pic.Placement = XLPicturePlacement.Move; // must be set before sizing
             pic.MoveTo(ws.Cell(r, col)).WithSize(LogoPx, LogoPx);
+            // Indent pushes the title past the logo; the text overflows into the empty cell on its right
+            var title = ws.Cell(r + 1, col);
+            title.Value = "Distribuzione Alimentare";
+            title.Style.Font.Bold = true;
+            title.Style.Alignment.Indent = 3;
             // shortcut: the family code is the DB id until families get a proper code, then show that instead
             var code = ws.Cell(r, right);
             code.Value = $"Codice: {familyId}";

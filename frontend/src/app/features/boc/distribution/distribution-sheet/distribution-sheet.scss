@@ -3,22 +3,26 @@
   width: 100%;
 }
 
-// Paper-like preview: a quarter of an A4 page (105 x 148.5 mm); the ratio is a minimum, content can grow
+// Paper-like preview: a quarter of an A4 page (105 x 148.5 mm); the ratio is a minimum, content can grow.
+// All sizes are in em, so the font size scales the whole sheet to fit the parent's size container:
+// 340px wide at most (28.34em at 12px), height = max(A4 ratio 40.1em, ~17.5em fixed + 2.2em per table row)
 .sheet {
+  --sheet-em: min(12px, 100cqw / 28.34, 100cqh / max(40.1, 17.5 + var(--sheet-rows, 10) * 2.2));
+
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  max-width: 340px;
+  gap: 1em;
+  width: calc(var(--sheet-em) * 28.34);
   aspect-ratio: 105 / 148.5;
   margin: 0 auto;
-  padding: 16px;
+  padding: 1.33em;
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 4px;
   background-color: #fff;
   box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
   color: #1f1f1f;
-  font-size: 12px;
+  font-size: var(--sheet-em);
+  line-height: 1.4;
 
   p {
     margin: 0;
@@ -31,7 +35,7 @@
 
   th,
   td {
-    padding: 4px 6px;
+    padding: 0.33em 0.5em;
     border: 1px solid #c7c7c7;
     text-align: left;
   }
@@ -55,11 +59,26 @@
 .sheet-brand {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.33em;
+}
+
+.sheet-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+
+  img {
+    width: 3.33em;
+    height: 3.33em;
+  }
+}
+
+.sheet-title {
+  font-weight: 600;
 }
 
 .sheet-code {
-  font-size: 14px;
+  font-size: 1.17em;
   font-weight: 600;
 }
 
@@ -72,18 +91,18 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 0.17em;
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 2em;
 }
 
 .sheet-signature-line {
   width: 60%;
-  height: 20px;
+  height: 1.67em;
   border-bottom: 1px solid #1f1f1f;
 }
 
 .sheet-caption {
-  font-size: 10px;
+  font-size: 0.83em;
   font-style: italic;
 }
