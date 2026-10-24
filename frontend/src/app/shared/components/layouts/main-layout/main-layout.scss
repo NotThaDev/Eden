@@ -139,8 +139,39 @@
   }
 }
 
-.settings-menu-state {
-  margin-left: auto;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 12px;
+// Segmented control: one row of icon buttons, the active one filled
+.settings-menu-theme {
+  display: flex;
+  gap: 4px;
+  margin: 4px 12px 8px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-high);
+}
+
+.settings-theme-option {
+  flex: 1;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 999px;
+
+  &[aria-checked='true'] {
+    background: var(--mat-sys-primary);
+
+    mat-icon {
+      color: var(--mat-sys-on-primary);
+    }
+  }
+}
+
+.settings-nav-title {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-nav-arrow {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }

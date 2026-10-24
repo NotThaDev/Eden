@@ -76,7 +76,11 @@
         >
           <mat-icon matListItemIcon>settings</mat-icon>
           @if (!isNavbarCollapsed() || isMobileNavOpen()) {
-          <span matListItemTitle>Impostazioni</span>
+          <span matListItemTitle class="settings-nav-title">
+            Impostazioni
+            <!-- Points to where the settings popup opens -->
+            <mat-icon class="settings-nav-arrow" aria-hidden="true">chevron_right</mat-icon>
+          </span>
           }
         </button>
       </mat-nav-list>
@@ -91,17 +95,21 @@
         (detach)="closeSettingsMenu()"
       >
         <div class="settings-menu" role="menu" aria-label="Impostazioni" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-          <button
-            type="button"
-            class="settings-menu-item"
-            role="menuitemcheckbox"
-            [attr.aria-checked]="isDark()"
-            (click)="toggleTheme()"
-          >
-            <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-            <span>Tema scuro</span>
-            <span class="settings-menu-state">{{ isDark() ? 'Attivo' : 'Spento' }}</span>
-          </button>
+          <div class="settings-menu-theme" role="group" aria-label="Tema">
+            @for (option of themeOptions; track option.value) {
+            <button
+              type="button"
+              class="settings-menu-item settings-theme-option"
+              role="menuitemradio"
+              [attr.aria-checked]="theme() === option.value"
+              [attr.aria-label]="option.label"
+              [matTooltip]="option.label"
+              (click)="setTheme(option.value)"
+            >
+              <mat-icon>{{ option.icon }}</mat-icon>
+            </button>
+            }
+          </div>
           <a class="settings-menu-item" role="menuitem" routerLink="/settings" (click)="closeSettingsMenu()">
             <mat-icon>tune</mat-icon>
             <span>Impostazioni</span>
