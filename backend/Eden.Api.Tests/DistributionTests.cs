@@ -97,6 +97,7 @@ public class DistributionTests(EdenApiFactory factory)
         var texts = ws.CellsUsed().Select(c => c.GetString()).ToList();
 
         Assert.Equal($"Codice: {family.Id}", ws.Cell(1, 3).GetString());
+        Assert.Equal("Distribuzione Alimentare", ws.Cell(2, 1).GetString());
         Assert.DoesNotContain(texts, t => t.Contains(family.Name));
         Assert.Contains("Firma beneficiario", texts);
         Assert.DoesNotContain("Firma operatore", texts);

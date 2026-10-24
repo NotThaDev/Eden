@@ -122,8 +122,11 @@
   border-top: 1px solid var(--mat-sys-outline-variant);
 }
 
+// Column flex so a step can fill the height and scroll a single block (see .step-container.fill)
 .side-stepper-content {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
   padding: 0 24px;
   overflow-x: hidden;
