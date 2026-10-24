@@ -4,15 +4,11 @@
   [style.--sheet-rows]="foods().length + emptyRows().length"
 >
   <header class="sheet-header">
-    <div class="sheet-brand">
-      <div class="sheet-logo">
-        <img [src]="logoUrl() ?? 'logo.svg'" alt="" />
-        <span class="sheet-title">Distribuzione Alimentare</span>
-      </div>
-      <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
-    </div>
+    <img class="sheet-logo" [src]="logoUrl() ?? 'logo.svg'" alt="" />
     <!-- shortcut: the family code is the DB id until families get a proper code -->
     <p class="sheet-code">Codice: {{ family().familyId }}</p>
+    <p class="sheet-title">Distribuzione Alimentare</p>
+    <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
   </header>
 
   <table class="sheet-table">

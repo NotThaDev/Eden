@@ -50,29 +50,25 @@
   text-align: center !important;
 }
 
+// Same layout as the printed sheet: logo | code, then title | date
 .sheet-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 0.33em 0.5em;
 
-.sheet-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 0.33em;
-}
-
-.sheet-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-
-  // Association logos keep their ratio: 40px high, at most 100px wide (at 12px)
-  img {
-    height: 3.33em;
-    max-width: 8.33em;
-    object-fit: contain;
+  > :nth-child(even) {
+    text-align: right;
   }
+}
+
+// Association logos keep their ratio: 40px high, at most 100px wide (at 12px)
+.sheet-logo {
+  height: 3.33em;
+  max-width: 8.33em;
+  object-fit: contain;
+  object-position: left;
+  justify-self: start;
 }
 
 .sheet-title {
