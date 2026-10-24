@@ -1,5 +1,29 @@
 <app-page-header title="Distribuzioni">
   <div class="header-actions">
+    <form class="filters" [formGroup]="filterForm">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Cerca famiglia</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput formControlName="search" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="period-field">
+        <mat-label>Periodo</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate formControlName="from" placeholder="Dal" />
+          <input matEndDate formControlName="to" placeholder="Al" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+
+      <button matButton type="button" (click)="toggleSort()">
+        <mat-icon>{{ sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+        {{ sortDirection() === 'desc' ? 'Più recenti' : 'Meno recenti' }}
+      </button>
+      <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
+    </form>
+
     <button matButton="filled" (click)="onNewDistribution()">
       <mat-icon>add</mat-icon>
       Nuova Distribuzione
@@ -10,8 +34,12 @@
     <div class="empty-wrapper">
       <empty-state description="Non sono presenti distribuzioni"></empty-state>
     </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-wrapper">
+      <empty-state description="Nessuna distribuzione trovata"></empty-state>
+    </div>
   } @else {
-    @for (distribution of distributions(); track distribution.id) {
+    @for (distribution of visible(); track distribution.id) {
       <accordion
         [title]="titleTemplate"
         [key]="'distribution-details-' + (distribution.id ?? $index)"
@@ -59,5 +87,14 @@
         </div>
       </ng-template>
     }
+
+    <mat-paginator
+      [length]="filtered().length"
+      [pageIndex]="pageIndex()"
+      [pageSize]="page().pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="page.set({ pageIndex: $event.pageIndex, pageSize: $event.pageSize })"
+      aria-label="Seleziona pagina"
+    ></mat-paginator>
   }
 </app-page-header>
