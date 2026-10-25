@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -8,7 +8,9 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatD
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { DateTime } from 'luxon';
+import { merge } from 'rxjs';
 import { CalendarEvent } from '../../../core/models/event';
 import { DEFAULT_EVENT_COLOR, EVENT_COLORS, EVENT_ICONS } from '../event-style';
 
@@ -62,6 +64,7 @@ function rangeValidator(group: AbstractControl): ValidationErrors | null {
     MatFormFieldModule,
     MatIcon,
     MatInputModule,
+    MatMenuModule,
   ],
   templateUrl: './event-dialog.html',
   styleUrl: './event-dialog.scss',
@@ -93,6 +96,31 @@ export class EventDialog {
     initialValue: this.form.controls.allDay.value,
   });
 
+  readonly icon = toSignal(this.form.controls.icon.valueChanges, {
+    initialValue: this.form.controls.icon.value,
+  });
+
+  private lastStart = toRange(this.form.getRawValue())?.start ?? null;
+
+  constructor() {
+    const { startDate, startTime } = this.form.controls;
+    merge(startDate.valueChanges, startTime.valueChanges)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.keepDuration());
+  }
+
+  // Moving the start moves the end too, so the event keeps its duration
+  private keepDuration(): void {
+    const range = toRange(this.form.getRawValue());
+    if (!range) return;
+    if (this.lastStart && range.end) {
+      const end = range.end.plus(range.start.diff(this.lastStart));
+      this.form.controls.endDate.setValue(end.startOf('day'), { emitEvent: false });
+      this.form.controls.endTime.setValue(end.toFormat('HH:mm'), { emitEvent: false });
+    }
+    this.lastStart = range.start;
+  }
+
   private startDate(): DateTime {
     const ev = this.data?.event;
     if (ev) return DateTime.fromISO(ev.start).startOf('day');
@@ -104,14 +132,17 @@ export class EventDialog {
     return ev ? DateTime.fromISO(ev.start).toFormat('HH:mm') : '09:00';
   }
 
+  // New events default to one hour on the start day
   private endDate(): DateTime | null {
-    const end = this.data?.event?.end;
-    return end ? DateTime.fromISO(end).startOf('day') : null;
+    const ev = this.data?.event;
+    if (!ev) return this.startDate();
+    return ev.end ? DateTime.fromISO(ev.end).startOf('day') : null;
   }
 
   private endTime(): string {
-    const end = this.data?.event?.end;
-    return end ? DateTime.fromISO(end).toFormat('HH:mm') : '';
+    const ev = this.data?.event;
+    if (!ev) return DateTime.fromFormat(this.startTime(), 'HH:mm').plus({ hours: 1 }).toFormat('HH:mm');
+    return ev.end ? DateTime.fromISO(ev.end).toFormat('HH:mm') : '';
   }
 
   get formError(): string {
