@@ -10,7 +10,9 @@
   ]"
   (selectionChange)="onStepChange($event)"
 >
-  <h2 mat-dialog-title sideStepperHeader>Nuova Distribuzione</h2>
+  <h2 mat-dialog-title sideStepperHeader>
+    {{ isEdit ? 'Modifica Distribuzione' : 'Nuova Distribuzione' }}
+  </h2>
   <cdk-step [stepControl]="familiesForm" label="Data e famiglie">
     <form [formGroup]="familiesForm" class="step-container">
       <p class="step-intro">Scegli la data della distribuzione e le famiglie coinvolte</p>
@@ -20,7 +22,7 @@
         <input
           matInput
           [matDatepicker]="datePicker"
-          [min]="today"
+          [min]="isEdit ? null : today"
           formControlName="distributionDate"
         />
         <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
@@ -111,7 +113,13 @@
 
   <cdk-step label="Riepilogo">
     <div class="step-container fill">
-      <p class="step-intro">Controlla la distribuzione prima di crearla</p>
+      <p class="step-intro">
+        {{
+          isEdit
+            ? 'Modifica le quantità per famiglia e alimento'
+            : 'Controlla la distribuzione prima di crearla'
+        }}
+      </p>
       @if (previewLoading()) {
         <p class="step-status">Calcolo in corso...</p>
       } @else if (previewError()) {
@@ -136,8 +144,13 @@
             <distribution-table
               [distribution]="distribution"
               [showTotals]="true"
+              [editable]="isEdit"
+              (quantityChange)="onQuantityChange($event)"
             ></distribution-table>
           </div>
+          @if (hasEmptyFamily()) {
+            <p class="step-status preview-error">Ogni famiglia deve ricevere almeno un alimento.</p>
+          }
         }
       }
     </div>
@@ -146,10 +159,15 @@
   <cdk-step label="Genera schede">
     <div class="step-container fill">
       <p class="step-intro">
-        Controlla le schede: alla conferma la distribuzione viene creata e le schede scaricate in
-        Excel
+        @if (isEdit) {
+          Controlla le schede: alla conferma la distribuzione viene aggiornata e le schede scaricate
+          in Excel
+        } @else {
+          Controlla le schede: alla conferma la distribuzione viene creata e le schede scaricate in
+          Excel
+        }
       </p>
-      @if (preview(); as distribution) {
+      @if (activePreview(); as distribution) {
         @if (distribution.items.length > 0) {
           <div class="sheet-carousel">
             <app-distribution-sheet
@@ -197,7 +215,7 @@
       </button>
     } @else {
       <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">
-        Crea e scarica schede
+        {{ isEdit ? 'Salva e scarica schede' : 'Crea e scarica schede' }}
       </button>
     }
   </mat-dialog-actions>

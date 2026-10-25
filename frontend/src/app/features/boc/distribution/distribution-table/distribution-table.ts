@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Distribution } from '../../../../core/models/distribution';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
@@ -10,6 +10,7 @@ interface FoodColumn {
 }
 
 interface DistributionFamilyRow {
+  familyId: number;
   familyName: string;
   [columnKey: string]: string | number;
 }
@@ -23,10 +24,13 @@ interface DistributionFamilyRow {
 export class DistributionTable {
   distribution = input.required<Distribution>();
   showTotals = input(false);
+  editable = input(false);
+  quantityChange = output<{ familyId: number; foodId: number; quantity: number }>();
 
   readonly dataSource = new MatTableDataSource<DistributionFamilyRow>([]);
   readonly foodColumns = signal<FoodColumn[]>([]);
   readonly totals = signal<Record<string, number>>({});
+  readonly trackByFamily = (_: number, row: DistributionFamilyRow) => row.familyId;
   readonly displayedColumns = computed<string[]>(() => [
     'familyName',
     ...this.foodColumns().map((column) => column.key),
@@ -55,6 +59,7 @@ export class DistributionTable {
 
       const rows = currentDistribution.items.map((familyDistribution) => {
         const row: DistributionFamilyRow = {
+          familyId: familyDistribution.familyId,
           familyName: familyDistribution.family?.name ?? 'N/A',
         };
 
@@ -87,5 +92,12 @@ export class DistributionTable {
       this.foodColumns.set(dynamicColumns);
       this.dataSource.data = rows;
     });
+  }
+
+  onQuantityChange(familyId: number, foodId: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const quantity = Math.max(0, Math.floor(input.valueAsNumber || 0));
+    input.value = String(quantity);
+    this.quantityChange.emit({ familyId, foodId, quantity });
   }
 }
