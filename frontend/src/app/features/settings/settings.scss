@@ -1,16 +1,9 @@
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 560px;
-}
-
-.settings-tab {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
-  // bottom padding: button touch targets (48px on 40px buttons) overflow the tab body's overflow:auto
-  padding: 24px 0 8px;
+  margin-top: 16px;
+  max-width: 560px;
 
   mat-form-field {
     width: 100%;
@@ -26,11 +19,11 @@
 }
 
 .logo-label,
-.tab-hint {
+.logo-hint {
   color: var(--mat-sys-on-surface-variant);
 }
 
-.tab-hint {
+.logo-hint {
   margin: 0;
   font-size: 12px;
 }

@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialog } from '../../shared/components/confirmation-dialog/confirmation-dialog';
 import { PageHeader } from '../../shared/components/layouts/page-header/page-header';
 import { Snackbar } from '../../shared/components/snackbar/snackbar';
@@ -17,7 +16,7 @@ const MAX_LOGO_BYTES = 1024 * 1024;
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIcon, PageHeader],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIcon, PageHeader],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
