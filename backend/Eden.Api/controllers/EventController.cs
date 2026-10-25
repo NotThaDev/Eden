@@ -65,6 +65,8 @@ namespace Eden.Api.Controllers
             existing.Start = request.Start;
             existing.End = request.End;
             existing.AllDay = request.AllDay;
+            existing.Icon = request.Icon;
+            existing.Color = request.Color;
             return Ok(await Event.UpdateEventAsync(existing));
         }
 
@@ -92,6 +94,8 @@ namespace Eden.Api.Controllers
             if (e.Title.Trim().Length > 200) return "Title is too long.";
             if (e.Description?.Length > 2000) return "Description is too long.";
             if (e.End != null && e.End < e.Start) return "End must not be before start.";
+            if (e.Icon != null && !Event.Icons.Contains(e.Icon)) return "Unknown icon.";
+            if (e.Color != null && !Event.Colors.Contains(e.Color)) return "Unknown color.";
             return null;
         }
     }

@@ -8,4 +8,7 @@ export interface CalendarEvent {
   allDay: boolean;
   // Set when the event mirrors a distribution (read-only from the calendar)
   distributionId?: number | null;
+  // Fixed keys from event-style.ts; null/undefined means default
+  icon?: string | null;
+  color?: string | null;
 }

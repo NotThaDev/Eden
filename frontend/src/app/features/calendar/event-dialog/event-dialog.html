@@ -6,6 +6,61 @@
       <input matInput formControlName="title" maxlength="200" />
     </mat-form-field>
 
+    <div class="picker">
+      <span class="picker-label">Icona</span>
+      <div class="icon-options" role="radiogroup" aria-label="Icona">
+        <button
+          type="button"
+          class="icon-option"
+          role="radio"
+          aria-label="Nessuna icona"
+          [attr.aria-checked]="form.controls.icon.value === null"
+          [class.selected]="form.controls.icon.value === null"
+          (click)="form.controls.icon.setValue(null)"
+        >
+          <mat-icon>block</mat-icon>
+        </button>
+        @for (entry of icons; track entry[0]) {
+          <button
+            type="button"
+            class="icon-option"
+            role="radio"
+            [attr.aria-label]="entry[1]"
+            [attr.title]="entry[1]"
+            [attr.aria-checked]="form.controls.icon.value === entry[0]"
+            [class.selected]="form.controls.icon.value === entry[0]"
+            (click)="form.controls.icon.setValue(entry[0])"
+          >
+            <mat-icon>{{ entry[0] }}</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="picker">
+      <span class="picker-label">Colore</span>
+      <div class="color-options" role="radiogroup" aria-label="Colore">
+        @for (c of colors; track c[0]) {
+          <button
+            type="button"
+            class="color-option"
+            role="radio"
+            [attr.aria-label]="c[1].label"
+            [attr.title]="c[1].label"
+            [attr.aria-checked]="form.controls.color.value === c[0]"
+            [class.selected]="form.controls.color.value === c[0]"
+            [style.background]="c[1].text"
+            [style.color]="c[1].background"
+            (click)="form.controls.color.setValue(c[0])"
+          >
+            @if (form.controls.color.value === c[0]) {
+              <mat-icon>check</mat-icon>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
     <mat-checkbox formControlName="allDay">Tutto il giorno</mat-checkbox>
 
     <div class="date-time">

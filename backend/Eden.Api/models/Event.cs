@@ -33,6 +33,15 @@ namespace Eden.Api.Models
 
         public bool AllDay { get; set; }
 
+        public static readonly string[] Icons = ["event", "groups", "volunteer_activism", "shopping_cart", "restaurant", "school", "celebration", "campaign", "handshake", "local_hospital", "inventory_2", "star"];
+        public static readonly string[] Colors = ["green", "blue", "teal", "purple", "pink", "red", "orange", "grey"];
+
+        [MaxLength(50)]
+        public string? Icon { get; set; }
+
+        [MaxLength(20)]
+        public string? Color { get; set; }
+
         // null = manual event; set = mirrors a distribution (read-only from the calendar)
         public int? DistributionId { get; set; }
 

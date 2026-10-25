@@ -136,6 +136,10 @@ namespace Eden.Api.Migrations
                     b.Property<bool>("AllDay")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -145,6 +149,10 @@ namespace Eden.Api.Migrations
 
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("timestamp with time zone");

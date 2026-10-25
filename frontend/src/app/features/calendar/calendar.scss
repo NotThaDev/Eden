@@ -138,6 +138,14 @@
   margin-bottom: 8px;
 }
 
+// Colored marker for the event's color in the list views
+.color-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 .list-item {
   display: flex;
   align-items: center;

@@ -55,6 +55,54 @@ public class EventTests(EdenApiFactory factory)
     }
 
     [Fact]
+    public async Task Create_ThenUpdate_RoundTripsIconAndColor()
+    {
+        var created = await CreateAsync(new Event
+        {
+            Title = TestData.UniqueName("Ev"),
+            Start = new DateTime(2031, 3, 10, 9, 0, 0, DateTimeKind.Utc),
+            Icon = "groups",
+            Color = "blue"
+        });
+        Assert.Equal("groups", created.Icon);
+        Assert.Equal("blue", created.Color);
+
+        var put = await _client.PutAsJsonAsync($"/api/event/{created.Id}",
+            new Event { Title = created.Title, Start = created.Start, Icon = null, Color = "red" });
+        Assert.Equal(HttpStatusCode.OK, put.StatusCode);
+
+        var fetched = await _client.GetFromJsonAsync<Event>($"/api/event/{created.Id}");
+        Assert.Null(fetched!.Icon);
+        Assert.Equal("red", fetched.Color);
+    }
+
+    [Fact]
+    public async Task Create_UnknownIcon_ReturnsBadRequest()
+    {
+        var response = await _client.PostAsJsonAsync("/api/event", new Event
+        {
+            Title = TestData.UniqueName("Ev"),
+            Start = new DateTime(2031, 3, 11, 9, 0, 0, DateTimeKind.Utc),
+            Icon = "not_an_icon"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Create_UnknownColor_ReturnsBadRequest()
+    {
+        var response = await _client.PostAsJsonAsync("/api/event", new Event
+        {
+            Title = TestData.UniqueName("Ev"),
+            Start = new DateTime(2031, 3, 12, 9, 0, 0, DateTimeKind.Utc),
+            Color = "#ff0000"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task GetAll_ReturnsOnlyEventsOverlappingRange()
     {
         var inside = await CreateAsync(new Event { Title = TestData.UniqueName("Inside"), Start = new DateTime(2031, 5, 10, 10, 0, 0, DateTimeKind.Utc) });

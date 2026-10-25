@@ -6,9 +6,11 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { DateTime } from 'luxon';
 import { CalendarEvent } from '../../../core/models/event';
+import { DEFAULT_EVENT_COLOR, EVENT_COLORS, EVENT_ICONS } from '../event-style';
 
 export interface EventDialogData {
   event?: CalendarEvent;
@@ -19,6 +21,8 @@ export type EventDialogResult = { action: 'save'; event: CalendarEvent } | { act
 
 interface FormValue {
   allDay: boolean;
+  icon: string | null;
+  color: string;
   startDate: DateTime | null;
   startTime: string | null;
   endDate: DateTime | null;
@@ -56,6 +60,7 @@ function rangeValidator(group: AbstractControl): ValidationErrors | null {
     MatDialogContent,
     MatDialogTitle,
     MatFormFieldModule,
+    MatIcon,
     MatInputModule,
   ],
   templateUrl: './event-dialog.html',
@@ -65,11 +70,15 @@ export class EventDialog {
   readonly dialogRef = inject(MatDialogRef<EventDialog>);
   readonly data = inject<EventDialogData | null>(MAT_DIALOG_DATA, { optional: true });
   readonly title = this.data?.event ? 'Modifica evento' : 'Nuovo evento';
+  readonly icons = Object.entries(EVENT_ICONS);
+  readonly colors = Object.entries(EVENT_COLORS);
 
   readonly form = inject(FormBuilder).nonNullable.group(
     {
       title: [this.data?.event?.title ?? '', [Validators.required, Validators.maxLength(200)]],
       allDay: [this.data?.event?.allDay ?? false],
+      icon: [(this.data?.event?.icon ?? null) as string | null],
+      color: [this.data?.event?.color ?? DEFAULT_EVENT_COLOR],
       startDate: [this.startDate() as DateTime | null, Validators.required],
       startTime: [this.startTime(), Validators.required],
       endDate: [this.endDate()],
@@ -132,6 +141,8 @@ export class EventDialog {
         start: range.start.toJSDate().toISOString(),
         end: range.end ? range.end.toJSDate().toISOString() : null,
         allDay: v.allDay,
+        icon: v.icon,
+        color: v.color,
       },
     });
   }

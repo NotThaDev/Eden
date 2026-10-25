@@ -41,11 +41,12 @@
               type="button"
               class="chip"
               [class.distribution]="isDistribution(ev)"
+              [style]="chipStyle(ev)"
               [attr.title]="ev.title"
               (click)="$event.stopPropagation(); openEvent(ev)"
             >
-              @if (isDistribution(ev)) {
-                <mat-icon>local_shipping</mat-icon>
+              @if (eventIcon(ev); as icon) {
+                <mat-icon>{{ icon }}</mat-icon>
               }
               <span class="chip-text">{{ chipLabel(ev) }}</span>
             </button>
@@ -73,6 +74,10 @@
       </header>
       @for (ev of selectedEvents(); track ev.id ?? ev.start) {
         <button type="button" class="list-item" (click)="openEvent(ev)">
+          <span class="color-dot" [style.background]="dotColor(ev)"></span>
+          @if (eventIcon(ev); as icon) {
+            <mat-icon>{{ icon }}</mat-icon>
+          }
           <span class="time">{{ timeLabel(ev) }}</span>
           <span class="title">{{ ev.title }}</span>
         </button>
@@ -86,8 +91,9 @@
         <h3>{{ day.date.toFormat('cccc d') }}</h3>
         @for (ev of day.events; track ev.id ?? ev.start) {
           <button type="button" class="list-item" (click)="openEvent(ev)">
-            @if (isDistribution(ev)) {
-              <mat-icon>local_shipping</mat-icon>
+            <span class="color-dot" [style.background]="dotColor(ev)"></span>
+            @if (eventIcon(ev); as icon) {
+              <mat-icon>{{ icon }}</mat-icon>
             }
             <span class="time">{{ timeLabel(ev) }}</span>
             <span class="title">{{ ev.title }}</span>

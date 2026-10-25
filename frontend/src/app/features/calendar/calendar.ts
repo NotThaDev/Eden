@@ -13,6 +13,7 @@ import { PageHeader } from '../../shared/components/layouts/page-header/page-hea
 import { Snackbar } from '../../shared/components/snackbar/snackbar';
 import { SnackbarStatus } from '../../shared/components/snackbar/type';
 import { EventDialog, EventDialogData, EventDialogResult } from './event-dialog/event-dialog';
+import { DEFAULT_EVENT_COLOR, EVENT_COLORS } from './event-style';
 import { EventService } from './services/event.service';
 
 const MAX_CHIPS = 3;
@@ -177,6 +178,21 @@ export class Calendar implements OnInit {
       : DateTime.fromISO(ev.start).toFormat('HH:mm');
   }
 
+  // Distribution chips keep the theme's primary colors (set by the .distribution class)
+  eventIcon(ev: CalendarEvent): string | null {
+    return this.isDistribution(ev) ? 'local_shipping' : (ev.icon ?? null);
+  }
+
+  chipStyle(ev: CalendarEvent): Record<string, string> | null {
+    if (this.isDistribution(ev)) return null;
+    const color = this.colorOf(ev);
+    return { background: color.background, color: color.text };
+  }
+
+  dotColor(ev: CalendarEvent): string {
+    return this.isDistribution(ev) ? 'var(--mat-sys-primary)' : this.colorOf(ev).text;
+  }
+
   chipLabel(ev: CalendarEvent): string {
     return ev.allDay || this.isDistribution(ev)
       ? ev.title
@@ -191,6 +207,10 @@ export class Calendar implements OnInit {
   defaultDate(): DateTime {
     const today = DateTime.now().startOf('day');
     return today.hasSame(this.month(), 'month') ? today : this.month();
+  }
+
+  private colorOf(ev: CalendarEvent) {
+    return EVENT_COLORS[ev.color ?? DEFAULT_EVENT_COLOR] ?? EVENT_COLORS[DEFAULT_EVENT_COLOR];
   }
 
   private goToMonth(month: DateTime): void {
