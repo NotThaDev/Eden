@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content [formGroup]="form">
+  <div class="event-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Titolo</mat-label>
+      <input matInput formControlName="title" maxlength="200" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="allDay">Tutto il giorno</mat-checkbox>
+
+    <div class="date-time">
+      <mat-form-field appearance="outline">
+        <mat-label>Data inizio</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+      @if (!allDay()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Ora inizio</mat-label>
+          <input matInput type="time" formControlName="startTime" />
+        </mat-form-field>
+      }
+    </div>
+
+    <div class="date-time">
+      <mat-form-field appearance="outline">
+        <mat-label>Data fine (facoltativa)</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+      @if (!allDay()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Ora fine</mat-label>
+          <input matInput type="time" formControlName="endTime" />
+        </mat-form-field>
+      }
+    </div>
+
+    @if (formError) {
+      <p class="form-error">{{ formError }}</p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descrizione</mat-label>
+      <textarea matInput formControlName="description" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="event-actions">
+  @if (data?.event) {
+    <button matButton="text" type="button" class="delete-button" (click)="onDelete()">Elimina</button>
+  }
+  <span class="spacer"></span>
+  <button matButton="text" type="button" (click)="dialogRef.close()">Annulla</button>
+  <button matButton="filled" type="button" [disabled]="form.invalid" (click)="onSave()">Salva</button>
+</mat-dialog-actions>

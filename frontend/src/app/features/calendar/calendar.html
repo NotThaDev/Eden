@@ -1,0 +1,101 @@
+<app-page-header title="Calendario">
+  <div class="toolbar">
+    <button matIconButton type="button" aria-label="Mese precedente" (click)="shiftMonth(-1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button matIconButton type="button" aria-label="Mese successivo" (click)="shiftMonth(1)">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button matButton="outlined" type="button" (click)="goToToday()">Oggi</button>
+    <h2 class="month-label">{{ monthLabel() }}</h2>
+    <span class="spacer"></span>
+    <button matButton="filled" type="button" (click)="openCreate(defaultDate())">
+      <mat-icon>add</mat-icon>Nuovo evento
+    </button>
+  </div>
+
+  <div class="weekdays" aria-hidden="true">
+    @for (name of weekdays; track name) {
+      <span>{{ name }}</span>
+    }
+  </div>
+
+  <div class="calendar-grid">
+    @for (week of weeks(); track week[0].date.toISODate()) {
+      @for (day of week; track day.date.toISODate()) {
+        <div
+          class="day-cell"
+          [class.outside]="!day.inMonth"
+          (click)="openCreate(day.date)"
+        >
+          <button
+            type="button"
+            class="day-number"
+            [class.today]="day.isToday"
+            [attr.aria-label]="dayAriaLabel(day)"
+            (click)="$event.stopPropagation(); openCreate(day.date)"
+          >{{ day.date.day }}</button>
+
+          @for (ev of day.visible; track ev.id ?? ev.start) {
+            <button
+              type="button"
+              class="chip"
+              [class.distribution]="isDistribution(ev)"
+              [attr.title]="ev.title"
+              (click)="$event.stopPropagation(); openEvent(ev)"
+            >
+              @if (isDistribution(ev)) {
+                <mat-icon>local_shipping</mat-icon>
+              }
+              <span class="chip-text">{{ chipLabel(ev) }}</span>
+            </button>
+          }
+
+          @if (day.hidden > 0) {
+            <button
+              type="button"
+              class="more"
+              (click)="$event.stopPropagation(); selectedDay.set(day.date)"
+            >+{{ day.hidden }} altri</button>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  @if (selectedDay(); as day) {
+    <section class="day-detail">
+      <header class="day-detail-header">
+        <h3>{{ day.toFormat('cccc d LLLL') }}</h3>
+        <button matIconButton type="button" aria-label="Chiudi" (click)="selectedDay.set(null)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+      @for (ev of selectedEvents(); track ev.id ?? ev.start) {
+        <button type="button" class="list-item" (click)="openEvent(ev)">
+          <span class="time">{{ timeLabel(ev) }}</span>
+          <span class="title">{{ ev.title }}</span>
+        </button>
+      }
+    </section>
+  }
+
+  <div class="calendar-list">
+    @for (day of monthDays(); track day.date.toISODate()) {
+      <section class="list-day">
+        <h3>{{ day.date.toFormat('cccc d') }}</h3>
+        @for (ev of day.events; track ev.id ?? ev.start) {
+          <button type="button" class="list-item" (click)="openEvent(ev)">
+            @if (isDistribution(ev)) {
+              <mat-icon>local_shipping</mat-icon>
+            }
+            <span class="time">{{ timeLabel(ev) }}</span>
+            <span class="title">{{ ev.title }}</span>
+          </button>
+        }
+      </section>
+    } @empty {
+      <empty-state description="Nessun evento questo mese" />
+    }
+  </div>
+</app-page-header>

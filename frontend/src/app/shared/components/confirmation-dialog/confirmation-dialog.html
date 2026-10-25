@@ -8,5 +8,5 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button matButton="text" class="action-button" (click)="dialogRef.close()">Annulla</button>
-  <button mat-flat-button (click)="onClose()" class="confirm-button action-button">Conferma</button>
+  <button mat-flat-button (click)="onClose()" class="confirm-button action-button">{{ data.confirmLabel ?? 'Conferma' }}</button>
 </mat-dialog-actions>

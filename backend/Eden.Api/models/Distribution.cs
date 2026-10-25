@@ -48,6 +48,8 @@ namespace Eden.Api.Models
             await EdenAppContext.Context.WithDbContext(db =>
             {
                 newDistribution = db.Distributions.Add(distribution).Entity;
+                // Mirror the distribution on the calendar (same SaveChanges, so atomic)
+                db.Events.Add(new Event { Title = Event.DistributionTitle, Start = distribution.DistributionDate, Distribution = distribution });
                 return db.SaveChangesAsync();
             });
 
@@ -133,10 +135,17 @@ namespace Eden.Api.Models
             });
 
             existingDistribution.Items = distribution.Items;
-            await EdenAppContext.Context.WithDbContext(db =>
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
+                await using var transaction = await db.Database.BeginTransactionAsync();
                 db.Distributions.Update(existingDistribution);
-                return db.SaveChangesAsync();
+                await db.SaveChangesAsync();
+                // Keep the calendar event on the distribution date
+                await db.Events
+                    .Where(e => e.DistributionId == existingDistribution.Id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(e => e.Start, existingDistribution.DistributionDate));
+                await transaction.CommitAsync();
+                return 0;
             });
 
             if (changedItems.Count > 0)
