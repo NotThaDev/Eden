@@ -9,7 +9,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 24px;
+  // bottom padding: button touch targets (48px on 40px buttons) overflow the tab body's overflow:auto
+  padding: 24px 0 8px;
 
   mat-form-field {
     width: 100%;

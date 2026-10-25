@@ -1,10 +1,10 @@
 <div class="navigation-container">
-  @if(isMobile()) {
-  <mat-toolbar>
-    <button matIconButton (click)="toggleMobileNavbar()">
-      <mat-icon>menu</mat-icon>
-    </button>
-  </mat-toolbar>
+  @if (isMobile()) {
+    <mat-toolbar>
+      <button matIconButton (click)="toggleMobileNavbar()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </mat-toolbar>
   }
 
   <mat-sidenav-container autosize>
@@ -16,106 +16,122 @@
       [ngClass]="isNavbarCollapsed() && !isMobile() ? 'collapsed' : ''"
     >
       <div class="sidenav-body">
-      @if(!isMobile()) {
-      <div class="logo-container" (click)="toggleNavbarCollapse()">
-        <img class="logo-image" src="logo.svg" alt="Eden logo" width="32" height="32" />
-        @if (!isNavbarCollapsed()) {
-        <span class="logo-text">Eden</span>
-        }
-      </div>
-      }
-      <mat-nav-list>
-        @for (route of validRoutes; track route.path) {
-        <a
-          mat-list-item
-          class="nav-entry"
-          [routerLink]="route.children.length > 0 ? null : route.path"
-          [activated]="isRouteActive(route.path)"
-          (click)="onNavEntryClick(route)"
-        >
-          <mat-icon matListItemIcon>{{ route.icon }}</mat-icon>
-          <span
-            matListItemTitle
-            [style]="{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }"
-          >
-            @if (!isNavbarCollapsed() || isMobileNavOpen()) {
-            {{ route.title }}
-
-            @if (route.children.length > 0) {
-            <mat-icon style="font-size: 20px; vertical-align: middle">
-              {{ openedSubmenu === route.path ? 'expand_less' : 'expand_more' }}
-            </mat-icon>
-            } }
-          </span>
-        </a>
-
-        <!-- #TODO On collapse show icon + tooltip with the same menu down here -->
-        @if(route.children.length > 0 && openedSubmenu === route.path) {
-        <app-sub-menu [navEntry]="route" />
-        } }
-      </mat-nav-list>
-      <mat-nav-list class="settings-nav">
-        <button
-          mat-list-item
-          type="button"
-          class="nav-entry"
-          cdkOverlayOrigin
-          #settingsOrigin="cdkOverlayOrigin"
-          [activated]="isRouteActive('settings')"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="isSettingsMenuOpen()"
-          aria-label="Impostazioni"
-          [matTooltip]="isNavbarCollapsed() && !isMobileNavOpen() ? 'Impostazioni' : ''"
-          matTooltipPosition="right"
-          [matTooltipDisabled]="isSettingsMenuOpen()"
-          (click)="isSettingsMenuOpen.set(!isSettingsMenuOpen())"
-        >
-          <mat-icon matListItemIcon>settings</mat-icon>
-          @if (!isNavbarCollapsed() || isMobileNavOpen()) {
-          <span matListItemTitle class="settings-nav-title">
-            Impostazioni
-            <!-- Points to where the settings popup opens -->
-            <mat-icon class="settings-nav-arrow" aria-hidden="true">chevron_right</mat-icon>
-          </span>
-          }
-        </button>
-      </mat-nav-list>
-
-      <ng-template
-        cdkConnectedOverlay
-        [cdkConnectedOverlayOrigin]="settingsOrigin"
-        [cdkConnectedOverlayOpen]="isSettingsMenuOpen()"
-        [cdkConnectedOverlayPositions]="settingsMenuPositions"
-        (overlayOutsideClick)="onSettingsMenuOutsideClick($event, settingsOrigin.elementRef.nativeElement)"
-        (overlayKeydown)="onSettingsMenuKeydown($event)"
-        (detach)="closeSettingsMenu()"
-      >
-        <div class="settings-menu" role="menu" aria-label="Impostazioni" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-          <div class="settings-menu-theme" role="group" aria-label="Tema">
-            @for (option of themeOptions; track option.value) {
-            <button
-              type="button"
-              class="settings-menu-item settings-theme-option"
-              role="menuitemradio"
-              [attr.aria-checked]="theme() === option.value"
-              [attr.aria-label]="option.label"
-              [matTooltip]="option.label"
-              (click)="setTheme(option.value)"
-            >
-              <mat-icon>{{ option.icon }}</mat-icon>
-            </button>
+        @if (!isMobile()) {
+          <div class="logo-container" (click)="toggleNavbarCollapse()">
+            <img class="logo-image" src="logo.svg" alt="Eden logo" width="32" height="32" />
+            @if (!isNavbarCollapsed()) {
+              <span class="logo-text">Eden</span>
             }
           </div>
-          <a class="settings-menu-item" role="menuitem" routerLink="/settings" (click)="closeSettingsMenu()">
-            <mat-icon>tune</mat-icon>
-            <span>Impostazioni</span>
-          </a>
-        </div>
-      </ng-template>
+        }
+        <mat-nav-list>
+          @for (route of validRoutes; track route.path) {
+            <a
+              mat-list-item
+              class="nav-entry"
+              [routerLink]="route.children.length > 0 ? null : route.path"
+              [activated]="isRouteActive(route.path)"
+              (click)="onNavEntryClick(route)"
+            >
+              <mat-icon matListItemIcon>{{ route.icon }}</mat-icon>
+              <span
+                matListItemTitle
+                [style]="{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }"
+              >
+                @if (!isNavbarCollapsed() || isMobileNavOpen()) {
+                  {{ route.title }}
+
+                  @if (route.children.length > 0) {
+                    <mat-icon style="font-size: 20px; vertical-align: middle">
+                      {{ openedSubmenu === route.path ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  }
+                }
+              </span>
+            </a>
+
+            <!-- #TODO On collapse show icon + tooltip with the same menu down here -->
+            @if (route.children.length > 0 && openedSubmenu === route.path) {
+              <app-sub-menu [navEntry]="route" />
+            }
+          }
+        </mat-nav-list>
+        <mat-nav-list class="settings-nav">
+          <button
+            mat-list-item
+            type="button"
+            class="nav-entry"
+            cdkOverlayOrigin
+            #settingsOrigin="cdkOverlayOrigin"
+            [activated]="isRouteActive('settings')"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isSettingsMenuOpen()"
+            aria-label="Impostazioni"
+            [matTooltip]="isNavbarCollapsed() && !isMobileNavOpen() ? 'Impostazioni' : ''"
+            matTooltipPosition="right"
+            [matTooltipDisabled]="isSettingsMenuOpen()"
+            (click)="isSettingsMenuOpen.set(!isSettingsMenuOpen())"
+          >
+            <mat-icon matListItemIcon>settings</mat-icon>
+            @if (!isNavbarCollapsed() || isMobileNavOpen()) {
+              <span matListItemTitle class="settings-nav-title">
+                Impostazioni
+                <!-- Points to where the settings popup opens -->
+                <mat-icon class="settings-nav-arrow" aria-hidden="true">chevron_right</mat-icon>
+              </span>
+            }
+          </button>
+        </mat-nav-list>
+
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="settingsOrigin"
+          [cdkConnectedOverlayOpen]="isSettingsMenuOpen()"
+          [cdkConnectedOverlayPositions]="settingsMenuPositions"
+          (overlayOutsideClick)="
+            onSettingsMenuOutsideClick($event, settingsOrigin.elementRef.nativeElement)
+          "
+          (overlayKeydown)="onSettingsMenuKeydown($event)"
+          (detach)="closeSettingsMenu()"
+        >
+          <div
+            class="settings-menu"
+            role="menu"
+            aria-label="Impostazioni"
+            cdkTrapFocus
+            [cdkTrapFocusAutoCapture]="true"
+          >
+            <a
+              class="settings-menu-item"
+              role="menuitem"
+              routerLink="/settings"
+              (click)="closeSettingsMenu()"
+            >
+              <mat-icon>tune</mat-icon>
+              <span>Impostazioni</span>
+            </a>
+            <mat-divider></mat-divider>
+            <div class="settings-menu-theme" role="group" aria-label="Tema">
+              @for (option of themeOptions; track option.value) {
+                <button
+                  type="button"
+                  class="settings-menu-item settings-theme-option"
+                  role="menuitemradio"
+                  [attr.aria-checked]="theme() === option.value"
+                  [attr.aria-label]="option.label"
+                  [matTooltip]="option.label"
+                  (click)="setTheme(option.value)"
+                >
+                  <mat-icon>{{ option.icon }}</mat-icon>
+                </button>
+              }
+            </div>
+          </div>
+        </ng-template>
       </div>
     </mat-sidenav>
 
