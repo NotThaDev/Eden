@@ -1,5 +1,5 @@
 /**
- * !! THIS WILL BE THE DEFAULT DATE FORMAT (Month DD YYYY)
+ * !! THIS WILL BE THE DEFAULT DATE FORMAT (localized full date, e.g. "20 ottobre 2026" with MAT_DATE_LOCALE it-IT)
  *
  * To change the date format on the single component level, provide the
  * `provideLuxonDateAdapter` function with the desired date format.

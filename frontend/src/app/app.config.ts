@@ -1,4 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { provideRouter } from '@angular/router';
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideLuxonDateAdapter(MONTH_DAY_YEAR_FORMAT),
+    { provide: MAT_DATE_LOCALE, useValue: 'it-IT' },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: snackbarDefaultConfig },
   ],
 };
