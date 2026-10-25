@@ -29,6 +29,7 @@ Members, beneficiaries, distributions, and scheduled events in one place.
 | 📦 | **Distribution management** | Plan and track distributions to beneficiaries ([how it works](docs/DISTRIBUTIONS.md)) |
 | 🏠 | **Beneficiary management** | Keep beneficiary families and their needs up to date |
 | 📅 | **Event calendar management** | Schedule and organize events |
+| ⚙️ | **Association settings** | Association name and contacts; sheet title and logo used on the distribution sheets |
 
 ## 🔐 Roles
 

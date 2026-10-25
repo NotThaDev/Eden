@@ -19,7 +19,7 @@ Operators print one sheet per family and use it while handing out the food. Shee
 
 - `GET api/distribution/{id}/sheets` returns `schede-distribuzione-yyyy-MM-dd.xlsx`, built by `DistributionSheetsExcel` (backend helper, ClosedXML).
 - "Esporta schede" in each distribution's accordion downloads the same file at any time.
-- Each sheet: the app logo and the date top-left, the family code top-right ("Codice", the family id for now), a table with every food of the distribution (name, unit size, quantity for that family, 0 if none) padded to at least 10 rows, and one signature line ("Firma beneficiario") bottom-right. No family name: sheets are anonymous.
+- Each sheet: the logo top-left (the association logo from Impostazioni → Schede when uploaded, otherwise the Eden logo), the date, the family code top-right ("Codice", the family id for now), a table with every food of the distribution (name, unit size, quantity for that family, 0 if none) padded to at least 10 rows, and one signature line ("Firma beneficiario") bottom-right. No family name: sheets are anonymous.
 - Layout: one worksheet, A4 portrait, 4 sheets per page in a 2×2 grid, families ordered by code (id). Every sheet has the same height (all foods are listed, at least 10 table rows), so the page height is known: the helper inserts a manual page break after each page and sets a fixed print scale that fits one page. It does not use "fit to page", because Excel ignores manual page breaks with it.
 
 ## Allocation rule
