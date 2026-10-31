@@ -96,6 +96,18 @@ export class NewDistributionDialog implements OnInit {
     ),
   );
 
+  // Quantity each food already holds in the edited distribution (it goes back to stock when saved)
+  private readonly _held = (this.editing?.items ?? []).reduce((held, family) => {
+    if (family.familyId > 0) {
+      for (const item of family.distributionItems) {
+        held.set(item.foodId, (held.get(item.foodId) ?? 0) + item.quantity);
+      }
+    }
+    return held;
+  }, new Map<number, number>());
+  // Key of the selection the last successful create-mode preview was loaded for
+  private _previewKey = '';
+
   families = this._familyService.families;
   // Only foods in stock can be distributed; edit mode also keeps the edited foods (even at 0 stock)
   foods = computed(() => {
@@ -106,6 +118,19 @@ export class NewDistributionDialog implements OnInit {
     );
     const missing = this._editedFoods.filter((ef) => !fetched.some((f) => f.id === ef.id));
     return [...available, ...missing];
+  });
+  // Max total per food: current stock plus what the edited distribution already holds
+  foodLimits = computed<Record<number, number>>(() => {
+    const limits: Record<number, number> = {};
+    for (const food of this._foodService.foods()) {
+      if (food.id !== undefined) {
+        limits[food.id] = food.quantity + (this._held.get(food.id) ?? 0);
+      }
+    }
+    for (const [foodId, held] of this._held) {
+      limits[foodId] ??= held;
+    }
+    return limits;
   });
 
   readonly today = DateTime.now().startOf('day');
@@ -180,7 +205,11 @@ export class NewDistributionDialog implements OnInit {
     this.currentStep.set(event.selectedIndex);
     if (event.selectedIndex === SUMMARY_STEP_INDEX) {
       if (this.isEdit) {
-        this.buildEditPreview();
+        this.buildPreview();
+      } else if (this._previewKey === this.selectionKey()) {
+        // Same selection as the loaded preview: keep the edited quantities
+        this.previewError.set(false);
+        this.buildPreview();
       } else {
         this.loadPreview();
       }
@@ -194,9 +223,18 @@ export class NewDistributionDialog implements OnInit {
     }
   }
 
+  private selectionKey(): string {
+    return JSON.stringify([
+      this.familiesForm.controls.familyIds.value,
+      this.foodsForm.controls.foodIds.value,
+    ]);
+  }
+
   loadPreview(): void {
     // Cancel an in-flight preview so an older response cannot overwrite a newer selection
     this._previewSubscription?.unsubscribe();
+    this._previewKey = '';
+    const key = this.selectionKey();
     this.preview.set(null);
     this.sheetIndex.set(0);
     this.previewError.set(false);
@@ -209,7 +247,17 @@ export class NewDistributionDialog implements OnInit {
       )
       .subscribe({
         next: (distribution) => {
-          this.preview.set(distribution);
+          // Seed the editable quantities with the backend allocation (summed per family and food)
+          const allocated = new Map<string, number>();
+          for (const family of distribution.items) {
+            for (const item of family.distributionItems) {
+              const quantityKey = `${family.familyId}-${item.foodId}`;
+              allocated.set(quantityKey, (allocated.get(quantityKey) ?? 0) + item.quantity);
+            }
+          }
+          this.quantities.set(allocated);
+          this._previewKey = key;
+          this.buildPreview();
           this.previewLoading.set(false);
         },
         error: () => {
@@ -219,12 +267,8 @@ export class NewDistributionDialog implements OnInit {
       });
   }
 
-  // Edit mode: builds the preview locally from the edited quantities (the backend preview ignores them)
-  buildEditPreview(): void {
-    const editing = this.editing;
-    if (!editing) {
-      return;
-    }
+  // Builds the preview locally from the quantities (the backend preview ignores edits)
+  buildPreview(): void {
     const quantities = this.quantities();
     const foodIds = this.foodsForm.controls.foodIds.value;
     const items: DistributionFamily[] = this.familiesForm.controls.familyIds.value.map(
@@ -232,7 +276,7 @@ export class NewDistributionDialog implements OnInit {
         familyId,
         family:
           this.families().find((f) => f.id === familyId) ??
-          editing.items.find((i) => i.familyId === familyId)?.family,
+          this.editing?.items.find((i) => i.familyId === familyId)?.family,
         distributionItems: foodIds.map((foodId) => ({
           foodId,
           food: this.foods().find((f) => f.id === foodId),
@@ -240,7 +284,11 @@ export class NewDistributionDialog implements OnInit {
         })),
       }),
     );
-    this.preview.set({ id: editing.id, distributionDate: editing.distributionDate, items });
+    this.preview.set({
+      id: this.editing?.id,
+      distributionDate: this.editing?.distributionDate ?? new Date(),
+      items,
+    });
     this.sheetIndex.set(0);
   }
 
@@ -254,7 +302,7 @@ export class NewDistributionDialog implements OnInit {
     quantity: number;
   }): void {
     this.quantities.update((map) => new Map(map).set(`${familyId}-${foodId}`, quantity));
-    this.buildEditPreview();
+    this.buildPreview();
   }
 
   toggleAllFamilies(checked: boolean): void {
@@ -322,19 +370,19 @@ export class NewDistributionDialog implements OnInit {
   }
 
   canCreate(): boolean {
-    return (this.preview()?.items.length ?? 0) > 0 && !this.hasEmptyFamily();
+    return (this.activePreview()?.items.length ?? 0) > 0 && !this.hasEmptyFamily();
   }
 
+  // Drops zero-quantity items and the families left without any item
   private withoutEmptyItems(distribution: Distribution): Distribution {
-    if (!this.isEdit) {
-      return distribution;
-    }
     return {
       ...distribution,
-      items: distribution.items.map((family) => ({
-        ...family,
-        distributionItems: family.distributionItems.filter((item) => item.quantity > 0),
-      })),
+      items: distribution.items
+        .map((family) => ({
+          ...family,
+          distributionItems: family.distributionItems.filter((item) => item.quantity > 0),
+        }))
+        .filter((family) => family.distributionItems.length > 0),
     };
   }
 

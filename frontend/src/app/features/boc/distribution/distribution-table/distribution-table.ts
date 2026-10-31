@@ -25,6 +25,8 @@ export class DistributionTable {
   distribution = input.required<Distribution>();
   showTotals = input(false);
   editable = input(false);
+  // Max total per food (keyed by foodId); a food without an entry has no limit
+  limits = input<Record<number, number> | null>(null);
   quantityChange = output<{ familyId: number; foodId: number; quantity: number }>();
 
   readonly dataSource = new MatTableDataSource<DistributionFamilyRow>([]);
@@ -94,10 +96,27 @@ export class DistributionTable {
     });
   }
 
-  onQuantityChange(familyId: number, foodId: number, event: Event): void {
+  limitFor(column: FoodColumn): number | null {
+    return this.limits()?.[column.id] ?? null;
+  }
+
+  // Largest value this cell can take: the food limit minus what the other families already hold
+  maxFor(row: DistributionFamilyRow, column: FoodColumn): number | null {
+    const limit = this.limitFor(column);
+    if (limit === null) {
+      return null;
+    }
+    const cell = row[column.key];
+    const value = typeof cell === 'number' ? cell : 0;
+    const columnTotal = this.totals()[column.key] ?? 0;
+    return Math.max(0, limit - (columnTotal - value));
+  }
+
+  onQuantityChange(row: DistributionFamilyRow, column: FoodColumn, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const quantity = Math.max(0, Math.floor(input.valueAsNumber || 0));
+    const max = this.maxFor(row, column);
+    const quantity = Math.max(0, Math.min(max ?? Infinity, Math.floor(input.valueAsNumber || 0)));
     input.value = String(quantity);
-    this.quantityChange.emit({ familyId, foodId, quantity });
+    this.quantityChange.emit({ familyId: row.familyId, foodId: column.id, quantity });
   }
 }

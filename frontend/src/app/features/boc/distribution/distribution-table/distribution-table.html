@@ -19,14 +19,18 @@
                 min="0"
                 class="quantity-input"
                 [value]="row[food.key] === '-' ? 0 : row[food.key]"
+                [attr.max]="maxFor(row, food)"
                 [attr.aria-label]="'Quantità ' + food.label + ' per ' + row.familyName"
-                (change)="onQuantityChange(row.familyId, food.id, $event)"
+                (change)="onQuantityChange(row, food, $event)"
               />
             } @else {
               {{ row[food.key] }}
             }
           </td>
-          <td mat-footer-cell *matFooterCellDef>{{ totals()[food.key] }}</td>
+          <td mat-footer-cell *matFooterCellDef>
+            {{ totals()[food.key]
+            }}{{ editable() && limitFor(food) !== null ? ' / ' + limitFor(food) : '' }}
+          </td>
         </ng-container>
       }
 

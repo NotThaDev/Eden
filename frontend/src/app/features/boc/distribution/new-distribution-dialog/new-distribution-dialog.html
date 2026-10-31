@@ -113,13 +113,7 @@
 
   <cdk-step label="Riepilogo">
     <div class="step-container fill">
-      <p class="step-intro">
-        {{
-          isEdit
-            ? 'Modifica le quantità per famiglia e alimento'
-            : 'Controlla la distribuzione prima di crearla'
-        }}
-      </p>
+      <p class="step-intro">Controlla e modifica le quantità per famiglia e alimento</p>
       @if (previewLoading()) {
         <p class="step-status">Calcolo in corso...</p>
       } @else if (previewError()) {
@@ -134,23 +128,23 @@
           </div>
           <div>
             <dt>Famiglie</dt>
-            <dd>{{ distribution.items.length }}</dd>
+            <dd>{{ activePreview()?.items?.length ?? 0 }}</dd>
           </div>
         </dl>
-        @if (distribution.items.length === 0) {
+        <div class="preview-table">
+          <distribution-table
+            [distribution]="distribution"
+            [showTotals]="true"
+            [editable]="true"
+            [limits]="foodLimits()"
+            (quantityChange)="onQuantityChange($event)"
+          ></distribution-table>
+        </div>
+        @if ((activePreview()?.items?.length ?? 0) === 0) {
           <p class="step-status">Nessun alimento da distribuire.</p>
-        } @else {
-          <div class="preview-table">
-            <distribution-table
-              [distribution]="distribution"
-              [showTotals]="true"
-              [editable]="isEdit"
-              (quantityChange)="onQuantityChange($event)"
-            ></distribution-table>
-          </div>
-          @if (hasEmptyFamily()) {
-            <p class="step-status preview-error">Ogni famiglia deve ricevere almeno un alimento.</p>
-          }
+        }
+        @if (hasEmptyFamily()) {
+          <p class="step-status preview-error">Ogni famiglia deve ricevere almeno un alimento.</p>
         }
       }
     </div>
