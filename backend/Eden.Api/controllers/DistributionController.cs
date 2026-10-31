@@ -1,4 +1,5 @@
 using Eden.Api.DTOs;
+using Eden.Api.Helpers;
 using Eden.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,7 +48,7 @@ namespace Eden.Api.Controllers
             };
         }
 
-        private async Task<IActionResult?> _validateDistributionRequest(DistributionDto distribution)
+        private async Task<IActionResult?> _validateDistributionRequest(DistributionDto distribution, Distribution? existing = null)
         {
             if (distribution.Items == null || distribution.Items.Count == 0)
             {
@@ -60,35 +61,38 @@ namespace Eden.Api.Controllers
                 {
                     return familyErrorResult;
                 }
-
-                if (await _validateDistributionFoods(familyDto.DistributionItems) is IActionResult foodErrorResult)
-                {
-                    return foodErrorResult;
-                }
             }
 
-            return null;
+            // Quantities the existing distribution already holds are back in stock once it is replaced.
+            var alreadyHeld = existing?.Items
+                .Where(i => i.FoodId != null && i.FamilyId != null)
+                .GroupBy(i => i.FoodId!.Value)
+                .ToDictionary(g => g.Key, g => g.Sum(i => i.Quantity)) ?? new();
+
+            return await _validateDistributionFoods(distribution.Items.SelectMany(f => f.DistributionItems).ToList(), alreadyHeld);
         }
 
-        private async Task<IActionResult?> _validateDistributionFoods(List<DistributionItemDto> items)
+        private async Task<IActionResult?> _validateDistributionFoods(List<DistributionItemDto> items, Dictionary<int, int> alreadyHeld)
         {
-            foreach (var item in items)
+            if (items.Any(item => item.Quantity <= 0))
             {
-                var existingFood = await Food.GetFoodByIdAsync(item.FoodId);
+                return BadRequest("Quantity must be greater than zero.");
+            }
 
-                if (item.Quantity <= 0)
-                {
-                    return BadRequest("Quantity must be greater than zero.");
-                }
-
+            // A food can appear in several families, so its requested total is checked against stock once.
+            foreach (var group in items.GroupBy(item => item.FoodId))
+            {
+                var existingFood = await Food.GetFoodByIdAsync(group.Key);
                 if (existingFood == null)
                 {
-                    return BadRequest($"Food with ID {item.FoodId} does not exist.");
+                    return BadRequest($"Food with ID {group.Key} does not exist.");
                 }
 
-                if (existingFood.Quantity < item.Quantity)
+                var requested = group.Sum(item => item.Quantity);
+                var available = existingFood.Quantity + alreadyHeld.GetValueOrDefault(group.Key);
+                if (requested > available)
                 {
-                    return BadRequest($"Not enough quantity for food {existingFood.Name}. Available: {existingFood.Quantity}, requested: {item.Quantity}");
+                    return BadRequest($"Not enough quantity for food {existingFood.Name}. Available: {available}, requested: {requested}");
                 }
             }
 
@@ -166,18 +170,33 @@ namespace Eden.Api.Controllers
             return Ok(_mapToDistributionDto(distribution));
         }
 
+        [HttpGet("{id}/sheets")]
+        public async Task<IActionResult> GetSheets(int id)
+        {
+            var distribution = await Distribution.GetDistributionByIdAsync(id);
+            if (distribution == null)
+            {
+                return NotFound();
+            }
+
+            var settings = await AssociationSettings.GetSettingsAsync();
+            var content = DistributionSheetsExcel.Build(distribution, settings.Logo);
+            var fileName = $"schede-distribuzione-{distribution.DistributionDate.ToLocalTime():yyyy-MM-dd}.xlsx";
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] DistributionDto distribution)
         {
-            if (await _validateDistributionRequest(distribution) is IActionResult errorResult)
-            {
-                return errorResult;
-            }
-
             var existingDistribution = await Distribution.GetDistributionByIdAsync(id);
             if (existingDistribution == null)
             {
                 return NotFound();
+            }
+
+            if (await _validateDistributionRequest(distribution, existingDistribution) is IActionResult errorResult)
+            {
+                return errorResult;
             }
 
             var updatedDistribution = _mapToDistribution(distribution);

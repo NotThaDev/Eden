@@ -1,0 +1,44 @@
+<article
+  class="sheet"
+  [attr.aria-label]="'Scheda ' + family().familyId"
+  [style.--sheet-rows]="foods().length + emptyRows().length"
+>
+  <header class="sheet-header">
+    <img class="sheet-logo" [src]="logoUrl() ?? 'logo.svg'" alt="" />
+    <!-- shortcut: the family code is the DB id until families get a proper code -->
+    <p class="sheet-code">Codice: {{ family().familyId }}</p>
+    <p class="sheet-title">Distribuzione Alimentare</p>
+    <p>Data: {{ distribution().distributionDate | date: 'dd/MM/yyyy' }}</p>
+  </header>
+
+  <table class="sheet-table">
+    <thead>
+      <tr>
+        <th>Alimento</th>
+        <th>Formato</th>
+        <th>Quantità</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (food of foods(); track food.id) {
+        <tr>
+          <td>{{ food.name }}</td>
+          <td>{{ food.unitSize }} {{ food.unit }}</td>
+          <td class="sheet-quantity">{{ quantity(food.id!) }}</td>
+        </tr>
+      }
+      @for (row of emptyRows(); track $index) {
+        <tr class="sheet-empty-row">
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="sheet-signature">
+    <span class="sheet-signature-line"></span>
+    <span class="sheet-caption">Firma beneficiario</span>
+  </div>
+</article>

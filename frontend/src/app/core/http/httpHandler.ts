@@ -9,7 +9,7 @@ export class HttpHandler {
   // #TODO move this on the env files
   private readonly apiUrl = 'http://localhost:5190';
 
-  private normalizeUrl(url: string): string {
+  normalizeUrl(url: string): string {
     if (!url.startsWith('/')) {
       url = '/' + url;
     }

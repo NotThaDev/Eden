@@ -40,12 +40,6 @@
   margin-top: 4px;
 }
 
-.step-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 32px;
-}
-
 .preview-summary {
   display: flex;
   flex-wrap: wrap;
@@ -67,11 +61,50 @@
   }
 }
 
+// Steps whose main block takes the remaining height and scrolls on its own, instead of the whole content
+.step-container.fill {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 16px;
+}
+
+// Only the table scrolls: header and totals stay visible (sticky rows in distribution-table)
 .preview-table {
-  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .preview-error {
   color: var(--mat-sys-error);
   font-weight: 500;
+}
+
+.sheet-carousel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+
+  // Size container for the sheet: it shrinks to fit, so the nav below is always visible
+  app-distribution-sheet {
+    flex: 1 1 520px;
+    min-height: 0;
+    container-type: size;
+  }
+}
+
+.sheet-carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-carousel-count {
+  min-width: 96px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
 }

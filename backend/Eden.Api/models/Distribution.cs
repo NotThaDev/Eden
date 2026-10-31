@@ -45,10 +45,10 @@ namespace Eden.Api.Models
         public static async Task<Distribution?> AddDistribution(Distribution distribution)
         {
             // Distribution and stock changes are saved together, so a failure rolls back both
-            await EdenAppContext.Context.WithDbContext<int>(async db =>
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
                 db.Distributions.Add(distribution);
-                await AdjustFoodQuantities(db, ToFoodDeltas(distribution.Items, -1));
+                await AdjustFoodStockAsync(db, SumByFood(distribution.Items).ToDictionary(e => e.Key, e => -e.Value));
                 return await db.SaveChangesAsync();
             });
 
@@ -60,9 +60,9 @@ namespace Eden.Api.Models
             return await GetDistributionByIdAsync(distribution.Id.Value);
         }
 
-        public static Task<bool> DeleteDistributionAsync(int id)
+        public static async Task<bool> DeleteDistributionAsync(int id)
         {
-            return EdenAppContext.Context.WithDbContext<bool>(async db =>
+            return await EdenAppContext.Context.WithDbContext(async db =>
             {
                 var distribution = await db.Distributions
                     .Include(d => d.Items)
@@ -72,7 +72,7 @@ namespace Eden.Api.Models
                     return false;
                 }
 
-                await AdjustFoodQuantities(db, ToFoodDeltas(distribution.Items, 1));
+                await AdjustFoodStockAsync(db, SumByFood(distribution.Items));
                 db.Distributions.Remove(distribution);
                 await db.SaveChangesAsync();
                 return true;
@@ -81,33 +81,44 @@ namespace Eden.Api.Models
 
         public static async Task<Distribution?> UpdateDistributionAsync(Distribution distribution)
         {
-            var updated = await EdenAppContext.Context.WithDbContext<bool>(async db =>
+            var updated = await EdenAppContext.Context.WithDbContext(async db =>
             {
-                var existingDistribution = await db.Distributions
+                // Unfiltered Include: old items whose food was deleted (FoodId null) must be removed too.
+                var existing = await db.Distributions
                     .Include(d => d.Items)
                     .FirstOrDefaultAsync(d => d.Id == distribution.Id);
-                if (existingDistribution == null)
+                if (existing == null)
                 {
                     return false;
                 }
 
-                existingDistribution.DistributionDate = distribution.DistributionDate;
+                // Items of a deleted family (FamilyId null) were handed out and cannot be edited: keep them as they are.
+                var replacedItems = existing.Items.Where(i => i.FamilyId != null).ToList();
 
-                // Incoming items carry no ids, so the update replaces all items: give back the old stock, take the new one
-                var deltas = ToFoodDeltas(existingDistribution.Items, 1);
-                foreach (var (foodId, delta) in ToFoodDeltas(distribution.Items, -1))
+                // Old quantities go back to stock, new quantities are taken from it.
+                var stockDelta = SumByFood(replacedItems);
+                foreach (var (foodId, quantity) in SumByFood(distribution.Items))
                 {
-                    deltas[foodId] = deltas.GetValueOrDefault(foodId) + delta;
+                    stockDelta[foodId] = stockDelta.GetValueOrDefault(foodId) - quantity;
                 }
+                await AdjustFoodStockAsync(db, stockDelta);
 
-                existingDistribution.Items.Clear();
-                existingDistribution.Items.AddRange(distribution.Items);
-                await AdjustFoodQuantities(db, deltas);
+                // Attendance only exists for past distributions: a future date drops all of it, otherwise only removed families lose their row.
+                var newFamilyIds = distribution.Items.Where(i => i.FamilyId != null).Select(i => i.FamilyId!.Value).Distinct().ToList();
+                var keptFamilyIds = distribution.DistributionDate.Date < DateTime.UtcNow.Date ? newFamilyIds : [];
+                var staleAttendances = await db.DistributionAttendances
+                    .Where(a => a.DistributionId == existing.Id && !keptFamilyIds.Contains(a.FamilyId))
+                    .ToListAsync();
+                db.DistributionAttendances.RemoveRange(staleAttendances);
+
+                db.DistributionItems.RemoveRange(replacedItems);
+                existing.Items = [.. existing.Items.Where(i => i.FamilyId == null), .. distribution.Items];
+                existing.DistributionDate = distribution.DistributionDate;
                 await db.SaveChangesAsync();
                 return true;
             });
 
-            return updated ? await GetDistributionByIdAsync(distribution.Id ?? 0) : null;
+            return updated ? await GetDistributionByIdAsync(distribution.Id!.Value) : null;
         }
 
         /// <summary>
@@ -199,25 +210,21 @@ namespace Eden.Api.Models
             };
         }
 
-        private static Dictionary<int, int> ToFoodDeltas(IEnumerable<DistributionItem> items, int sign)
+        private static Dictionary<int, int> SumByFood(IEnumerable<DistributionItem> items)
         {
             return items
                 .Where(i => i.FoodId != null)
                 .GroupBy(i => i.FoodId!.Value)
-                .ToDictionary(g => g.Key, g => sign * g.Sum(i => i.Quantity));
+                .ToDictionary(g => g.Key, g => g.Sum(i => i.Quantity));
         }
 
-        /// <summary>
-        /// Applies quantity deltas to foods tracked by <paramref name="db"/>. Changes are persisted by the caller's SaveChangesAsync.
-        /// </summary>
-        private static async Task AdjustFoodQuantities(AppDbContext db, Dictionary<int, int> deltas)
+        private static async Task AdjustFoodStockAsync(AppDbContext db, Dictionary<int, int> delta)
         {
-            var foodIds = deltas.Keys.ToList();
+            var foodIds = delta.Keys.ToList();
             var foods = await db.Foods.Where(f => foodIds.Contains(f.Id!.Value)).ToListAsync();
-
             foreach (var food in foods)
             {
-                food.Quantity += deltas[food.Id!.Value];
+                food.Quantity += delta[food.Id!.Value];
             }
         }
     }

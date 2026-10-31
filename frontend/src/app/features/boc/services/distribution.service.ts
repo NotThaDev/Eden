@@ -63,7 +63,10 @@ export class DistributionService {
     return this.httpHandler.put<Distribution>(`api/distribution/${id}`, distribution).pipe(
       tap((updatedDistribution) => {
         this.distributionsSignal.update((distributions) =>
-          distributions.map((d) => (d.id === updatedDistribution.id ? updatedDistribution : d)),
+          distributions
+            .map((d) => (d.id === updatedDistribution.id ? updatedDistribution : d))
+            // Same order as the API: newest first
+            .sort((a, b) => +new Date(b.distributionDate) - +new Date(a.distributionDate)),
         );
       }),
       finalize(() => this.loadingSignal.set(false)),
@@ -71,7 +74,9 @@ export class DistributionService {
   }
 
   getAttendance(distributionId: number) {
-    return this.httpHandler.get<DistributionAttendance[]>(`api/distribution/${distributionId}/attendance`);
+    return this.httpHandler.get<DistributionAttendance[]>(
+      `api/distribution/${distributionId}/attendance`,
+    );
   }
 
   updateAttendance(distributionId: number, attendance: DistributionAttendance[]) {
@@ -83,5 +88,11 @@ export class DistributionService {
 
   previewDistribution(familyIds: number[], foodIds: number[]) {
     return this.httpHandler.post<Distribution>('api/distribution/preview', { familyIds, foodIds });
+  }
+
+  downloadSheets(distributionId: number) {
+    return this.httpHandler.get<Blob>(`api/distribution/${distributionId}/sheets`, {
+      responseType: 'blob',
+    });
   }
 }

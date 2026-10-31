@@ -1,0 +1,29 @@
+<app-page-header title="Impostazioni">
+  <form class="settings-form" [formGroup]="form" (ngSubmit)="onSave()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Nome associazione</mat-label><input matInput formControlName="name" required /></mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Indirizzo</mat-label><input matInput formControlName="address" /></mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Telefono</mat-label><input matInput formControlName="phone" /></mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" /></mat-form-field>
+    <div class="settings-actions">
+      <button matButton="filled" type="submit" [disabled]="loading()">Salva</button>
+    </div>
+
+    <div class="logo-section">
+      <span class="logo-label">Logo (PNG o JPEG, massimo 1 MB)</span>
+      <p class="logo-hint">Il logo viene stampato in alto a sinistra su ogni scheda. Se non ne carichi uno viene usato il logo di Eden.</p>
+      <!-- Without an uploaded logo the sheets use Eden's, so show that one -->
+      <img class="logo-preview" [src]="logoUrl() ?? 'logo.svg'" [alt]="logoUrl() ? 'Logo associazione' : 'Logo di Eden'" />
+      <div class="logo-actions">
+        <input #logoInput type="file" accept="image/png,image/jpeg" hidden (change)="onLogoSelected($event)" />
+        <button matButton="outlined" type="button" [disabled]="loading()" (click)="logoInput.click()">
+          <mat-icon>upload</mat-icon>{{ logoUrl() ? 'Sostituisci logo' : 'Carica logo' }}
+        </button>
+        @if (logoUrl()) {
+          <button matButton type="button" [disabled]="loading()" (click)="onRemoveLogo()">
+            <mat-icon>delete</mat-icon>Rimuovi logo
+          </button>
+        }
+      </div>
+    </div>
+  </form>
+</app-page-header>

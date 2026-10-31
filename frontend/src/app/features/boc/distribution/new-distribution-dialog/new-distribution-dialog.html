@@ -1,10 +1,18 @@
 <side-stepper
+  #stepper
   [linear]="true"
-  [icons]="['groups', 'restaurant', 'fact_check']"
-  [descriptions]="['Quando e a chi', 'Cosa distribuire', 'Controlla e conferma']"
+  [icons]="['groups', 'restaurant', 'fact_check', 'print']"
+  [descriptions]="[
+    'Quando e a chi',
+    'Cosa distribuire',
+    'Controlla e conferma',
+    'Anteprima e stampa',
+  ]"
   (selectionChange)="onStepChange($event)"
 >
-  <h2 mat-dialog-title sideStepperHeader>Nuova Distribuzione</h2>
+  <h2 mat-dialog-title sideStepperHeader>
+    {{ isEdit ? 'Modifica Distribuzione' : 'Nuova Distribuzione' }}
+  </h2>
   <cdk-step [stepControl]="familiesForm" label="Data e famiglie">
     <form [formGroup]="familiesForm" class="step-container">
       <p class="step-intro">Scegli la data della distribuzione e le famiglie coinvolte</p>
@@ -14,7 +22,7 @@
         <input
           matInput
           [matDatepicker]="datePicker"
-          [min]="today"
+          [min]="isEdit ? null : today"
           formControlName="distributionDate"
         />
         <mat-datepicker-toggle matIconSuffix [for]="datePicker"></mat-datepicker-toggle>
@@ -59,11 +67,6 @@
         }
       </div>
     </form>
-    <div class="step-buttons">
-      <button type="button" matButton="filled" cdkStepperNext [disabled]="familiesInvalid()">
-        Avanti
-      </button>
-    </div>
   </cdk-step>
 
   <cdk-step [stepControl]="foodsForm" label="Alimenti">
@@ -106,17 +109,11 @@
         }
       </div>
     </form>
-    <div class="step-buttons">
-      <button type="button" matButton cdkStepperPrevious>Indietro</button>
-      <button type="button" matButton="filled" cdkStepperNext [disabled]="foodsInvalid()">
-        Avanti
-      </button>
-    </div>
   </cdk-step>
 
   <cdk-step label="Riepilogo">
-    <div class="step-container">
-      <p class="step-intro">Controlla la distribuzione prima di crearla</p>
+    <div class="step-container fill">
+      <p class="step-intro">Controlla e modifica le quantità per famiglia e alimento</p>
       @if (previewLoading()) {
         <p class="step-status">Calcolo in corso...</p>
       } @else if (previewError()) {
@@ -131,27 +128,89 @@
           </div>
           <div>
             <dt>Famiglie</dt>
-            <dd>{{ distribution.items.length }}</dd>
+            <dd>{{ activePreview()?.items?.length ?? 0 }}</dd>
           </div>
         </dl>
-        @if (distribution.items.length === 0) {
+        <div class="preview-table">
+          <distribution-table
+            [distribution]="distribution"
+            [showTotals]="true"
+            [editable]="true"
+            [limits]="foodLimits()"
+            (quantityChange)="onQuantityChange($event)"
+          ></distribution-table>
+        </div>
+        @if ((activePreview()?.items?.length ?? 0) === 0) {
           <p class="step-status">Nessun alimento da distribuire.</p>
-        } @else {
-          <div class="preview-table">
-            <distribution-table
-              [distribution]="distribution"
-              [showTotals]="true"
-            ></distribution-table>
-          </div>
+        }
+        @if (hasEmptyFamily()) {
+          <p class="step-status preview-error">Ogni famiglia deve ricevere almeno un alimento.</p>
         }
       }
     </div>
-    <div class="step-buttons">
-      <button type="button" matButton cdkStepperPrevious>Indietro</button>
+  </cdk-step>
+
+  <cdk-step label="Genera schede">
+    <div class="step-container fill">
+      <p class="step-intro">
+        @if (isEdit) {
+          Controlla le schede: alla conferma la distribuzione viene aggiornata e le schede scaricate
+          in Excel
+        } @else {
+          Controlla le schede: alla conferma la distribuzione viene creata e le schede scaricate in
+          Excel
+        }
+      </p>
+      @if (activePreview(); as distribution) {
+        @if (distribution.items.length > 0) {
+          <div class="sheet-carousel">
+            <app-distribution-sheet
+              [distribution]="distribution"
+              [family]="sheetFamilies()[sheetIndex()]"
+            ></app-distribution-sheet>
+            <div class="sheet-carousel-nav">
+              <button
+                matIconButton
+                type="button"
+                aria-label="Scheda precedente"
+                [disabled]="sheetIndex() === 0"
+                (click)="moveSheet(-1)"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="sheet-carousel-count">
+                Scheda {{ sheetIndex() + 1 }} di {{ sheetFamilies().length }}
+              </span>
+              <button
+                matIconButton
+                type="button"
+                aria-label="Scheda successiva"
+                [disabled]="sheetIndex() === sheetFamilies().length - 1"
+                (click)="moveSheet(1)"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @else {
+          <p class="step-status">Nessuna scheda da generare.</p>
+        }
+      }
     </div>
   </cdk-step>
   <mat-dialog-actions sideStepperFooter>
     <button matButton="text" (click)="dialogRef.close()">Annulla</button>
-    <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">Crea</button>
+    @if (currentStep() > 0) {
+      <button matButton (click)="stepper.previous()">Indietro</button>
+    }
+    @if (currentStep() < LAST_STEP_INDEX) {
+      <button matButton="filled" (click)="stepper.next()" [disabled]="currentStepInvalid()">
+        Avanti
+      </button>
+    } @else {
+      <button matButton="filled" (click)="onSubmit()" [disabled]="!canCreate()">
+        {{ isEdit ? 'Salva e scarica schede' : 'Crea e scarica schede' }}
+      </button>
+    }
   </mat-dialog-actions>
 </side-stepper>

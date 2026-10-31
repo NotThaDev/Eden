@@ -1,0 +1,39 @@
+<mat-form-field appearance="outline" subscriptSizing="dynamic" class="necessity-level-select">
+  <mat-label>{{ label() }}</mat-label>
+  <mat-select
+    multiple
+    [value]="value()"
+    [disabled]="disabled()"
+    (selectionChange)="select($event.value)"
+    (closed)="onTouched()"
+    placeholder="Tutti"
+  >
+    <mat-select-trigger>
+      <span class="chips">
+        @for (level of value().slice(0, 2); track level) {
+          @let props = chipProps(level);
+          <app-label-chip
+            [label]="props.label"
+            [textColor]="props.textColor"
+            [backgroundColor]="props.backgroundColor"
+            [borderColor]="props.borderColor"
+          />
+        }
+        @if (value().length > 2) {
+          <span class="more">+{{ value().length - 2 }}</span>
+        }
+      </span>
+    </mat-select-trigger>
+    @for (level of levels; track level) {
+      @let props = chipProps(level);
+      <mat-option [value]="level">
+        <app-label-chip
+          [label]="props.label"
+          [textColor]="props.textColor"
+          [backgroundColor]="props.backgroundColor"
+          [borderColor]="props.borderColor"
+        />
+      </mat-option>
+    }
+  </mat-select>
+</mat-form-field>
