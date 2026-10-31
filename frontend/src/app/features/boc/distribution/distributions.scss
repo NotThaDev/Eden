@@ -1,11 +1,33 @@
 .header-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
   margin-bottom: 16px;
 
   @media (max-width: 600px) {
     button {
       width: 100%;
+    }
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+
+  .period-field {
+    min-width: 400px;
+  }
+
+  @media (max-width: 600px) {
+    mat-form-field,
+    .period-field {
+      width: 100%;
+      min-width: 0;
     }
   }
 }
@@ -57,4 +79,9 @@
       width: 100%;
     }
   }
+}
+
+.danger-button {
+  --mat-button-outlined-label-text-color: var(--mat-sys-error);
+  --mat-button-outlined-outline-color: var(--mat-sys-error);
 }

@@ -1,5 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, OnInit, Signal, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { map } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,7 +10,8 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { AssistanceLevel, Family } from '../../../core/models/family';
 import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
@@ -17,7 +21,10 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
-import { NecessityLevelChipProps } from './utils';
+import { NecessityLevelSelect } from '../../../shared/components/necessity-level-select/necessity-level-select';
+import { necessityLevelChipProps } from '../../../shared/components/necessity-level-select/necessity-level';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
+import { FamilyFilter, FamilyTypeFilter, filterFamilies, sortFamilies } from './utils';
 import { Drawer } from '../../../shared/components/drawer/drawer';
 import { FamilyHistoryDrawerContent } from './family-history-drawer-content/family-history-drawer-content';
 
@@ -33,8 +40,12 @@ import { FamilyHistoryDrawerContent } from './family-history-drawer-content/fami
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    ReactiveFormsModule,
     MatIconModule,
     LabelChip,
+    NecessityLevelSelect,
+    EmptyState,
     Drawer,
     FamilyHistoryDrawerContent,
     NgTemplateOutlet,
@@ -63,56 +74,50 @@ export class BocFamily implements OnInit {
   regularFamilies = computed(() => this.families().filter((f) => !f.isOccasional));
   occasionalFamilies = computed(() => this.families().filter((f) => f.isOccasional));
 
+  readonly pageSizeOptions = [10, 25, 50];
+
+  filterForm = inject(FormBuilder).nonNullable.group({
+    search: '',
+    // explicit FormControl: a bare array literal would be read as a [value, validators] tuple
+    levels: new FormControl<AssistanceLevel[]>([], { nonNullable: true }),
+    type: 'all' as FamilyTypeFilter,
+  });
+  filter = toSignal(
+    this.filterForm.valueChanges.pipe(map(() => this.filterForm.getRawValue())),
+    { initialValue: this.filterForm.getRawValue() },
+  );
+
+  regularView = this.tableView(this.regularFamilies);
+  occasionalView = this.tableView(this.occasionalFamilies);
+
+  private tableView(source: Signal<Family[]>) {
+    const sort = signal<Sort>({ active: '', direction: '' });
+    // back to the first page whenever the filters change
+    const page = linkedSignal<FamilyFilter, { pageIndex: number; pageSize: number }>({
+      source: this.filter,
+      computation: (_, prev) => ({ pageIndex: 0, pageSize: prev?.value.pageSize ?? 10 }),
+    });
+    const filtered = computed(() => sortFamilies(filterFamilies(source(), this.filter()), sort()));
+    // clamp: data shrinking (e.g. a delete) can leave the current page out of range
+    const pageIndex = computed(() =>
+      Math.min(page().pageIndex, Math.max(0, Math.ceil(filtered().length / page().pageSize) - 1)),
+    );
+    const rows = computed(() => {
+      const { pageSize } = page();
+      return filtered().slice(pageIndex() * pageSize, (pageIndex() + 1) * pageSize);
+    });
+    return { sort, page, pageIndex, filtered, rows };
+  }
+
   ngOnInit() {
     this.familyService.fetchFamilies();
   }
 
-  getNecessityGradeLabelProp(level: AssistanceLevel): NecessityLevelChipProps {
-    switch (level) {
-      case AssistanceLevel.VeryLow:
-        return {
-          label: 'Molto Basso',
-          textColor: 'light-dark(#1B5E20, #A5D6A7)',
-          backgroundColor: 'light-dark(#E8F5E9, #12291a)',
-          borderColor: '#4CAF50',
-        };
-      case AssistanceLevel.Low:
-        return {
-          label: 'Basso',
-          textColor: 'light-dark(#F57F17, #FFE082)',
-          backgroundColor: 'light-dark(#FFF3E0, #2e2508)',
-          borderColor: '#FFA726',
-        };
-      case AssistanceLevel.Medium:
-        return {
-          label: 'Medio',
-          textColor: 'light-dark(#E65100, #FFCC80)',
-          backgroundColor: 'light-dark(#FFE0B2, #33200a)',
-          borderColor: '#FF9800',
-        };
-      case AssistanceLevel.High:
-        return {
-          label: 'Alto',
-          textColor: 'light-dark(#C62828, #FFCDD2)',
-          backgroundColor: 'light-dark(#FFEBEE, #3b1214)',
-          borderColor: '#E53935',
-        };
-      case AssistanceLevel.VeryHigh:
-        return {
-          label: 'Molto Alto',
-          textColor: 'light-dark(#B71C1C, #FFEBEE)',
-          backgroundColor: 'light-dark(#FFCDD2, #4a1416)',
-          borderColor: '#D32F2F',
-        };
-      default:
-        return {
-          label: 'Sconosciuto',
-          textColor: 'var(--mat-sys-on-surface)',
-          backgroundColor: 'var(--mat-sys-surface)',
-          borderColor: 'var(--mat-sys-outline)',
-        };
-    }
+  resetFilters() {
+    this.filterForm.reset();
   }
+
+  readonly getNecessityGradeLabelProp = necessityLevelChipProps;
 
   deleteFamily(family: Family) {
     const dialogRef = this.dialogRef.open(ConfirmationDialog, {

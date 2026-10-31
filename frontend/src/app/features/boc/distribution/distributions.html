@@ -1,21 +1,49 @@
 <app-page-header title="Distribuzioni">
+  <button matButton="filled" pageActions (click)="onNewDistribution()">
+    <mat-icon>add</mat-icon>
+    Nuova Distribuzione
+  </button>
   <div class="header-actions">
-    <button matButton="filled" (click)="onNewDistribution()">
-      <mat-icon>add</mat-icon>
-      Nuova Distribuzione
-    </button>
+    <form class="filters" [formGroup]="filterForm">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Cerca famiglia</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput formControlName="search" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="period-field">
+        <mat-label>Periodo</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate formControlName="from" placeholder="Dal" />
+          <input matEndDate formControlName="to" placeholder="Al" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+
+      <button matButton type="button" (click)="toggleSort()">
+        <mat-icon>{{ sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+        {{ sortDirection() === 'desc' ? 'Più recenti' : 'Meno recenti' }}
+      </button>
+      <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
+    </form>
   </div>
 
   @if (distributions().length === 0) {
     <div class="empty-wrapper">
       <empty-state description="Non sono presenti distribuzioni"></empty-state>
     </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-wrapper">
+      <empty-state description="Nessuna distribuzione trovata"></empty-state>
+    </div>
   } @else {
-    @for (distribution of distributions(); track distribution.id) {
+    @for (distribution of visible(); track distribution.id) {
       <accordion
         [title]="titleTemplate"
         [key]="'distribution-details-' + (distribution.id ?? $index)"
         [style]="getAccordionStyle($index)"
+        [defaultExpanded]="$first"
       >
         <div class="distribution-actions">
           <button
@@ -29,6 +57,14 @@
           <button matButton="outlined" (click)="onExportSheets(distribution)">
             <mat-icon>download</mat-icon>
             Esporta schede
+          </button>
+          <button matButton="outlined" (click)="onEditDistribution(distribution)">
+            <mat-icon>edit</mat-icon>
+            Modifica
+          </button>
+          <button matButton="outlined" class="danger-button" (click)="onDeleteDistribution(distribution)">
+            <mat-icon>delete</mat-icon>
+            Elimina
           </button>
         </div>
         <distribution-table [distribution]="distribution"></distribution-table>
@@ -59,5 +95,14 @@
         </div>
       </ng-template>
     }
+
+    <mat-paginator
+      [length]="filtered().length"
+      [pageIndex]="pageIndex()"
+      [pageSize]="page().pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="page.set({ pageIndex: $event.pageIndex, pageSize: $event.pageSize })"
+      aria-label="Seleziona pagina"
+    ></mat-paginator>
   }
 </app-page-header>

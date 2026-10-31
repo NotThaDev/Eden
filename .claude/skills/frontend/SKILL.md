@@ -79,9 +79,9 @@ Never use `HttpClient` directly; inject `HttpHandler`. Components do not build e
 Use these before adding a new primitive:
 
 - Angular Material (`MatTableModule`, `MatButtonModule`, `MatIcon`, `MatDialog`, form fields, datepicker with the Luxon adapter)
-- `PageHeader` — page title and actions
+- `PageHeader` — page title; page-level action buttons go next to the title by adding the `pageActions` attribute to each button inside `<app-page-header>`. Action buttons must be top-level children of `<app-page-header>` (not inside `@if`/`@for`), otherwise they land in the body.
 - `Drawer` — side panel; feature-specific content goes in a `*-drawer-content` component
-- `Accordion`, `EmptyState`, `LabelChip`
+- `Accordion`, `EmptyState` (optional `icon`), `LabelChip`, `NecessityLevelSelect` (multi-select of assistance levels shown as chips, form control of `AssistanceLevel[]`)
 - `ConfirmationDialog` — destructive confirm
 - `Snackbar` + `SnackbarStatus`
 - `MONTH_DAY_YEAR_FORMAT` from `shared/DateFormat.ts`
