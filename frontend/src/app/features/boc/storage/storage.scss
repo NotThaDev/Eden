@@ -1,5 +1,37 @@
 @use '@angular/material' as mat;
 
+.storage-table {
+  margin-top: 16px;
+}
+
+.toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.no-data {
+  padding: 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 600px) {
+  .filters mat-form-field {
+    width: 100%;
+  }
+}
+
 .view-load-button {
   @include mat.icon-button-overrides(
     (

@@ -39,3 +39,47 @@ export function sheetQuantity(family: DistributionFamily, foodId: number): numbe
 export function sheetFamilies(distribution: Distribution): DistributionFamily[] {
   return [...distribution.items].sort((left, right) => left.familyId - right.familyId);
 }
+
+export interface DistributionFilter {
+  search: string;
+  from: string | null; // 'yyyy-MM-dd', inclusive
+  to: string | null; // 'yyyy-MM-dd', inclusive
+}
+
+export type DateSortDirection = 'desc' | 'asc';
+
+const pad2 = (n: number): string => String(n).padStart(2, '0');
+
+// Local calendar day ('yyyy-MM-dd') of a distribution; the API sends UTC ('Z') timestamps
+function distributionDay(distributionDate: Date | string): string {
+  const date = new Date(distributionDate);
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+export function filterDistributions(list: Distribution[], filter: DistributionFilter): Distribution[] {
+  const search = filter.search.trim().toLowerCase();
+  return list.filter((distribution) => {
+    const day = distributionDay(distribution.distributionDate);
+    if (filter.from && day < filter.from) {
+      return false;
+    }
+    if (filter.to && day > filter.to) {
+      return false;
+    }
+    if (!search) {
+      return true;
+    }
+    return distribution.items.some((item) =>
+      (item.family?.name ?? '').toLowerCase().includes(search),
+    );
+  });
+}
+
+export function sortDistributions(list: Distribution[], direction: DateSortDirection): Distribution[] {
+  const sign = direction === 'desc' ? -1 : 1;
+  return [...list].sort(
+    (left, right) =>
+      sign *
+      (new Date(left.distributionDate).getTime() - new Date(right.distributionDate).getTime()),
+  );
+}

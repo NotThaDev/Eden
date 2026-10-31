@@ -1,3 +1,38 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  flex: 1;
+
+  .search-field {
+    min-width: 220px;
+  }
+}
+
+.no-data {
+  height: 200px;
+  padding: 16px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .filters mat-form-field,
+  .filters .search-field {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 .family-section + .family-section {
   margin-top: 32px;
 }

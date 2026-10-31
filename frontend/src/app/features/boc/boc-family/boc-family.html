@@ -19,49 +19,81 @@
   </button>
 
   <div class="content-container">
+    <div class="toolbar">
+      <form class="filters" [formGroup]="filterForm">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search-field">
+          <mat-label>Cerca per nome</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput formControlName="search" />
+        </mat-form-field>
 
-    <section class="family-section">
-      <h3 class="section-title">Assistiti</h3>
-      <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: regularFamilies() }" />
-    </section>
+        <app-necessity-level-select formControlName="levels" />
 
-    @if (occasionalFamilies().length > 0) {
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="all">Tutte</mat-option>
+            <mat-option value="regular">Assistiti</mat-option>
+            <mat-option value="occasional">Saltuari</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
+      </form>
+    </div>
+
+    @if (filter().type !== 'occasional') {
       <section class="family-section">
-        <h3 class="section-title">Saltuari</h3>
-        <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: occasionalFamilies() }" />
+        <h3 class="section-title">Assistiti</h3>
+        <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: regularView }" />
       </section>
     }
 
-    <ng-template #familyTable let-rows>
+    @if (filter().type !== 'regular' && occasionalFamilies().length > 0) {
+      <section class="family-section">
+        <h3 class="section-title">Saltuari</h3>
+        <ng-container *ngTemplateOutlet="familyTable; context: { $implicit: occasionalView }" />
+      </section>
+    }
+
+    <ng-template #familyTable let-view>
       <div class="eden-table-container">
-        <table mat-table [dataSource]="rows" class="eden-table">
+        <table
+          mat-table
+          [dataSource]="view.rows()"
+          matSort
+          (matSortChange)="view.sort.set($event)"
+          [matSortActive]="view.sort().active"
+          [matSortDirection]="view.sort().direction"
+          class="eden-table"
+        >
           <!-- Name Column -->
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nome</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="name">Nome</th>
             <td mat-cell *matCellDef="let family">{{ family.name }}</td>
           </ng-container>
 
           <!-- Members Column -->
           <ng-container matColumnDef="members">
-            <th mat-header-cell *matHeaderCellDef>Membri</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="members">Membri</th>
             <td mat-cell *matCellDef="let family">{{ family.members }}</td>
           </ng-container>
 
           <!-- Children Column -->
           <ng-container matColumnDef="children">
-            <th mat-header-cell *matHeaderCellDef>Minori</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="children">Minori</th>
             <td mat-cell *matCellDef="let family">{{ family.children }}</td>
           </ng-container>
 
           <!-- ISEE Column -->
           <ng-container matColumnDef="isee">
-            <th mat-header-cell *matHeaderCellDef>ISEE</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="isee">ISEE</th>
             <td mat-cell *matCellDef="let family">{{ family.isee }}</td>
           </ng-container>
 
           <!-- Necessity Level Column -->
           <ng-container matColumnDef="necessityLevel">
-            <th mat-header-cell *matHeaderCellDef>Grado di Necessità</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="necessityLevel">Grado di Necessità</th>
             <td mat-cell *matCellDef="let family">
               @if (getNecessityGradeLabelProp(family.necessityLevel); as props) {
                 <app-label-chip
@@ -105,7 +137,23 @@
             *matRowDef="let row; columns: displayedColumns"
             [class.skip-alert]="skippedCount(row) > 5"
           ></tr>
+          <tr *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <empty-state
+                [icon]="loading() ? 'hourglass_empty' : 'search_off'"
+                [description]="loading() ? 'Caricamento...' : 'Nessuna famiglia trovata'"
+              />
+            </td>
+          </tr>
         </table>
+        <mat-paginator
+          [length]="view.filtered().length"
+          [pageIndex]="view.pageIndex()"
+          [pageSize]="view.page().pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="view.page.set({ pageIndex: $event.pageIndex, pageSize: $event.pageSize })"
+          aria-label="Seleziona pagina"
+        />
       </div>
     </ng-template>
   </div>
