@@ -9,17 +9,15 @@
 </app-drawer>
 
 <app-page-header [title]="'Magazzino'">
-  <div class="toolbar">
-    <button matButton="filled" (click)="onAddFood()" extended>
-      <mat-icon>add</mat-icon>
-      Aggiungi Alimento
-    </button>
-    <button matButton="filled" extended (click)="onAddLoad()">
-      <mat-icon>local_shipping</mat-icon>
-      Nuovo Carico
-    </button>
-  </div>
-  <div class="eden-table-container storage-table">
+  <button matButton="filled" (click)="onAddFood()" extended pageActions>
+    <mat-icon>add</mat-icon>
+    Aggiungi Alimento
+  </button>
+  <button matButton="filled" extended pageActions (click)="onAddLoad()">
+    <mat-icon>local_shipping</mat-icon>
+    Nuovo Carico
+  </button>
+  <div class="eden-table-container">
     <table mat-table [dataSource]="dataSource" class="eden-table">
       <!-- Name Column -->
       <ng-container matColumnDef="name">

@@ -1,10 +1,8 @@
 <app-page-header title="Distribuzioni">
-  <div class="header-actions">
-    <button matButton="filled" (click)="onNewDistribution()">
-      <mat-icon>add</mat-icon>
-      Nuova Distribuzione
-    </button>
-  </div>
+  <button matButton="filled" pageActions (click)="onNewDistribution()">
+    <mat-icon>add</mat-icon>
+    Nuova Distribuzione
+  </button>
 
   @if (distributions().length === 0) {
     <div class="empty-wrapper">

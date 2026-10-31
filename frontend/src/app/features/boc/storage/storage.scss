@@ -1,17 +1,5 @@
 @use '@angular/material' as mat;
 
-.storage-table {
-  margin-top: 16px;
-}
-
-.toolbar {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 16px;
-}
-
 .view-load-button {
   @include mat.icon-button-overrides(
     (

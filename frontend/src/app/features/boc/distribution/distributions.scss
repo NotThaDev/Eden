@@ -1,15 +1,3 @@
-.header-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-
-  @media (max-width: 600px) {
-    button {
-      width: 100%;
-    }
-  }
-}
-
 .empty-wrapper {
   width: 100%;
   height: 100%;
