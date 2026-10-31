@@ -58,6 +58,14 @@
             <mat-icon>download</mat-icon>
             Esporta schede
           </button>
+          <button matButton="outlined" (click)="onEditDistribution(distribution)">
+            <mat-icon>edit</mat-icon>
+            Modifica
+          </button>
+          <button matButton="outlined" class="danger-button" (click)="onDeleteDistribution(distribution)">
+            <mat-icon>delete</mat-icon>
+            Elimina
+          </button>
         </div>
         <distribution-table [distribution]="distribution"></distribution-table>
       </accordion>

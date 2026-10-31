@@ -14,6 +14,7 @@ import { DateTime } from 'luxon';
 import { map } from 'rxjs';
 import { Distribution } from '../../../core/models/distribution';
 import { Accordion } from '../../../shared/components/accordion/accordion';
+import { ConfirmationDialog } from '../../../shared/components/confirmation-dialog/confirmation-dialog';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
 import { PageHeader } from '../../../shared/components/layouts/page-header/page-header';
@@ -138,6 +139,53 @@ export class Distributions implements OnInit {
     this.downloadSheets(distribution);
   }
 
+  onEditDistribution(distribution: Distribution): void {
+    const dialogRef = this.dialogRef.open(NewDistributionDialog, {
+      width: '800px',
+      maxWidth: '95vw',
+      data: { distribution },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.distributionService.updateDistribution(result, distribution.id).subscribe({
+          next: (updated) => this.downloadSheets(updated),
+          error: () =>
+            this.showSnackbar('Impossibile aggiornare la distribuzione.', SnackbarStatus.ERROR),
+          complete: () =>
+            this.showSnackbar('Distribuzione aggiornata con successo!', SnackbarStatus.SUCCESS),
+        });
+      }
+    });
+  }
+
+  onDeleteDistribution(distribution: Distribution): void {
+    if (!distribution.id) {
+      return;
+    }
+
+    const date = DateTime.fromJSDate(new Date(distribution.distributionDate)).toFormat(
+      'dd/MM/yyyy',
+    );
+    const dialogRef = this.dialogRef.open(ConfirmationDialog, {
+      data: {
+        title: `Eliminare la distribuzione del ${date}?`,
+        message: 'Le quantità torneranno in magazzino. Questa azione non può essere annullata.',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.distributionService.deleteDistribution(distribution.id).subscribe({
+          error: () =>
+            this.showSnackbar('Impossibile eliminare la distribuzione.', SnackbarStatus.ERROR),
+          complete: () =>
+            this.showSnackbar('Distribuzione eliminata con successo!', SnackbarStatus.SUCCESS),
+        });
+      }
+    });
+  }
+
   private downloadSheets(distribution: Distribution) {
     if (!distribution.id) {
       return;
@@ -199,8 +247,10 @@ export class Distributions implements OnInit {
               return;
             }
             this.distributionService.updateAttendance(distributionId, result).subscribe({
-              error: () => this.showSnackbar('Impossibile salvare le presenze.', SnackbarStatus.ERROR),
-              complete: () => this.showSnackbar('Presenze salvate con successo!', SnackbarStatus.SUCCESS),
+              error: () =>
+                this.showSnackbar('Impossibile salvare le presenze.', SnackbarStatus.ERROR),
+              complete: () =>
+                this.showSnackbar('Presenze salvate con successo!', SnackbarStatus.SUCCESS),
             });
           });
       },

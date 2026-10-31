@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using ClosedXML.Excel;
 using Eden.Api.DTOs;
+using Eden.Api.Models;
 using Eden.Api.Tests.Fixtures;
 using Eden.Api.Tests.Helpers;
 
@@ -147,5 +148,190 @@ public class DistributionTests(EdenApiFactory factory)
         Assert.Equal("Firma beneficiario", ws.Cell(50, 6).GetString());
         Assert.Equal(50, ws.PageSetup.PrintAreas.Single().RangeAddress.LastAddress.RowNumber);
         Assert.Equal(100, ws.PageSetup.Scale);
+    }
+
+    [Fact]
+    public async Task Update_Distribution_ReplacesItemsAndAdjustsStock()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 4)))
+            .Content.ReadFromJsonAsync<DistributionDto>();
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 7));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(3, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+        var items = (await _client.GetFromJsonAsync<DistributionDto>($"/api/distribution/{created.Id}"))!
+            .Items.SelectMany(f => f.DistributionItems).ToList();
+        Assert.Single(items);
+        Assert.Equal(7, items[0].Quantity);
+    }
+
+    [Fact]
+    public async Task Update_KeepsSameQuantityOfLowStockFood()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 5);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 5)))
+            .Content.ReadFromJsonAsync<DistributionDto>();
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 5));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(0, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+    }
+
+    [Fact]
+    public async Task Update_QuantityAboveStock_Returns400AndKeepsStock()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 4)))
+            .Content.ReadFromJsonAsync<DistributionDto>();
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}", TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 11));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(6, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+        var items = (await _client.GetFromJsonAsync<DistributionDto>($"/api/distribution/{created.Id}"))!
+            .Items.SelectMany(f => f.DistributionItems).ToList();
+        Assert.Equal(4, items.Single().Quantity);
+    }
+
+    [Fact]
+    public async Task Update_RemovedFamily_DropsItsAttendance()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var familyA = await TestData.CreateFamilyAsync(_client);
+        var familyB = await TestData.CreateFamilyAsync(_client);
+        var pastDate = DateTime.UtcNow.AddDays(-3);
+        var request = new DistributionDto
+        {
+            DistributionDate = pastDate,
+            Items =
+            [
+                new DistributionFamilyDto { FamilyId = familyA.Id!.Value, DistributionItems = [new DistributionItemDto { FoodId = food.Id!.Value, Quantity = 1 }] },
+                new DistributionFamilyDto { FamilyId = familyB.Id!.Value, DistributionItems = [new DistributionItemDto { FoodId = food.Id!.Value, Quantity = 1 }] }
+            ]
+        };
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", request)).Content.ReadFromJsonAsync<DistributionDto>();
+        await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}/attendance", new List<DistributionAttendance>
+        {
+            new() { FamilyId = familyA.Id!.Value, Present = true },
+            new() { FamilyId = familyB.Id!.Value, Present = true }
+        });
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created.Id}",
+            TestData.SingleFamilyDistribution(familyA.Id!.Value, food.Id!.Value, 1) with { DistributionDate = pastDate });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var attendance = await _client.GetFromJsonAsync<List<DistributionAttendance>>($"/api/distribution/{created.Id}/attendance");
+        var row = Assert.Single(attendance!);
+        Assert.Equal(familyA.Id, row.FamilyId);
+        Assert.True(row.Present);
+    }
+
+    [Fact]
+    public async Task Create_SameFoodAcrossFamiliesAboveStock_Returns400()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 5);
+        var familyA = await TestData.CreateFamilyAsync(_client);
+        var familyB = await TestData.CreateFamilyAsync(_client);
+        var request = new DistributionDto
+        {
+            Items =
+            [
+                new DistributionFamilyDto { FamilyId = familyA.Id!.Value, DistributionItems = [new DistributionItemDto { FoodId = food.Id!.Value, Quantity = 3 }] },
+                new DistributionFamilyDto { FamilyId = familyB.Id!.Value, DistributionItems = [new DistributionItemDto { FoodId = food.Id!.Value, Quantity = 3 }] }
+            ]
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/distribution", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(5, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+    }
+
+    [Fact]
+    public async Task Update_SwapFood_RestoresOldAndTakesNew()
+    {
+        var foodA = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var foodB = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", TestData.SingleFamilyDistribution(family.Id!.Value, foodA.Id!.Value, 4)))
+            .Content.ReadFromJsonAsync<DistributionDto>();
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}", TestData.SingleFamilyDistribution(family.Id!.Value, foodB.Id!.Value, 3));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(10, (await TestData.GetFoodAsync(_client, foodA.Id!.Value)).Quantity);
+        Assert.Equal(7, (await TestData.GetFoodAsync(_client, foodB.Id!.Value)).Quantity);
+    }
+
+    [Fact]
+    public async Task Update_MoveDateToFuture_DropsAttendance()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var pastRequest = TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 1) with { DistributionDate = DateTime.UtcNow.AddDays(-3) };
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", pastRequest)).Content.ReadFromJsonAsync<DistributionDto>();
+        await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}/attendance", new List<DistributionAttendance>
+        {
+            new() { FamilyId = family.Id!.Value, Present = true }
+        });
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created.Id}",
+            pastRequest with { DistributionDate = DateTime.UtcNow.AddDays(3) });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var attendance = await _client.GetFromJsonAsync<List<DistributionAttendance>>($"/api/distribution/{created.Id}/attendance");
+        Assert.NotEmpty(attendance!);
+        Assert.All(attendance!, a =>
+        {
+            Assert.Null(a.Id);
+            Assert.False(a.Present);
+        });
+    }
+
+    [Fact]
+    public async Task Delete_AfterAttendance_Returns204AndRestoresStock()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var family = await TestData.CreateFamilyAsync(_client);
+        var request = TestData.SingleFamilyDistribution(family.Id!.Value, food.Id!.Value, 4) with { DistributionDate = DateTime.UtcNow.AddDays(-3) };
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", request)).Content.ReadFromJsonAsync<DistributionDto>();
+        await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}/attendance", new List<DistributionAttendance>
+        {
+            new() { FamilyId = family.Id!.Value, Present = true }
+        });
+
+        var response = await _client.DeleteAsync($"/api/distribution/{created.Id}");
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(10, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+    }
+
+    [Fact]
+    public async Task Update_WithDeletedFamily_KeepsItsItemsAndStock()
+    {
+        var food = await TestData.CreateFoodAsync(_client, quantity: 10);
+        var kept = await TestData.CreateFamilyAsync(_client);
+        var deleted = await TestData.CreateFamilyAsync(_client);
+        var request = TestData.SingleFamilyDistribution(kept.Id!.Value, food.Id!.Value, 2);
+        request.Items.Add(new DistributionFamilyDto
+        {
+            FamilyId = deleted.Id!.Value,
+            DistributionItems = [new DistributionItemDto { FoodId = food.Id!.Value, Quantity = 3 }]
+        });
+        var created = await (await _client.PostAsJsonAsync("/api/distribution", request)).Content.ReadFromJsonAsync<DistributionDto>();
+        (await _client.DeleteAsync($"/api/family/{deleted.Id}")).EnsureSuccessStatusCode();
+
+        var response = await _client.PutAsJsonAsync($"/api/distribution/{created!.Id}", TestData.SingleFamilyDistribution(kept.Id!.Value, food.Id!.Value, 4));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(3, (await TestData.GetFoodAsync(_client, food.Id!.Value)).Quantity);
+        var updated = await _client.GetFromJsonAsync<DistributionDto>($"/api/distribution/{created.Id}");
+        Assert.Equal(7, updated!.Items.Sum(f => f.DistributionItems.Sum(i => i.Quantity)));
     }
 }
