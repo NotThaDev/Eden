@@ -1,4 +1,8 @@
 <app-page-header title="Distribuzioni">
+  <button matButton="filled" pageActions (click)="onNewDistribution()">
+    <mat-icon>add</mat-icon>
+    Nuova Distribuzione
+  </button>
   <div class="header-actions">
     <form class="filters" [formGroup]="filterForm">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -23,11 +27,6 @@
       </button>
       <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
     </form>
-
-    <button matButton="filled" (click)="onNewDistribution()">
-      <mat-icon>add</mat-icon>
-      Nuova Distribuzione
-    </button>
   </div>
 
   @if (distributions().length === 0) {

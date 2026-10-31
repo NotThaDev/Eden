@@ -13,6 +13,11 @@
 </app-drawer>
 
 <app-page-header [title]="'Famiglie'">
+  <button matButton="filled" extended pageActions (click)="openDialog()">
+    <mat-icon>add</mat-icon>
+    Nuova Famiglia
+  </button>
+
   <div class="content-container">
     <div class="toolbar">
       <form class="filters" [formGroup]="filterForm">
@@ -35,11 +40,6 @@
 
         <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
       </form>
-
-      <button matButton="filled" extended (click)="openDialog()">
-        <mat-icon>add</mat-icon>
-        Nuova Famiglia
-      </button>
     </div>
 
     @if (filter().type !== 'occasional') {
