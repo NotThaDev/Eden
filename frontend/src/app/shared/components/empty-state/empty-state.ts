@@ -9,4 +9,5 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class EmptyState {
   description = input<string>('Nessun dato trovato');
+  icon = input<string>('inventory_2');
 }

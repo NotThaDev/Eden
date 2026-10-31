@@ -1,7 +1,4 @@
 import { Route } from '@angular/router';
-import { BocFamily } from './features/boc/boc-family/boc-family';
-import { Storage } from './features/boc/storage/storage';
-import { Distributions } from './features/boc/distribution/distributions';
 
 interface EdenAppRoute extends Route {
   icon?: string;
@@ -21,23 +18,34 @@ export const routes: EdenAppRoutes = [
     path: 'boc',
     icon: 'settings',
     title: 'BOC',
+    // Lazy: keeps the BOC pages out of the initial bundle
     children: [
       { path: '', redirectTo: 'family', pathMatch: 'full', hide: true },
       {
         path: 'family',
         title: 'Famiglie',
-        component: BocFamily,
+        loadComponent: () =>
+          import('./features/boc/boc-family/boc-family').then((m) => m.BocFamily),
       },
       {
         path: 'storage',
         title: 'Magazzino',
-        component: Storage,
+        loadComponent: () => import('./features/boc/storage/storage').then((m) => m.Storage),
       },
       {
         path: 'distribution',
         title: 'Distribuzioni',
-        component: Distributions,
+        loadComponent: () =>
+          import('./features/boc/distribution/distributions').then((m) => m.Distributions),
       },
     ],
+  },
+  {
+    path: 'settings',
+    hide: true,
+    icon: 'tune',
+    title: 'Impostazioni',
+    // Lazy: keeps the settings page out of the initial bundle
+    loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
   },
 ];

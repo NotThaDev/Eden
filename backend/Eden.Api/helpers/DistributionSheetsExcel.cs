@@ -1,3 +1,5 @@
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
 using Eden.Api.Models;
@@ -37,7 +39,7 @@ namespace Eden.Api.Helpers
                 .OrderBy(f => f!.Name)
                 .ToList();
 
-            // 3 logo rows + date + blank + header + n food rows + 2 blank + signature line + label = n + 10,
+            // 3 logo rows + title/date + blank + header + n food rows + 2 blank + signature line + label = n + 10,
             // n = max(10, foods): the table always has at least 10 rows, more foods grow the block
             var tableRows = Math.Max(MinFoodRows, foods.Count);
             var blockHeight = tableRows + 10;
@@ -91,7 +93,32 @@ namespace Eden.Api.Helpers
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
-            return stream.ToArray();
+            return DeduplicateMedia(stream.ToArray());
+        }
+
+        // ClosedXML embeds a separate copy of the image for every AddPicture call; point all pictures at one copy.
+        // Assumes the logo is the only media in the workbook (the sheets have no other images).
+        private static byte[] DeduplicateMedia(byte[] xlsx)
+        {
+            using var ms = new MemoryStream();
+            ms.Write(xlsx);
+            using (var zip = new ZipArchive(ms, ZipArchiveMode.Update, leaveOpen: true))
+            {
+                var media = zip.Entries.Where(e => e.FullName.StartsWith("xl/media/")).OrderBy(e => e.FullName.Length).ThenBy(e => e.FullName).ToList();
+                if (media.Count < 2) return xlsx;
+                var keep = "/" + media[0].FullName;
+                foreach (var rels in zip.Entries.Where(e => e.FullName.StartsWith("xl/drawings/_rels/")).ToList())
+                {
+                    string xml;
+                    using (var reader = new StreamReader(rels.Open())) xml = reader.ReadToEnd();
+                    xml = Regex.Replace(xml, "Target=\"/?xl/media/[^\"]+\"", $"Target=\"{keep}\"");
+                    rels.Delete();
+                    using var writer = new StreamWriter(zip.CreateEntry(rels.FullName).Open());
+                    writer.Write(xml);
+                }
+                foreach (var dup in media.Skip(1)) dup.Delete();
+            }
+            return ms.ToArray();
         }
 
         private static void WriteBlock(IXLWorksheet ws, int top, int col, int? familyId,
@@ -100,15 +127,11 @@ namespace Eden.Api.Helpers
             var r = top;
             var right = col + 2;
 
-            // Rows top..top+2: logo and title on the left, family code on the right
+            // Rows top..top+2: logo on the left, family code on the right
             var pic = ws.AddPicture(new MemoryStream(logo));
             pic.Placement = XLPicturePlacement.Move; // must be set before sizing
-            pic.MoveTo(ws.Cell(r, col)).WithSize(LogoPx, LogoPx);
-            // Indent pushes the title past the logo; the text overflows into the empty cell on its right
-            var title = ws.Cell(r + 1, col);
-            title.Value = "Distribuzione Alimentare";
-            title.Style.Font.Bold = true;
-            title.Style.Alignment.Indent = 3;
+            // Keep the aspect ratio: at most LogoPx high and 2.5 * LogoPx wide (column A is ~170 px)
+            pic.MoveTo(ws.Cell(r, col)).Scale(Math.Min((double)LogoPx / pic.OriginalHeight, 2.5 * LogoPx / pic.OriginalWidth));
             // shortcut: the family code is the DB id until families get a proper code, then show that instead
             var code = ws.Cell(r, right);
             code.Value = $"Codice: {familyId}";
@@ -117,7 +140,13 @@ namespace Eden.Api.Helpers
             code.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
             r += 3;
 
-            ws.Cell(r++, col).Value = date;
+            // Row below the logo: title on the left, date on the right
+            var title = ws.Cell(r, col);
+            title.Value = "Distribuzione Alimentare";
+            title.Style.Font.Bold = true;
+            var dateCell = ws.Cell(r++, right);
+            dateCell.Value = date;
+            dateCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
             r++;
 
             var header = ws.Range(r, col, r, right);

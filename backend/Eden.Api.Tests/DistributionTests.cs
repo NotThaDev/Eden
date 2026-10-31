@@ -87,12 +87,19 @@ public class DistributionTests(EdenApiFactory factory)
         var response = await _client.GetAsync($"/api/distribution/{distribution.Id}/sheets");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        using var workbook = new XLWorkbook(await response.Content.ReadAsStreamAsync());
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+        using (var zip = new System.IO.Compression.ZipArchive(new MemoryStream(bytes)))
+        {
+            // The app logo is embedded once even though every sheet shows it
+            Assert.Single(zip.Entries, e => e.FullName.StartsWith("xl/media/"));
+        }
+        using var workbook = new XLWorkbook(new MemoryStream(bytes));
         var ws = workbook.Worksheet("Schede");
         var texts = ws.CellsUsed().Select(c => c.GetString()).ToList();
 
         Assert.Equal($"Codice: {family.Id}", ws.Cell(1, 3).GetString());
-        Assert.Equal("Distribuzione Alimentare", ws.Cell(2, 1).GetString());
+        Assert.Equal("Distribuzione Alimentare", ws.Cell(4, 1).GetString());
+        Assert.StartsWith("Data: ", ws.Cell(4, 3).GetString());
         Assert.DoesNotContain(texts, t => t.Contains(family.Name));
         Assert.Contains("Firma beneficiario", texts);
         Assert.DoesNotContain("Firma operatore", texts);

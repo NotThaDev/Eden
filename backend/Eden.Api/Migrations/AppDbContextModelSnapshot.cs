@@ -22,6 +22,35 @@ namespace Eden.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Eden.Api.Models.AssociationSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Logo")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("LogoContentType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AssociationSettings");
+                });
+
             modelBuilder.Entity("Eden.Api.Models.Distribution", b =>
                 {
                     b.Property<int>("Id")
@@ -228,11 +257,13 @@ namespace Eden.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Eden.Api.Models.Family", null)
+                    b.HasOne("Eden.Api.Models.Family", "Family")
                         .WithMany()
                         .HasForeignKey("FamilyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.DistributionItem", b =>

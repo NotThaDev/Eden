@@ -81,7 +81,7 @@ Use these before adding a new primitive:
 - Angular Material (`MatTableModule`, `MatButtonModule`, `MatIcon`, `MatDialog`, form fields, datepicker with the Luxon adapter)
 - `PageHeader` — page title and actions
 - `Drawer` — side panel; feature-specific content goes in a `*-drawer-content` component
-- `Accordion`, `EmptyState`, `LabelChip`
+- `Accordion`, `EmptyState` (optional `icon`), `LabelChip`, `NecessityLevelSelect` (multi-select of assistance levels shown as chips, form control of `AssistanceLevel[]`)
 - `ConfirmationDialog` — destructive confirm
 - `Snackbar` + `SnackbarStatus`
 - `MONTH_DAY_YEAR_FORMAT` from `shared/DateFormat.ts`
