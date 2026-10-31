@@ -44,6 +44,7 @@
         [title]="titleTemplate"
         [key]="'distribution-details-' + (distribution.id ?? $index)"
         [style]="getAccordionStyle($index)"
+        [defaultExpanded]="$first"
       >
         <div class="distribution-actions">
           <button
