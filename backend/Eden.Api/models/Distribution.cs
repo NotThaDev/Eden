@@ -44,27 +44,20 @@ namespace Eden.Api.Models
 
         public static async Task<Distribution?> AddDistribution(Distribution distribution)
         {
-            Distribution? newDistribution = null;
-
-            await EdenAppContext.Context.WithDbContext(db =>
+            // Distribution and stock changes are saved together, so a failure rolls back both
+            await EdenAppContext.Context.WithDbContext(async db =>
             {
-                newDistribution = db.Distributions.Add(distribution).Entity;
-                return db.SaveChangesAsync();
+                db.Distributions.Add(distribution);
+                await AdjustFoodStockAsync(db, SumByFood(distribution.Items).ToDictionary(e => e.Key, e => -e.Value));
+                return await db.SaveChangesAsync();
             });
 
-            if (newDistribution?.Id == null)
+            if (distribution.Id == null)
             {
                 return null;
             }
 
-
-            await UpdateFoodQuantities([.. distribution.Items.Select(i => new LoadItem
-                {
-                    FoodId = i.FoodId ?? 0,
-                    Quantity = -i.Quantity
-                })]);
-
-            return await GetDistributionByIdAsync(newDistribution.Id!.Value);
+            return await GetDistributionByIdAsync(distribution.Id.Value);
         }
 
         public static async Task<bool> DeleteDistributionAsync(int id)
@@ -233,20 +226,6 @@ namespace Eden.Api.Models
             {
                 food.Quantity += delta[food.Id!.Value];
             }
-        }
-
-        private static async Task UpdateFoodQuantities(List<LoadItem> loadItems)
-        {
-            var foodIds = loadItems.Select(li => li.FoodId).ToList();
-            var foods = await Food.GetFoodsByIdsAsync(foodIds);
-
-            foreach (var item in loadItems)
-            {
-                var food = foods.FirstOrDefault(f => f.Id == item.FoodId);
-                food?.Quantity += item.Quantity;
-            }
-
-            await Food.UpdateFoodsAsync(foods);
         }
     }
 
