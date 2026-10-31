@@ -138,19 +138,16 @@ export class MainLayout implements OnDestroy, OnInit {
     return this._router.url.includes(path);
   }
 
+  // Leaf entries leave the open submenu alone: it closes only from its own parent entry
   onNavEntryClick(route: NavEntry): void {
     const hasChildren = route.children && route.children.length > 0;
-    if (hasChildren) {
-      this.toggleSubmenu(route.path);
-      // Make sure to open the navbar when collapsed, if clicking a parent nav entry
-      if (this.isNavbarCollapsed()) {
-        this.toggleNavbarCollapse();
-      }
+    if (!hasChildren) return;
 
-      return;
+    this.toggleSubmenu(route.path);
+    // Make sure to open the navbar when collapsed, if clicking a parent nav entry
+    if (this.isNavbarCollapsed()) {
+      this.toggleNavbarCollapse();
     }
-
-    this.openedSubmenu = null;
   }
 
   constructor() {

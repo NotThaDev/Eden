@@ -13,6 +13,7 @@ namespace Eden.Api.Data
         public DbSet<DistributionItem> DistributionItems => Set<DistributionItem>();
         public DbSet<AssociationSettings> AssociationSettings => Set<AssociationSettings>();
         public DbSet<DistributionAttendance> DistributionAttendances => Set<DistributionAttendance>();
+        public DbSet<Event> Events => Set<Event>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +50,12 @@ namespace Eden.Api.Data
                 .HasOne(a => a.Family)
                 .WithMany()
                 .HasForeignKey(a => a.FamilyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.Distribution)
+                .WithOne()
+                .HasForeignKey<Event>(e => e.DistributionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())

@@ -125,6 +125,51 @@ namespace Eden.Api.Migrations
                     b.ToTable("DistributionItems");
                 });
 
+            modelBuilder.Entity("Eden.Api.Models.Event", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllDay")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int?>("DistributionId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistributionId")
+                        .IsUnique();
+
+                    b.ToTable("Events");
+                });
+
             modelBuilder.Entity("Eden.Api.Models.Family", b =>
                 {
                     b.Property<int>("Id")
@@ -287,6 +332,16 @@ namespace Eden.Api.Migrations
                     b.Navigation("Family");
 
                     b.Navigation("Food");
+                });
+
+            modelBuilder.Entity("Eden.Api.Models.Event", b =>
+                {
+                    b.HasOne("Eden.Api.Models.Distribution", "Distribution")
+                        .WithOne()
+                        .HasForeignKey("Eden.Api.Models.Event", "DistributionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Distribution");
                 });
 
             modelBuilder.Entity("Eden.Api.Models.Food", b =>

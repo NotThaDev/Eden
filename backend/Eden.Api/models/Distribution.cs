@@ -49,6 +49,8 @@ namespace Eden.Api.Models
             await EdenAppContext.Context.WithDbContext(db =>
             {
                 newDistribution = db.Distributions.Add(distribution).Entity;
+                // Mirror the distribution on the calendar (same SaveChanges, so atomic)
+                db.Events.Add(new Event { Title = Event.DistributionTitle, Start = distribution.DistributionDate, Distribution = distribution });
                 return db.SaveChangesAsync();
             });
 
@@ -90,6 +92,7 @@ namespace Eden.Api.Models
         {
             var updated = await EdenAppContext.Context.WithDbContext(async db =>
             {
+                await using var transaction = await db.Database.BeginTransactionAsync();
                 // Unfiltered Include: old items whose food was deleted (FoodId null) must be removed too.
                 var existing = await db.Distributions
                     .Include(d => d.Items)
@@ -122,6 +125,11 @@ namespace Eden.Api.Models
                 existing.Items = [.. existing.Items.Where(i => i.FamilyId == null), .. distribution.Items];
                 existing.DistributionDate = distribution.DistributionDate;
                 await db.SaveChangesAsync();
+                // Keep the calendar event on the distribution date
+                await db.Events
+                    .Where(e => e.DistributionId == existing.Id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(e => e.Start, existing.DistributionDate));
+                await transaction.CommitAsync();
                 return true;
             });
 

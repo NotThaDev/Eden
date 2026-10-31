@@ -41,6 +41,13 @@ export const routes: EdenAppRoutes = [
     ],
   },
   {
+    path: 'calendar',
+    icon: 'event',
+    title: 'Calendario',
+    // Lazy: keeps the calendar out of the initial bundle
+    loadComponent: () => import('./features/calendar/calendar').then((m) => m.Calendar),
+  },
+  {
     path: 'settings',
     hide: true,
     icon: 'tune',

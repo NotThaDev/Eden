@@ -1,0 +1,126 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content [formGroup]="form">
+  <div class="event-form">
+    <div class="title-row">
+      <button
+        type="button"
+        class="icon-trigger"
+        [class.empty]="!icon()"
+        [matMenuTriggerFor]="iconMenu"
+        #iconTrigger="matMenuTrigger"
+        aria-label="Scegli icona"
+        title="Scegli icona"
+      >
+        <mat-icon>{{ icon() ?? 'add_reaction' }}</mat-icon>
+      </button>
+      <mat-form-field appearance="outline" class="title-field">
+        <mat-label>Titolo</mat-label>
+        <input matInput formControlName="title" maxlength="200" />
+      </mat-form-field>
+    </div>
+
+    <mat-menu #iconMenu="matMenu" xPosition="after">
+      <div class="icon-options" role="radiogroup" aria-label="Icona" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="icon-option"
+          role="radio"
+          aria-label="Nessuna icona"
+          title="Nessuna icona"
+          [attr.aria-checked]="icon() === null"
+          [class.selected]="icon() === null"
+          (click)="form.controls.icon.setValue(null); iconTrigger.closeMenu()"
+        >
+          <mat-icon>block</mat-icon>
+        </button>
+        @for (entry of icons; track entry[0]) {
+          <button
+            type="button"
+            class="icon-option"
+            role="radio"
+            [attr.aria-label]="entry[1]"
+            [attr.title]="entry[1]"
+            [attr.aria-checked]="icon() === entry[0]"
+            [class.selected]="icon() === entry[0]"
+            (click)="form.controls.icon.setValue(entry[0]); iconTrigger.closeMenu()"
+          >
+            <mat-icon>{{ entry[0] }}</mat-icon>
+          </button>
+        }
+      </div>
+    </mat-menu>
+
+    <mat-checkbox formControlName="allDay">Tutto il giorno</mat-checkbox>
+
+    <div class="date-time">
+      <mat-form-field appearance="outline">
+        <mat-label>Data inizio</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+      @if (!allDay()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Ora inizio</mat-label>
+          <input matInput type="time" formControlName="startTime" />
+        </mat-form-field>
+      }
+    </div>
+
+    <div class="date-time">
+      <mat-form-field appearance="outline">
+        <mat-label>Data fine</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+      @if (!allDay()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Ora fine</mat-label>
+          <input matInput type="time" formControlName="endTime" />
+        </mat-form-field>
+      }
+    </div>
+
+    @if (formError) {
+      <p class="form-error">{{ formError }}</p>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descrizione</mat-label>
+      <textarea matInput formControlName="description" rows="3" maxlength="2000"></textarea>
+    </mat-form-field>
+
+    <div class="picker">
+      <span class="picker-label">Colore</span>
+      <div class="color-options" role="radiogroup" aria-label="Colore">
+        @for (c of colors; track c[0]) {
+          <button
+            type="button"
+            class="color-option"
+            role="radio"
+            [attr.aria-label]="c[1].label"
+            [attr.title]="c[1].label"
+            [attr.aria-checked]="form.controls.color.value === c[0]"
+            [class.selected]="form.controls.color.value === c[0]"
+            [style.background]="c[1].text"
+            [style.color]="c[1].background"
+            (click)="form.controls.color.setValue(c[0])"
+          >
+            @if (form.controls.color.value === c[0]) {
+              <mat-icon>check</mat-icon>
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="event-actions">
+  @if (data?.event) {
+    <button matButton="text" type="button" class="delete-button" (click)="onDelete()">Elimina</button>
+  }
+  <span class="spacer"></span>
+  <button matButton="text" type="button" (click)="dialogRef.close()">Annulla</button>
+  <button matButton="filled" type="button" [disabled]="form.invalid" (click)="onSave()">Salva</button>
+</mat-dialog-actions>
