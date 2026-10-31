@@ -13,24 +13,12 @@ describe('filterFamilies', () => {
     expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, search: 'BIA' })).toEqual([families[1]]);
   });
 
-  it('filters by necessity level when set', () => {
-    expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, level: AssistanceLevel.Medium })).toEqual([families[2]]);
+  it('filters by necessity levels when set', () => {
+    expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, levels: [AssistanceLevel.Medium] })).toEqual([families[2]]);
+    expect(
+      filterFamilies(families, { ...EMPTY_FAMILY_FILTER, levels: [AssistanceLevel.High, AssistanceLevel.Medium] }),
+    ).toEqual([families[0], families[2]]);
     expect(filterFamilies(families, EMPTY_FAMILY_FILTER)).toEqual(families);
-  });
-
-  it('filters ISEE with min only, max only, both, inclusive', () => {
-    expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, iseeMin: 8000 })).toEqual([families[1], families[2]]);
-    expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, iseeMax: 8000 })).toEqual([families[0], families[2]]);
-    expect(filterFamilies(families, { ...EMPTY_FAMILY_FILTER, iseeMin: 5000, iseeMax: 8000 })).toEqual([
-      families[0],
-      families[2],
-    ]);
-  });
-
-  it('treats ISEE 0 as a real bound', () => {
-    const zero: Family[] = [{ ...families[0], isee: 0 }, families[1]];
-    expect(filterFamilies(zero, { ...EMPTY_FAMILY_FILTER, iseeMax: 0 })).toEqual([zero[0]]);
-    expect(filterFamilies(zero, { ...EMPTY_FAMILY_FILTER, iseeMin: 0 })).toEqual(zero);
   });
 });
 

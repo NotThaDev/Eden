@@ -17,22 +17,17 @@
   .search-field {
     min-width: 220px;
   }
-
-  .isee-field {
-    width: 120px;
-  }
 }
 
 .no-data {
+  height: 200px;
   padding: 16px;
   text-align: center;
-  color: var(--mat-sys-on-surface-variant);
 }
 
 @media (max-width: 600px) {
   .filters mat-form-field,
-  .filters .search-field,
-  .filters .isee-field {
+  .filters .search-field {
     width: 100%;
     min-width: 0;
   }

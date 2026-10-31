@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input } f
 import { MatIcon } from '@angular/material/icon';
 import { LabelChip } from '../../../../shared/components/label-chip/label-chip';
 import { FamilyService } from '../../services/family.service';
-import { NecessityLevelChipProps } from '../utils';
+import { NecessityLevelChipProps } from '../../../../shared/components/necessity-level-select/necessity-level';
 
 @Component({
   selector: 'app-family-history-drawer-content',

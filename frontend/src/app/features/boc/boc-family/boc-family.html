@@ -22,15 +22,7 @@
           <input matInput formControlName="search" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Grado di Necessità</mat-label>
-          <mat-select formControlName="level">
-            <mat-option [value]="''">Tutti</mat-option>
-            @for (level of levels; track level) {
-              <mat-option [value]="level">{{ getNecessityGradeLabelProp(level).label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-necessity-level-select formControlName="levels" />
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Tipo</mat-label>
@@ -39,16 +31,6 @@
             <mat-option value="regular">Assistiti</mat-option>
             <mat-option value="occasional">Saltuari</mat-option>
           </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="isee-field">
-          <mat-label>ISEE min</mat-label>
-          <input matInput type="number" min="0" formControlName="iseeMin" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="isee-field">
-          <mat-label>ISEE max</mat-label>
-          <input matInput type="number" min="0" formControlName="iseeMax" />
         </mat-form-field>
 
         <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
@@ -157,7 +139,10 @@
           ></tr>
           <tr *matNoDataRow>
             <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
-              {{ loading() ? 'Caricamento...' : 'Nessuna famiglia trovata' }}
+              <empty-state
+                [icon]="loading() ? 'hourglass_empty' : 'search_off'"
+                [description]="loading() ? 'Caricamento...' : 'Nessuna famiglia trovata'"
+              />
             </td>
           </tr>
         </table>

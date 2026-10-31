@@ -1,0 +1,27 @@
+:host {
+  display: inline-block;
+}
+
+.necessity-level-select {
+  min-width: 220px;
+  width: 100%;
+}
+
+.chips {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  align-items: center;
+  overflow: hidden;
+}
+
+.more {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+// Chips inside options and the trigger are visual only; clicks go to the option.
+mat-option app-label-chip,
+.chips app-label-chip {
+  pointer-events: none;
+}

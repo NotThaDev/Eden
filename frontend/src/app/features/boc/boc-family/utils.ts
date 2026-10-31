@@ -1,29 +1,18 @@
 import { Sort } from '@angular/material/sort';
 import { AssistanceLevel, Family } from '../../../core/models/family';
 
-export interface NecessityLevelChipProps {
-  label: string;
-  textColor: string;
-  backgroundColor: string;
-  borderColor: string;
-}
-
 export type FamilyTypeFilter = 'all' | 'regular' | 'occasional';
 
 export interface FamilyFilter {
   search: string;
-  level: AssistanceLevel | '';
+  levels: AssistanceLevel[];
   type: FamilyTypeFilter;
-  iseeMin: number | null;
-  iseeMax: number | null;
 }
 
 export const EMPTY_FAMILY_FILTER: FamilyFilter = {
   search: '',
-  level: '',
+  levels: [],
   type: 'all',
-  iseeMin: null,
-  iseeMax: null,
 };
 
 const LEVEL_ORDER: AssistanceLevel[] = [
@@ -40,9 +29,7 @@ export function filterFamilies(families: Family[], f: FamilyFilter): Family[] {
   return families.filter(
     (family) =>
       (!search || family.name.toLowerCase().includes(search)) &&
-      (!f.level || family.necessityLevel === f.level) &&
-      (f.iseeMin != null ? family.isee >= f.iseeMin : true) &&
-      (f.iseeMax != null ? family.isee <= f.iseeMax : true),
+      (!f.levels.length || f.levels.includes(family.necessityLevel)),
   );
 }
 

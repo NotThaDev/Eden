@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal, OnInit, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { map } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -21,13 +21,10 @@ import { SnackbarStatus } from '../../../shared/components/snackbar/type';
 import { FamilyService } from '../services/family.service';
 import { CreateFamilyDialog } from './create-family-dialog/create-family-dialog';
 import { LabelChip } from '../../../shared/components/label-chip/label-chip';
-import {
-  FamilyFilter,
-  FamilyTypeFilter,
-  filterFamilies,
-  NecessityLevelChipProps,
-  sortFamilies,
-} from './utils';
+import { NecessityLevelSelect } from '../../../shared/components/necessity-level-select/necessity-level-select';
+import { necessityLevelChipProps } from '../../../shared/components/necessity-level-select/necessity-level';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
+import { FamilyFilter, FamilyTypeFilter, filterFamilies, sortFamilies } from './utils';
 import { Drawer } from '../../../shared/components/drawer/drawer';
 import { FamilyHistoryDrawerContent } from './family-history-drawer-content/family-history-drawer-content';
 
@@ -47,6 +44,8 @@ import { FamilyHistoryDrawerContent } from './family-history-drawer-content/fami
     ReactiveFormsModule,
     MatIconModule,
     LabelChip,
+    NecessityLevelSelect,
+    EmptyState,
     Drawer,
     FamilyHistoryDrawerContent,
     NgTemplateOutlet,
@@ -75,15 +74,13 @@ export class BocFamily implements OnInit {
   regularFamilies = computed(() => this.families().filter((f) => !f.isOccasional));
   occasionalFamilies = computed(() => this.families().filter((f) => f.isOccasional));
 
-  readonly levels = Object.values(AssistanceLevel);
   readonly pageSizeOptions = [10, 25, 50];
 
   filterForm = inject(FormBuilder).nonNullable.group({
     search: '',
-    level: '' as AssistanceLevel | '',
+    // explicit FormControl: a bare array literal would be read as a [value, validators] tuple
+    levels: new FormControl<AssistanceLevel[]>([], { nonNullable: true }),
     type: 'all' as FamilyTypeFilter,
-    iseeMin: null as number | null,
-    iseeMax: null as number | null,
   });
   filter = toSignal(
     this.filterForm.valueChanges.pipe(map(() => this.filterForm.getRawValue())),
@@ -120,52 +117,7 @@ export class BocFamily implements OnInit {
     this.filterForm.reset();
   }
 
-  getNecessityGradeLabelProp(level: AssistanceLevel): NecessityLevelChipProps {
-    switch (level) {
-      case AssistanceLevel.VeryLow:
-        return {
-          label: 'Molto Basso',
-          textColor: 'light-dark(#1B5E20, #A5D6A7)',
-          backgroundColor: 'light-dark(#E8F5E9, #12291a)',
-          borderColor: '#4CAF50',
-        };
-      case AssistanceLevel.Low:
-        return {
-          label: 'Basso',
-          textColor: 'light-dark(#F57F17, #FFE082)',
-          backgroundColor: 'light-dark(#FFF3E0, #2e2508)',
-          borderColor: '#FFA726',
-        };
-      case AssistanceLevel.Medium:
-        return {
-          label: 'Medio',
-          textColor: 'light-dark(#E65100, #FFCC80)',
-          backgroundColor: 'light-dark(#FFE0B2, #33200a)',
-          borderColor: '#FF9800',
-        };
-      case AssistanceLevel.High:
-        return {
-          label: 'Alto',
-          textColor: 'light-dark(#C62828, #FFCDD2)',
-          backgroundColor: 'light-dark(#FFEBEE, #3b1214)',
-          borderColor: '#E53935',
-        };
-      case AssistanceLevel.VeryHigh:
-        return {
-          label: 'Molto Alto',
-          textColor: 'light-dark(#B71C1C, #FFEBEE)',
-          backgroundColor: 'light-dark(#FFCDD2, #4a1416)',
-          borderColor: '#D32F2F',
-        };
-      default:
-        return {
-          label: 'Sconosciuto',
-          textColor: 'var(--mat-sys-on-surface)',
-          backgroundColor: 'var(--mat-sys-surface)',
-          borderColor: 'var(--mat-sys-outline)',
-        };
-    }
-  }
+  readonly getNecessityGradeLabelProp = necessityLevelChipProps;
 
   deleteFamily(family: Family) {
     const dialogRef = this.dialogRef.open(ConfirmationDialog, {
