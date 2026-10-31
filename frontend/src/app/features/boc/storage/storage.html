@@ -9,6 +9,14 @@
 </app-drawer>
 
 <app-page-header [title]="'Magazzino'">
+  <button matButton="filled" (click)="onAddFood()" extended pageActions>
+    <mat-icon>add</mat-icon>
+    Aggiungi Alimento
+  </button>
+  <button matButton="filled" extended pageActions (click)="onAddLoad()">
+    <mat-icon>local_shipping</mat-icon>
+    Nuovo Carico
+  </button>
   <div class="toolbar">
     <form class="filters" [formGroup]="filterForm">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -19,16 +27,6 @@
       <mat-slide-toggle formControlName="lowStock">Scorte basse (≤ {{ lowStockThreshold }})</mat-slide-toggle>
       <button matButton type="button" (click)="resetFilters()">Azzera filtri</button>
     </form>
-    <div class="actions">
-      <button matButton="filled" (click)="onAddFood()" extended>
-        <mat-icon>add</mat-icon>
-        Aggiungi Alimento
-      </button>
-      <button matButton="filled" extended (click)="onAddLoad()">
-        <mat-icon>local_shipping</mat-icon>
-        Nuovo Carico
-      </button>
-    </div>
   </div>
   <div class="eden-table-container storage-table">
     <table mat-table [dataSource]="dataSource" matSort class="eden-table">
